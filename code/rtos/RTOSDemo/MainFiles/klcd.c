@@ -11,6 +11,7 @@ short rgb(int r, int g, int b) {
 #include "vtUtilities.h"
 #include "lcdTask.h"
 
+#include <math.h>
 
 typedef struct {
 	xQueueHandle toLCD, freed;
@@ -33,20 +34,16 @@ void StartSignalTest() {
 }
 
 TASK_FUNC(TestTask, LCDBuf, bufs) {
-	int count = 0;
+	double count = 0;
 	for (;;) {
 		SignalLCDMsg* msg;
 		RECV(bufs->freed, msg)
 		
 		int i;
-		count++;
 		short* dest = &(msg->data[0]);
 		for (i = 0; i < SIGNAL_SAMPLES; i++) {
-			if (count % 2) {
-				dest[i] = SIGNAL_SAMPLES - i;
-			} else {
-				dest[i] = i;
-			}
+			dest[i] = sin(count)*100;
+			count += .1;
 		}
 
 		SEND(bufs->toLCD, msg);

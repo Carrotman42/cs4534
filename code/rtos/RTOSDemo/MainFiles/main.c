@@ -201,7 +201,6 @@ static vtLCDStruct vtLCDdata;
 
 
 /*-----------------------------------------------------------*/
-void use(xQueueHandle a) {}
 int main( void )
 {
 	/* MTJ: initialize syscalls -- *must* be first */
