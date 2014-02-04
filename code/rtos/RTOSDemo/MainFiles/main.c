@@ -117,7 +117,6 @@ You should read the note above.
 
 // Include file for MTJ's LCD & i2cTemp tasks
 #include "vtUtilities.h"
-#include "lcdTask.h"
 #include "i2cTemp.h"
 #include "vtI2C.h"
 #include "myTimers.h"
@@ -125,6 +124,7 @@ You should read the note above.
 
 
 #include "tasks.h"
+#include "common.h"
 
 /* syscalls initialization -- *must* occur first */
 #include "syscalls.h"
@@ -199,6 +199,12 @@ static vtConductorStruct conductorData;
 static vtLCDStruct vtLCDdata; 
 #endif
 
+#include "klcd.h"
+
+// all milestone-specific code for milestone 1. Will just be tasks starting and whatnot.
+void StartMilestone1() {
+	StartSignalTest();
+}
 
 /*-----------------------------------------------------------*/
 int main( void )
@@ -213,7 +219,7 @@ int main( void )
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();
 	
-	StartSignalTest();
+	StartMilestone1();
 
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );

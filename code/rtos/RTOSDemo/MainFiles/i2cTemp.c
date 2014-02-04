@@ -12,7 +12,6 @@
 /* include files. */
 #include "vtUtilities.h"
 #include "vtI2C.h"
-#include "LCDtask.h"
 #include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
 

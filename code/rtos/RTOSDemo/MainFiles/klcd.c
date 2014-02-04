@@ -1,5 +1,6 @@
 
-#include "tasks.h"
+#include "common.h"
+#include "klcd.h"
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 short rgb(int r, int g, int b) {
@@ -9,44 +10,79 @@ short rgb(int r, int g, int b) {
 
 #include "GLCD.h"
 #include "vtUtilities.h"
-#include "lcdTask.h"
-
 #include <math.h>
 
 typedef struct {
 	xQueueHandle toLCD, freed;
 } LCDBuf;
-// The task to display a signal on the LCD screen
-TASK_PROTOTYPE(LCDSignalTask, LCDBuf, 1000, tskIDLE_PRIORITY);
-#include "lcdTask.h"
-TASK_PROTOTYPE(TestTask, LCDBuf, 200, tskIDLE_PRIORITY);
 
 // This needs to be here because the params are shallow copied (and must be a pointer)
 //    and therefore must not be on the stack. Since we only need one of these, we can just
 //    make it file scope.
 static LCDBuf lcdCmd;
 
+static xQueueHandle lcdTxt;
+
+#ifdef CHECKS
+// Note: this doesn't actually work to check to make sure things were initted
+//   because C doesn't initialize variables to be a specific value. But just in
+//   case I look into making them zeroed out initially I'm leaving them here.
+#define reqSig FAILIF(lcdCmd.toLCD == NULL && lcdCmd.freed == NULL)
+#define reqText FAILIF(lcdTxt == NULL)
+#else
+#define reqSig
+#endif
+
+#define LCD_TASKS
+#include "tasks.h"
+
+
+
+
+void StartTextTest() {
+	MAKE_Q(lcdTxt, TextLCDMsg, 4)
+}
+
+
 void StartSignalTest() {
 	MAKE_Q(lcdCmd.toLCD, SignalLCDMsg*, 4);
 	MAKE_Q(lcdCmd.freed, SignalLCDMsg*, 4);
+
 	StartLCDSignalTask(&lcdCmd);
 	StartTestTask(&lcdCmd);
+}
+
+SignalLCDMsg* LCDgetSignalBuffer() {
+	reqSig;
+	
+	SignalLCDMsg* ret;
+	RECV(lcdCmd.freed, ret);
+	return ret;
+}
+void LCDcommitSignalBuffer(SignalLCDMsg*in) {
+	reqSig;
+	
+	SEND(lcdCmd.toLCD, in);
+}
+void LCDabortSignalBuffer(SignalLCDMsg*in) {
+	reqSig;
+	
+	SEND(lcdCmd.freed, in);
 }
 
 TASK_FUNC(TestTask, LCDBuf, bufs) {
 	double count = 0;
 	for (;;) {
-		SignalLCDMsg* msg;
-		RECV(bufs->freed, msg)
+		SignalLCDMsg* msg = LCDgetSignalBuffer();
 		
 		int i;
 		short* dest = &(msg->data[0]);
 		for (i = 0; i < SIGNAL_SAMPLES; i++) {
 			dest[i] = sin(count)*100;
-			count += .1;
+			count += .25;
 		}
 
-		SEND(bufs->toLCD, msg);
+		LCDcommitSignalBuffer(msg);
 	}
 } ENDTASK
 

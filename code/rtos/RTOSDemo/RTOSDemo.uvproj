@@ -347,11 +347,6 @@
               <FilePath>../FreeRTOS/Demo/CORTEX_LPC1768_GCC_Rowley/ParTest.c</FilePath>
             </File>
             <File>
-              <FileName>LCDtask.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MainFiles/LCDtask.c</FilePath>
-            </File>
-            <File>
               <FileName>myTimers.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/myTimers.c</FilePath>
@@ -360,6 +355,11 @@
               <FileName>conductor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/conductor.c</FilePath>
+            </File>
+            <File>
+              <FileName>klcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/klcd.c</FilePath>
             </File>
           </Files>
         </Group>

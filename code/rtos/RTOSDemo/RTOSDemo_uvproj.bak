@@ -316,6 +316,11 @@
               <FileType>1</FileType>
               <FilePath>../FreeRTOS/Source/portable/GCC/ARM_CM3/port.c</FilePath>
             </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../FreeRTOS/Source/timers.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -345,6 +350,16 @@
               <FileName>LCDtask.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/LCDtask.c</FilePath>
+            </File>
+            <File>
+              <FileName>myTimers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/myTimers.c</FilePath>
+            </File>
+            <File>
+              <FileName>conductor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/conductor.c</FilePath>
             </File>
           </Files>
         </Group>
