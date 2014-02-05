@@ -19,6 +19,12 @@
 // This macro helps with checking return codes
 #define FAILIF(x) if (x) FATAL(0);
 
+#ifdef CHECKS
+#define ASSERT(x) if (!(x)) FATAL(0);
+#else
+#define ASSERT(x)
+#endif
+
 // These macros have to do with queues and are relatively straightforward.
 #define MAKE_Q(dest, type, len) if (((dest) = xQueueCreate(len, sizeof(type))) == NULL) FATAL(0);
 #define RECV(chan, dest) if(xQueueReceive(chan,(void *)&(dest),portMAX_DELAY) != pdTRUE) FATAL(0);

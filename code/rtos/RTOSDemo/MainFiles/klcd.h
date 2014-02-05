@@ -5,6 +5,7 @@
 void LCDinit();
 
 void StartSignalTest();
+void StartLCD();
 
 // Blocks until a buffer is available
 SignalLCDMsg* LCDgetSignalBuffer();

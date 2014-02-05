@@ -99,20 +99,6 @@ You should read the note above.
 // Define whether to use my USB task
 #define USE_MTJ_USE_USB 0
 
-#if USE_FREERTOS_DEMO == 1
-/* Demo app includes. */
-#include "BlockQ.h"
-#include "integer.h"
-#include "blocktim.h"
-#include "flash.h"
-#include "semtest.h"
-#include "PollQ.h"
-#include "GenQTest.h"
-#include "QPeek.h"
-#include "recmutex.h"
-#include "timers.h"
-#endif
-
 #include "partest.h"
 
 // Include file for MTJ's LCD & i2cTemp tasks

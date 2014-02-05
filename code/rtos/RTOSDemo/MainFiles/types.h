@@ -12,11 +12,11 @@ typedef struct {
 	short data[SIGNAL_SAMPLES];
 } SignalLCDMsg;
 
-
-#define LINE_CHAR_MAX 10
+#define CHARS 320/16
 typedef struct {
-	unsigned char line, len;
-	char data[LINE_CHAR_MAX];
+	unsigned char line;
+	// Must be 0 terminated
+	char text[CHARS + 1];
 } TextLCDMsg;
 
 #endif

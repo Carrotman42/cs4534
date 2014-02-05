@@ -11,8 +11,8 @@
 
 #ifdef LCD_TASKS
 // The task to display a signal on the LCD screen
-TASK_PROTOTYPE(LCDSignalTask, LCDBuf, 1000, tskIDLE_PRIORITY);
-TASK_PROTOTYPE(TestTask, LCDBuf, 200, tskIDLE_PRIORITY);
+TASK_PROTOTYPE(LCDTask, LCDBuf, 1000, tskIDLE_PRIORITY);
+TASK_PROTOTYPE(TestSignalTask, LCDBuf, 200, tskIDLE_PRIORITY);
 #endif
 
 #endif
