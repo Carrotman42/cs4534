@@ -17,6 +17,8 @@ typedef struct {
 #define CHARS 320/16
 typedef struct {
 	unsigned char line;
+	// Can be small (0) or large (1)
+	unsigned char size : 1;
 	// Must be 0 terminated
 	char text[CHARS + 1];
 } TextLCDMsg;

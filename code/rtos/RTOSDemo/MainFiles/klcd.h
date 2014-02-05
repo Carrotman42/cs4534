@@ -18,7 +18,9 @@ void LCDcommitBuffer(void*aa);
 void LCDabortBuffer(void*a);
 
 // DEBUG FUNCTION
-// Doesn't bounds check
+
+// Wraps text to next line.
+// NOTE: If this prototype is changed, make sure to change the corresponding prototype in FATAL
 void LCDwriteLn(int line, char* data);
 #endif
 

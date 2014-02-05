@@ -13,8 +13,16 @@
 // Our local types
 #include "types.h"
 
-// Could swap this out with a print to LCD (or log file on the SD card) the __FILE__ and __LINE__ in debug mode
-#define FATAL(x) VT_HANDLE_FATAL_ERROR(x);
+// Note: This won't work if the LCD fails, so if you think that could be happening
+//    then take out the LCDwriteLn
+// TODO: Include line number too.
+#define FATAL(x) {\
+		void LCDwriteLn(int line, char* data); \
+		LCDwriteLn(8, "FAIL: " __FILE__); \
+		/* Hacky way to help make sure the LCD will draw correctly */ \
+		vTaskDelay(1000/portTICK_RATE_MS); \
+		VT_HANDLE_FATAL_ERROR(x); \
+	}
 
 // This macro helps with checking return codes
 #define FAILIF(x) if (x) FATAL(0);

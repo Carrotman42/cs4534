@@ -31,17 +31,17 @@ void StartSensorTasks() {
 	StartPumpSensor();
 	vStartConductorTask(&conduct, tskIDLE_PRIORITY, &vtI2C0, &vtTemp);
 }
-
 				  
 #define tempWRITE_RATE_BASE	( ( portTickType ) 500 / portTICK_RATE_MS)
 TASK_FUNC_NOARG(PumpSensor) {
-	int count = 0;
+	int count = 0;	
 	while(1) {
 		vTaskDelay(100/portTICK_RATE_MS);
 		SendTempTimerMsg(&vtTemp,tempWRITE_RATE_BASE,0);
-		if (count++ % 10 == 0) {
+		if (count++ % 40 == 0) {
 			char buf[2] = {(count/10)%10 + '0', 0};
 			LCDwriteLn(3, buf);
+			//FATAL(0);
 		}
 	}
 } ENDTASK

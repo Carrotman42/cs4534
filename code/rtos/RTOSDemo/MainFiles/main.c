@@ -186,6 +186,7 @@ static vtLCDStruct vtLCDdata;
 #endif
 
 #include "klcd.h"
+#include "sensors.h"
 
 // all milestone-specific code for milestone 1. Will just be tasks starting and whatnot.
 void StartMilestone1() {

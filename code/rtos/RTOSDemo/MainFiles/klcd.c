@@ -67,6 +67,8 @@ TextLCDMsg* LCDgetTextBuffer() {
 	RECV(lcdCmd.freed, ret);
 	
 	ret->type = text;
+	// Partially initialize the text msg
+	ret->text.size = 1;
 	return &ret->text;
 }
 
@@ -116,8 +118,6 @@ TASK_FUNC_NOARG(TestSignalTask) {
 			msg->text[0] = '0' + (times/10) % 10;
 			msg->text[1] = 0;
 			LCDcommitBuffer(msg);
-			// Fast way of doing that, but less efficient due to copying:
-			LCDwriteLn(6, "A string");
 		}
 	}
 } ENDTASK
@@ -126,6 +126,7 @@ TASK_FUNC_NOARG(TestSignalTask) {
 void LCDwriteLn(int line, char* data) {
 	TextLCDMsg* msg = LCDgetTextBuffer();
 	msg->line = line;
+	msg->size = 1; // could be 0
 	int i = 0;
 	while (1) {
 		char d = *data++;
@@ -207,7 +208,7 @@ void lcdText(TextLCDMsg*text) {
 	int curLine = text->line;
 	//GLCD_ClearLn(curLine,1);
 	// show the text
-	GLCD_DisplayString(curLine,0,1,(unsigned char *)text->text);
+	GLCD_DisplayString(curLine,0,text->size,(unsigned char *)text->text);
 }
 
 TASK_FUNC(LCDTask, LCDBuf, bufs) {
