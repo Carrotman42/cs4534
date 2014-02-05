@@ -37,6 +37,11 @@
 	unsigned portBASE_TYPE const name##PRIORITY = priority; \
 	void Start##name(type* ps);
 
+#define TASK_PROTOTYPE_NOARG(name, stackSize, priority) \
+	unsigned short const name##STACK_SIZE = stackSize; \
+	unsigned portBASE_TYPE const name##PRIORITY = priority; \
+	void Start##name(void);
+
 // Use this to declare a task (usually in a source (.c) file)
 // NOTE: You need an asscociated TASK_PROTOTYPE for every TASK_FUNC, (yes, even if it's in the same file).
 //   But Usually the TASK_FUNC goes in a .c file and the TASK_PROTOTYPE goes in a .h file.
@@ -51,6 +56,17 @@
 	static portTASK_FUNCTION(name, orig_##paramName) { \
 		type* paramName = (type*)orig_##paramName;
 
+
+#define TASK_FUNC_NOARG(name) \
+	static portTASK_FUNCTION(name, unusedParam); \
+	void Start##name(void) { \
+		portBASE_TYPE retval; \
+		if ((retval = xTaskCreate(name, (signed char*) #name, name##STACK_SIZE, NULL, name##PRIORITY, NULL )) != pdPASS) { \
+			FATAL(retval); \
+		} \
+	} \
+	static portTASK_FUNCTION(name, unusedParam) {
+		
 #define ENDTASK }
 
 #define INSPECT_STACK(max_stack) \

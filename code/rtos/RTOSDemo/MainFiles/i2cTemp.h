@@ -6,7 +6,6 @@
 // Do not touch...
 typedef struct __TempStruct {
 	vtI2CStruct *dev;
-	vtLCDStruct *lcdData;
 	xQueueHandle inQ;
 } vtTempStruct;
 // Maximum length of a message that can be received by this task
@@ -20,7 +19,7 @@ typedef struct __TempStruct {
 //   uxPriority -- the priority you want this task to be run at
 //   i2c: pointer to the data structure for an i2c task
 //   lcd: pointer to the data structure for an LCD task (may be NULL)
-void vStarti2cTempTask(vtTempStruct *tempData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtLCDStruct *lcd);
+void vStarti2cTempTask(vtTempStruct *tempData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c);
 //
 // Send a timer message to the Temperature task
 // Args:

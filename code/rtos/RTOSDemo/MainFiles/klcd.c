@@ -50,8 +50,8 @@ static const short forecolor = rgb(31, 63, 31);
 static const short thcolor = rgb(0,15,0);
 
 void StartSignalTest() {
-	StartLCD();
-	StartTestSignalTask(&lcdCmd);
+	StartLCD();																							 
+	StartTestSignalTask();
 }
 void StartLCD() {
 	MAKE_Q(lcdCmd.toLCD, LCDMsg*, 4);
@@ -89,13 +89,13 @@ void LCDcommitBuffer(void*in) {
 	
 	SEND(lcdCmd.toLCD, in);
 }
-void LCDabortBuffer(SignalLCDMsg*in) {
+void LCDabortBuffer(void*in) {
 	reqSig;
 	
 	SEND(lcdCmd.freed, in);
 }
 
-TASK_FUNC(TestSignalTask, LCDBuf, bufs) {
+TASK_FUNC_NOARG(TestSignalTask) {
 	double count = 0;
 	int times = 0;
 	for (;;) {
@@ -116,9 +116,27 @@ TASK_FUNC(TestSignalTask, LCDBuf, bufs) {
 			msg->text[0] = '0' + (times/10) % 10;
 			msg->text[1] = 0;
 			LCDcommitBuffer(msg);
+			// Fast way of doing that, but less efficient due to copying:
+			LCDwriteLn(6, "A string");
 		}
 	}
 } ENDTASK
+
+
+void LCDwriteLn(int line, char* data) {
+	TextLCDMsg* msg = LCDgetTextBuffer();
+	msg->line = line;
+	int i = 0;
+	while (1) {
+		char d = *data++;
+		msg->text[i++] = d;
+		if (d == 0) {
+			break;
+		}
+	}
+	
+	LCDcommitBuffer(msg);
+}
 
 void lcdSignal(SignalLCDMsg* msg) {
 	GLCD_WindowMax();

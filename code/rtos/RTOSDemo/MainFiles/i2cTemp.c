@@ -14,6 +14,8 @@
 #include "vtI2C.h"
 #include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
+#include "common.h"
+#include "klcd.h"
 
 /* *********************************************** */
 // definitions and data structures that are private to this file
@@ -43,7 +45,7 @@ static portTASK_FUNCTION_PROTO( vi2cTempUpdateTask, pvParameters );
 
 /*-----------------------------------------------------------*/
 // Public API
-void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtLCDStruct *lcd)
+void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c)
 {
 	// Create the queue that will be used to talk to this task
 	if ((params->inQ = xQueueCreate(vtTempQLen,sizeof(vtTempMsg))) == NULL) {
@@ -52,7 +54,6 @@ void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, v
 	/* Start the task */
 	portBASE_TYPE retval;
 	params->dev = i2c;
-	params->lcdData = lcd;
 	if ((retval = xTaskCreate( vi2cTempUpdateTask, ( signed char * ) "i2cTemp", i2cSTACK_SIZE, (void *) params, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
@@ -127,10 +128,6 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	vtTempStruct *param = (vtTempStruct *) pvParameters;
 	// Get the I2C device pointer
 	vtI2CStruct *devPtr = param->dev;
-	// Get the LCD information pointer
-	vtLCDStruct *lcdData = param->lcdData;
-	// String buffer for printing
-	char lcdBuffer[vtLCDMaxLen+1];
 	// Buffer for receiving messages
 	vtTempMsg msgBuffer;
 	uint8_t currentState;
@@ -153,6 +150,13 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			VT_HANDLE_FATAL_ERROR(0);
 		}
 
+		{
+			char buf[4];
+			buf[0] = 'T';
+			buf[1] = '0' + getMsgType(&msgBuffer);
+			buf[2] = 0;
+			LCDwriteLn(0, buf);
+		}
 		// Now, based on the type of the message and the state, we decide on the new state and action to take
 		switch(getMsgType(&msgBuffer)) {
 		case vtI2CMsgTypeTempInit: {
@@ -224,19 +228,13 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				// Do the accurate temperature calculation
 				temperature += -0.25 + ((countPerC-countRemain)/countPerC);
 
-				#if PRINTF_VERSION == 1
-				printf("Kevi %f F (%f C)\n",(32.0 + ((9.0/5.0)*temperature)), (temperature));
-				sprintf(lcdBuffer,"Iss=%6.2fF (%6.2fC)",(32.0 + ((9.0/5.0)*temperature)),temperature);
-				#else
 				// we do not have full printf (so no %f) and therefore need to print out integers
-				printf("Kevn %d F (%d C)\n",lrint(32.0 + ((9.0/5.0)*temperature)), lrint(temperature));
-				sprintf(lcdBuffer,"Lest=%d F (%d C)",lrint(32.0 + ((9.0/5.0)*temperature)),lrint(temperature));
-				#endif
-				if (lcdData != NULL) {
-					//if (SendLCDPrintMsg(lcdData,strnlen(lcdBuffer,vtLCDMaxLen),lcdBuffer,portMAX_DELAY) != pdTRUE) {
-					//	VT_HANDLE_FATAL_ERROR(0);
-					//}
-				}
+				//printf("Kevn %d F (%d C)\n",lrint(32.0 + ((9.0/5.0)*temperature)), lrint(temperature));
+				TextLCDMsg* buf = LCDgetTextBuffer();
+				snprintf(buf->text, CHARS+1, "Temp=%d F (%d C)",(int)lrint(32.0 + ((9.0/5.0)*temperature)),(int)lrint(temperature));
+
+				buf->line = 1;
+				LCDcommitBuffer(buf);
 			} else {
 				// unexpectedly received this message
 				VT_HANDLE_FATAL_ERROR(0);
