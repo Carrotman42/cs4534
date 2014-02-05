@@ -7,9 +7,11 @@
 #define LCDWIDTH 320
 #define LCDHEIGHT 240
 
+// NOTE: SIGNAL_SAMPLES *MUST* remain equal to LCDWIDTH because the interleaving
+//   algorithm for the lcd depends on it.
 #define SIGNAL_SAMPLES (LCDWIDTH)
 typedef struct {
-	short data[SIGNAL_SAMPLES];
+	short data[LCDWIDTH];
 } SignalLCDMsg;
 
 #define CHARS 320/16

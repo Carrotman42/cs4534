@@ -125,7 +125,6 @@ void lcdSignal(SignalLCDMsg* msg) {
 	// It's okay to have static vars: we're guarenteed to always be in the same task.
 	//   ps: I hope the memory model of freertos guarentees that... It seems appropriate
 	//          to assume.
-	static int curX = 0;
 	static short last[LCDWIDTH];
 	// Autoscale: find the largest value
 	int max = 0;
@@ -148,35 +147,38 @@ void lcdSignal(SignalLCDMsg* msg) {
 	// Make sure all 0s still displays correctly
 	if (max == 0) max = 1;
 	else max *= 5; // scale it for debugging
-	; 
 
-	if (curX + SIGNAL_SAMPLES > LCDWIDTH) {
-		curX = 0;
+	#define LOOP(s) for (x = s, data = &msg->data[s]; x < SIGNAL_SAMPLES; x+=2, data+=2)
+	// TODO: Figure out what kind of fp support we have
+	#define Y int y = *data * (LCDHEIGHT/2) / max + LCDHEIGHT/2;
+		 		
+	// Use a fancy technique from old interleaved tvs: since writes to the LCD screen are effectively visible to the human
+	//    eye, we split it up and rewrite every other line. At fast refresh speeds it eases how it looks (note: could be confirmation
+	//    bias, but this at least doesn't have any real negative issues.
+	GLCD_SetTextColor(backcolor);
+	LOOP(0) {				   			   
+		GLCD_PutPixel(x, last[x]);
 	}
-		
-	int saveX = curX;
-	for (x = 0, data = &msg->data[0]; x < SIGNAL_SAMPLES; x+=2, data+=2, curX+=2) {
-		// TODO: Figure out what kind of fp support we have
-		int y = *data * (LCDHEIGHT/2) / max + LCDHEIGHT/2;
-						
-		GLCD_SetTextColor(backcolor);						   
-		GLCD_PutPixel(curX, last[x]);
-		GLCD_SetTextColor(forecolor);
+	
+	GLCD_SetTextColor(forecolor);
+	LOOP(0) {
+		Y;
 		last[x] = y;			   
-		GLCD_PutPixel(curX, y);
+		GLCD_PutPixel(x, y);
 	}
 
-	curX = saveX;
-	for (x = 1, data = &msg->data[1]; x < SIGNAL_SAMPLES; x+=2, data+=2, curX+=2) {
-		// TODO: Figure out what kind of fp support we have
-		int y = *data * (LCDHEIGHT/2) / max + LCDHEIGHT/2;
-						
-		GLCD_SetTextColor(backcolor);						   
-		GLCD_PutPixel(curX, last[x]);
-		GLCD_SetTextColor(forecolor);
-		last[x] = y;			   
-		GLCD_PutPixel(curX, y);
+	GLCD_SetTextColor(backcolor);
+	LOOP(1) {				   			   
+		GLCD_PutPixel(x, last[x]);
 	}
+	
+	GLCD_SetTextColor(forecolor);
+	LOOP(1) {
+		Y;
+		last[x] = y;			   
+		GLCD_PutPixel(x, y);
+	}
+
 
 	// Not needed, but may help with things sometimes.
     GLCD_WindowMax();
