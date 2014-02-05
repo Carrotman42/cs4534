@@ -13,15 +13,25 @@
 // Our local types
 #include "types.h"
 
+
+#define _m2S(x) #x
+#define m2S(x) _m2S(x)
+
+#ifdef CHECKS
 // Note: This won't work if the LCD fails, so if you think that could be happening
 //    then take out the LCDwriteLn
 // TODO: Include line number too.
-#define FATAL(x) {\
+#define FATAL(x) FATALSTR("FAIL: " __FILE__ ":" m2S(__LINE__))
+#else
+#define FATAL(x) VT_HANDLE_FATAL_ERROR(x)
+#endif
+
+#define FATALSTR(str) { \
 		void LCDwriteLn(int line, char* data); \
-		LCDwriteLn(8, "FAIL: " __FILE__); \
+		LCDwriteLn(8, str); \
 		/* Hacky way to help make sure the LCD will draw correctly */ \
 		vTaskDelay(1000/portTICK_RATE_MS); \
-		VT_HANDLE_FATAL_ERROR(x); \
+		VT_HANDLE_FATAL_ERROR(0); \
 	}
 
 // This macro helps with checking return codes

@@ -126,6 +126,7 @@ TASK_FUNC_NOARG(TestSignalTask) {
 void LCDwriteLn(int line, char* data) {
 	TextLCDMsg* msg = LCDgetTextBuffer();
 	msg->line = line;
+	
 	msg->size = 1; // could be 0
 	int i = 0;
 	while (1) {

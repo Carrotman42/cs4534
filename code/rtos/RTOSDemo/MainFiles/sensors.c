@@ -41,7 +41,6 @@ TASK_FUNC_NOARG(PumpSensor) {
 		if (count++ % 40 == 0) {
 			char buf[2] = {(count/10)%10 + '0', 0};
 			LCDwriteLn(3, buf);
-			//FATAL(0);
 		}
 	}
 } ENDTASK
