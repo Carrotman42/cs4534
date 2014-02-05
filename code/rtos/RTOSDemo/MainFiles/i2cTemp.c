@@ -150,15 +150,21 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			VT_HANDLE_FATAL_ERROR(0);
 		}
 
+		int msgT = getMsgType(&msgBuffer);
 		{
 			char buf[4];
 			buf[0] = 'T';
-			buf[1] = '0' + getMsgType(&msgBuffer);
-			buf[2] = 0;
+			buf[1] = '0' + msgT;
+			buf[2] = '0' + currentState;
+			buf[3] = 0;
 			LCDwriteLn(0, buf);
 		}
+		
+		if (currentState < 4) {
+			DBGval(currentState);
+		}
 		// Now, based on the type of the message and the state, we decide on the new state and action to take
-		switch(getMsgType(&msgBuffer)) {
+		switch(msgT) {
 		case vtI2CMsgTypeTempInit: {
 			if (currentState == fsmStateInit1Sent) {
 				currentState = fsmStateInit2Sent;

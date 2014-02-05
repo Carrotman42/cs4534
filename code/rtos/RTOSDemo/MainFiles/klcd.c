@@ -7,7 +7,6 @@
 
 
 #include "GLCD.h"
-#include "vtUtilities.h"
 #include <math.h>
 
 typedef struct {
@@ -51,8 +50,9 @@ static const short thcolor = rgb(0,15,0);
 
 void StartSignalTest() {
 	StartLCD();																							 
-	StartTestSignalTask();
+	//StartTestSignalTask();
 }
+
 void StartLCD() {
 	MAKE_Q(lcdCmd.toLCD, LCDMsg*, 4);
 	MAKE_Q(lcdCmd.freed, LCDMsg*, 4);
@@ -175,8 +175,9 @@ void lcdSignal(SignalLCDMsg* msg) {
 	// Use a fancy technique from old interleaved tvs: since writes to the LCD screen are effectively visible to the human
 	//    eye, we split it up and rewrite every other line. At fast refresh speeds it eases how it looks (note: could be confirmation
 	//    bias, but this at least doesn't have any real negative issues.
+	   
 	GLCD_SetTextColor(backcolor);
-	LOOP(0) {				   			   
+	LOOP(0) {				   			
 		GLCD_PutPixel(x, last[x]);
 	}
 	

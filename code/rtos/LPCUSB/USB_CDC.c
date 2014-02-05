@@ -474,6 +474,7 @@ void vUSBTask( void *pvParameters )
 	USBHwConnect(TRUE);
 	// put this task to sleep -- we don't really need a task at all
 	vTaskSuspend(xTaskGetCurrentTaskHandle());
+	
 	for( ;; )
 	{	
 	}

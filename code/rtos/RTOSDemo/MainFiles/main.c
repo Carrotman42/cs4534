@@ -186,6 +186,7 @@ static vtLCDStruct vtLCDdata;
 #endif
 
 #include "klcd.h"
+#include "kdbg.h"
 #include "sensors.h"
 
 // all milestone-specific code for milestone 1. Will just be tasks starting and whatnot.
@@ -203,6 +204,7 @@ int main( void )
 
 	// Set up the LED ports and turn them off
 	vtInitLED();
+	InitDBG();
 
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();

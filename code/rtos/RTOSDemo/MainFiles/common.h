@@ -12,7 +12,10 @@
 #include "queue.h"
 // Our local types
 #include "types.h"
-
+// Helpers given to us
+#include "vtUtilities.h"
+// Helpers I wrote
+#include "kdbg.h"
 
 #define _m2S(x) #x
 #define m2S(x) _m2S(x)
@@ -37,8 +40,12 @@
 // This macro helps with checking return codes
 #define FAILIF(x) if (x) FATAL(0);
 
+#define SLEEP(ms) vTaskDelay(ms/portTICK_RATE_MS)
+
 #ifdef CHECKS
+#ifndef ASSERT
 #define ASSERT(x) if (!(x)) FATAL(0);
+#endif
 #else
 #define ASSERT(x)
 #endif
