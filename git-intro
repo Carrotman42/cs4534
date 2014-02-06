@@ -1,0 +1,47 @@
+
+
+
+A repository is a set of files along with their histories. The files in the repository (repo for short) are considered "tracked files". Changes to files are done by "commit"-ing. When you commit changes to a file that file's latest contents is updated, but all of the previous history for the file is still kept intact so that no person can accidentally screw up the project.
+
+In git there are two levels of repositories: the "remote" repo and the "local" repo. The local repo is physically kept on your hard drive, the repote repo is on the remote machine (in this case GitHub's servers). These repos are not automatically kept in sync, you have to do manual a "push" from the local repo to the remote repo.
+
+When you commit files into your local repository, you have to first "stage" them first. This tells git which files you want to commit that time.
+
+To get the latest version of the remote repository (from the GitHub) and put it into your local repository:
+	- git pull
+
+To stage files:
+	- git add files_you_want_to_add.txt you_can_put_more_than_one_at_a_time_if_you_want.txt
+
+To commit your staged changes into your local repository:
+	- git commit -m "Your commit message. You should definitely always write a comment."
+
+To push changes from your local repository to the remote one:
+	- git push
+
+Protip: You can combine the `git add` and `git commit` steps by adding the -a flag to git comming: `git commit -a -m "Commit message"`. This will effectively do a `git add` of every file that is currently tracked. Note that to track new files you need to manually do a `git add` to make it tracked so that the -a flag to commit will catch it.
+
+Generally, every time you start programming you should do a `git pull` so that you can get our updates before you start programming. If you do a pull while you have changes you have to do a "merge", and that's annoying and is a skill programmers must hone through lots of practice. I'll not go into it now.
+
+
+
+When you add a new file to the repo, do this:
+	- git add filename
+
+When you have a bit of code you want to upload, do the following:
+	- git commit -a -m "Commit message so that your team members can know what you changed"
+	- git push
+	
+When you want to get teammates updates:
+	- git pull
+	
+Other tips:
+	- It is never okay to push code to the remote repository that doesn't compile (at least not to the main area called "master"). ALWAYS compile the project before committing because preventing the project from compiling is super annoying. Accidents happen so it's not a deadly thing to do (and you can always fix it), but to ensure that your team members are always productive without having to clean up your mess. It doesn't always have to work correctly, but at least make sure it compiles. But try work on things in small enough chunks that you rarely commit something that causes something to break.
+	- Try to not "sit on a commit", eg make a commit to your local repository but not push it to the remote repo. You can do this, but it increases the chances that a teammate will make a change and push it to the remote repo such that when you eventually remember to push you might have to do a manual merge, which is again really annoying to deal with sometimes.
+
+
+
+
+
+
+
