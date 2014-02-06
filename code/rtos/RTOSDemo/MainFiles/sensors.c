@@ -36,7 +36,7 @@ void StartSensorTasks() {
 TASK_FUNC_NOARG(PumpSensor) {
 	int count = 0;	
 	while(1) {
-		vTaskDelay(100/portTICK_RATE_MS);
+		vTaskDelay(500/portTICK_RATE_MS);
 		SendTempTimerMsg(&vtTemp,tempWRITE_RATE_BASE,0);
 		if (count++ % 40 == 0) {
 			char buf[2] = {(count/10)%10 + '0', 0};
@@ -44,7 +44,39 @@ TASK_FUNC_NOARG(PumpSensor) {
 		}
 	}
 } ENDTASK
+/*
+void TempTimerCallback(xTimerHandle pxTimer)
+{
+	if (pxTimer == NULL) {
+		VT_HANDLE_FATAL_ERROR(0);
+	} else {
+		// When setting up this timer, I put the pointer to the 
+		//   Temperature structure as the "timer ID" so that I could access
+		//   that structure here -- which I need to do to get the 
+		//   address of the message queue to send to 
+		vtTempStruct *ptr = (vtTempStruct *) pvTimerGetTimerID(pxTimer);
+		// Make this non-blocking *but* be aware that if the queue is full, this routine
+		// will not care, so if you care, you need to check something
+		if (SendTempTimerMsg(ptr,tempWRITE_RATE_BASE,0) == errQUEUE_FULL) {
+			// Here is where you would do something if you wanted to handle the queue being full
+			VT_HANDLE_FATAL_ERROR(0);
+		}
+	}
+}
 
+void startTimerForTemperature(vtTempStruct *vtTempdata) {
+	if (sizeof(long) != sizeof(vtTempStruct *)) {
+		VT_HANDLE_FATAL_ERROR(0);
+	}
+	xTimerHandle TempTimerHandle = xTimerCreate((const signed char *)"Temp Timer",tempWRITE_RATE_BASE,pdTRUE,(void *) vtTempdata,TempTimerCallback);
+	if (TempTimerHandle == NULL) {
+		VT_HANDLE_FATAL_ERROR(0);
+	} else {
+		if (xTimerStart(TempTimerHandle,0) != pdPASS) {
+			VT_HANDLE_FATAL_ERROR(0);
+		}
+	}
+}*/
 
 
 

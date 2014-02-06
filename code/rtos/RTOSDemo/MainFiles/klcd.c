@@ -50,7 +50,7 @@ static const short thcolor = rgb(0,15,0);
 
 void StartSignalTest() {
 	StartLCD();																							 
-	//StartTestSignalTask();
+	StartTestSignalTask();
 }
 
 void StartLCD() {
