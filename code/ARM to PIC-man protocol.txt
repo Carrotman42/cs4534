@@ -1,0 +1,82 @@
+
+
+
+Terminology:
+
+Eventual Setup:
+    
+            I2C                WIFI                I2C
+   ARM <----------> PIC-man <--------> MasterPIC <-----> Slave 1/2/n
+                 "PIC-manager"
+
+The "brain" is a combination of the ARM and PIC-man, whereas the "rover" is a combination of the MasterPIC, all slave PICs, sensors, motors, etc.
+
+Even though right now we're just talking to a single PIC18 chip, eventually this will be the uP that actually talks through the WIFI to the rover. Therefore I think we should just start implementing the actual protocol I think we could use between the rover and the brain. In Milestone 1 the WIFI is substituted in for I2C, but since both are just abstract serial interfaces, the protocol can just be switched to the different source/dest later (note: you should design the code so that this transition is easier!)
+
+Strategy: We should put the structs we use for the communication in common header files in common folders that are platform-independent so that we never have to worry about a bug involving one of us having an old version of the protocol. In addition, anything having to do with this protocol (encode/decode functions, flag constants, etc) should be put in the common folder so that we can keep all relevant methods close. After the initial annoyance of getting the files to compile with our different projects (I'll try to figure that one out) then it will be easier to update and everything, especially if we later remove the PIC-man to remove that latency as well as if we try to update the protocol for any reason.
+
+
+
+
+Anyway, here's the main protocol. If there's anything missing/extra/whatever please don't hesitate to fix it here or bring it up to the group for discussion. Also if you need clarification feel free to ask also, this is just the first version. The payload (information after the flags/command byte) will probably be different for every type of command.
+
+// The message FROM Brain TO Rover
+struct BrainMsg {
+    // The command/flags for this message. Right now only get (BrainMsgGET) will exist.
+    uint8 flags;
+    // -- The following will change with future versions of the protocol. Right now, just the payload for the GET will exist.
+
+    // Bitmask of sensors to read from. Right now only the A/D converter (SensorAD) exists.
+    //   If we ever have more than 8 sensors, we'll make this bigger to fit them all in.
+    uint8 sensorMask;
+
+    // Number of messages to subscribe to. NOTE: you need to double-check that you know the width of your datatypes, or else
+    //   This could be bad. We'll have to double-check with ASSERTS and whatnot.
+    uint16 len;
+}
+
+// Note: I cannot decide on the exact form of this message, and I'd love any suggestions.
+
+// The message FROM Rover TO Brain. This is variable length.
+struct RoverMsg {
+    // The command/flags for this message. Right now only get (BrainMsgGET) will exist.
+    uint8 flags;
+    // -- The following will change with future versions of the protocol. Right now, just the payload for the GET will exist.
+
+    // Sensor that this message is from. Rather than being a bitmask this is the actual sensor id (a whole number from 0-7) so
+    //   that it's easier to switch on the value to find out both where it is going as well as the length of each data sample.
+    uint8 sensorId;
+    
+    // The number of samples taken. Probably won't ever be able to buffer more than 255 at a time
+    uint8 count;
+
+    // The actual data. Note: because the size of this struct is not actually the length of the full data, just pasing this
+    //   to an existing function without manually adding the size of the count will cause the addition to fail.
+    uint8 payload[0];
+}
+
+
+
+
+
+
+
+
+
+
+
+#define BrainMsgGET 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+

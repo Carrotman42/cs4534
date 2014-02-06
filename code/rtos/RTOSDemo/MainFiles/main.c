@@ -105,7 +105,6 @@ You should read the note above.
 #include "vtUtilities.h"
 #include "i2cTemp.h"
 #include "vtI2C.h"
-#include "myTimers.h"
 #include "conductor.h"
 
 
