@@ -29,7 +29,7 @@
 #define FATAL(x) VT_HANDLE_FATAL_ERROR(x)
 #endif
 
-#define FATALSTR(str) VT_HANDLE_FATAL_ERROR(0); { \
+#define FATALSTR(str) { \
 		/* Only write to the LCD if the scheduler has started */ \
 		if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) { \
 			void LCDwriteLn(int line, char* data); \

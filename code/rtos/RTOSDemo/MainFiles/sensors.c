@@ -23,35 +23,18 @@ void StartSensorTasks() {
 	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,100000) != vtI2CInitSuccess);
 
 	vStarti2cTempTask(&vtTemp, tskIDLE_PRIORITY, &vtI2C0);
-	//START_TIMER(MakePumpSensor(), 0);
-	
-	xTimerHandle hand = MakePumpSensor();
-	portBASE_TYPE p = xTimerStart(hand,0);
-	if(p != pdPASS) {
-		FATAL(p);
-	}
-	
+	START_TIMER(MakePumpSensor(), 0);
 	vStartConductorTask(&conduct, tskIDLE_PRIORITY, &vtI2C0, &vtTemp);
 }
 
-//TIMER_FUNC_NOARG(PumpSensor) {
-static void PumpSensor(xTimerHandle pxTimer); 
-xTimerHandle MakePumpSensor(void) { 
-	xTimerHandle retval; 
-	if((retval = xTimerCreate((const signed char*) "PumpSensor", PumpSensorPERIOD, pdTRUE, NULL, PumpSensor)) == NULL) {
-		FATAL(retval);
-	}
-	return retval; 
-} 
-
-static void PumpSensor(xTimerHandle pxTimer) {
+TIMER_FUNC_NOARG(PumpSensor) {
 	static int count = 0;
 	SendTempTimerMsg(&vtTemp,PumpSensorPERIOD,0);
 	if ((count++ % 40) == 0) {
 		char buf[2] = {(count/10)%10 + '0', 0};
 		LCDwriteLn(3, buf);
 	}
-} //ENDTIMER
+} ENDTIMER
 
 
 
