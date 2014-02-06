@@ -30,10 +30,13 @@
 #endif
 
 #define FATALSTR(str) VT_HANDLE_FATAL_ERROR(0); { \
-		void LCDwriteLn(int line, char* data); \
-		LCDwriteLn(8, str); \
-		/* Hacky way to help make sure the LCD will draw correctly */ \
-		vTaskDelay(1000/portTICK_RATE_MS); \
+		/* Only write to the LCD if the scheduler has started */ \
+		if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) { \
+			void LCDwriteLn(int line, char* data); \
+			LCDwriteLn(8, str); \
+			/* Hacky way to help make sure the LCD will draw this */ \
+			vTaskDelay(1000/portTICK_RATE_MS); \
+		} \
 		VT_HANDLE_FATAL_ERROR(0); \
 	}
 
