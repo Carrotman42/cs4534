@@ -361,6 +361,11 @@
               <FileType>1</FileType>
               <FilePath>.\MainFiles/klcd.c</FilePath>
             </File>
+            <File>
+              <FileName>sensors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/sensors.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -263,7 +263,7 @@
               <MiscControls></MiscControls>
               <Define>ROM_MODE,CONFIGURE_USB,FULL_SPEED,PACK_STRUCT_END="__attribute((packed))",ALIGN_STRUCT_END="__attribute((align(4))"</Define>
               <Undefine></Undefine>
-              <IncludePath>.\..\SystemFiles;.\..\NXPDrivers\include;.\..\FreeRTOS\Source\portable\GCC\ARM_CM3;.\..\FreeRTOS\Source\include;.\..\vtCode;.\..\vtCode\vtLCD;.\..\vtCode\vtI2C;.\..\FreeRTOS\Demo\Common\ethernet\uIP\uip-1.0\uip;.\..\FreeRTOS\Demo\Common\include;.\MainFiles;.\..\FreeRTOS\Demo\CORTEX_LPC1768_GCC_Rowley\webserver;.\..\FreeRTOS\Demo\CORTEX_LPC1768_GCC_Rowley\LPCUSB;.\..\LPCUSB;.\..\FreeRTOS\Source\portable\MemMang;.</IncludePath>
+              <IncludePath>.\..\..\common;.\..\..\common\communication;.\..\SystemFiles;.\..\NXPDrivers\include;.\..\FreeRTOS\Source\portable\GCC\ARM_CM3;.\..\FreeRTOS\Source\include;.\..\vtCode;.\..\vtCode\vtLCD;.\..\vtCode\vtI2C;.\..\FreeRTOS\Demo\Common\ethernet\uIP\uip-1.0\uip;.\..\FreeRTOS\Demo\Common\include;.\MainFiles;.\..\FreeRTOS\Demo\CORTEX_LPC1768_GCC_Rowley\webserver;.\..\FreeRTOS\Demo\CORTEX_LPC1768_GCC_Rowley\LPCUSB;.\..\LPCUSB;.\..\FreeRTOS\Source\portable\MemMang;.</IncludePath>
             </VariousControls>
           </Carm>
           <Aarm>
@@ -347,11 +347,6 @@
               <FilePath>../FreeRTOS/Demo/CORTEX_LPC1768_GCC_Rowley/ParTest.c</FilePath>
             </File>
             <File>
-              <FileName>myTimers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MainFiles/myTimers.c</FilePath>
-            </File>
-            <File>
               <FileName>conductor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/conductor.c</FilePath>
@@ -365,6 +360,11 @@
               <FileName>sensors.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/sensors.c</FilePath>
+            </File>
+            <File>
+              <FileName>kdbg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/kdbg.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -609,6 +609,19 @@
               <FileName>vtI2C.c</FileName>
               <FileType>1</FileType>
               <FilePath>../vtCode/vtI2C/vtI2C.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>common</GroupName>
+        </Group>
+        <Group>
+          <GroupName>communication</GroupName>
+          <Files>
+            <File>
+              <FileName>brain_rover.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../common/communication/brain_rover.c</FilePath>
             </File>
           </Files>
         </Group>
