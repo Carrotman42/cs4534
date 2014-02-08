@@ -1,4 +1,6 @@
 
+// This file contains functions for processing data from different sensors.
+
 #include "common.h"
 #include "sensors.h"
 #include "vtI2C.h"	  
@@ -6,8 +8,7 @@
 // TODO: Rewrite this to handle multiple inputs. Eventually it will be the tasks listening to wifi.
 #include "conductor.h"
 
-// This file will change as we progress, but the idea is to minimize API changes. It will eventually look nice, but is
-//    hackish now.
+
 
 static vtI2CStruct vtI2C0;
 static vtTempStruct vtTemp;
@@ -16,6 +17,8 @@ static vtConductorStruct conduct;
 #define SENSOR_TASKS
 #include "tasks.h"
 #include "klcd.h"
+
+
 
 #define mainI2CMONITOR_TASK_PRIORITY			( tskIDLE_PRIORITY)
 void StartSensorTasks() {
