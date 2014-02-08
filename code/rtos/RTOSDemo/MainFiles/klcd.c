@@ -1,5 +1,5 @@
 
-#include "common.h"
+#include "armcommon.h"
 #include "klcd.h"
 
 #define min(a, b) ((a) < (b) ? (a) : (b))

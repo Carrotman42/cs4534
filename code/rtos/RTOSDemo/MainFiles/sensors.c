@@ -1,7 +1,7 @@
 
 // This file contains functions for processing data from different sensors.
 
-#include "common.h"
+#include "armcommon.h"
 #include "sensors.h"
 #include "vtI2C.h"	  
 #include "i2cTemp.h"

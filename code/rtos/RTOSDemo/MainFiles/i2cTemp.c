@@ -14,7 +14,7 @@
 #include "vtI2C.h"
 #include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
-#include "common.h"
+#include "armcommon.h"
 #include "klcd.h"
 
 /* *********************************************** */

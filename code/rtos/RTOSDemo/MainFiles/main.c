@@ -109,7 +109,7 @@ You should read the note above.
 
 
 #include "tasks.h"
-#include "common.h"
+#include "armcommon.h"
 
 /* syscalls initialization -- *must* occur first */
 #include "syscalls.h"

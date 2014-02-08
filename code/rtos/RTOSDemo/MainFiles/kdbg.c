@@ -1,5 +1,5 @@
 
-#include "common.h"
+#include "armcommon.h"
 #include "lpc17xx_gpio.h"
 #include "kdbg.h"
 
