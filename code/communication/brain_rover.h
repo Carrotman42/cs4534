@@ -18,26 +18,9 @@ typedef struct {
 	uint8 payload[0];
 } RoverMsg;
 
-/*
-void packADData(int len, sensorADData* data, char* out, int maxout) {
-	RoverMsg* msg = (RoverMsg*)out;
-	msg->flags = RETURN_DATA;
-	msg->sensorID = sensorADid;
-	msg->count = len;
-	memcpy(msg->payload, data, len*sizeof(sensorADData));
-}
+void packADData(int len, sensorADData* data, char* out, int maxout);
+void unpackADData(char* in, int len, sensorADData* out, int maxout);
 
-void unpackADData(char* in, int len, sensorADData* out, int maxout) {
-	RoverMsg* msg = (RoverMsg*)out;
-	if(msg->flags != RETURN_DATA || msg->sesorID != sensorADid) {
-		FAIL(0);
-	}
-	msg->flags = RETURN_DATA;
-	msg->sensorID = sensorADid;
-	msg->count = len;
-	memcpy(msg->payload, data, len*sizeof(sensorADData));
-}
-*/
 // HEY DAVE, this is YOURS!
 /*
 void sendADdata(sensorADData*data, int len) {
