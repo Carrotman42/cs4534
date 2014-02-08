@@ -2,10 +2,7 @@
 #ifndef BRAIN_ROVER_H_INC
 #define BRAIN_ROVER_H_INC
 
-
-typedef char uint8;
-typedef short uint16;
-
+#include "sensor_types.h"
 
 typedef struct {
 	uint8 flags;
@@ -20,10 +17,6 @@ typedef struct {
     uint8 count;
 	uint8 payload[0];
 } RoverMsg;
-
-typedef struct {
-	uint8 data;
-} sensorADData;
 
 /*
 void packADData(int len, sensorADData* data, char* out, int maxout) {
