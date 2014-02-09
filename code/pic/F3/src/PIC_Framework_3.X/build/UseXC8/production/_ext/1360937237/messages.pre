@@ -5989,7 +5989,7 @@ extern char * strichr(const char *, int);
 extern char * strrchr(const char *, int);
 extern char * strrichr(const char *, int);
 
-# 14 "../src/messages.c"
+# 16 "../src/messages.c"
 void init_queue(msg_queue *qptr) {
 unsigned char i;
 
@@ -6006,7 +6006,7 @@ unsigned char slot;
 msg *qmsg;
 size_t tlength = length;
 
-# 38
+# 40
 slot = qptr->cur_write_ind;
 qmsg = &(qptr->queue[slot]);
 
@@ -6018,7 +6018,7 @@ return (-1);
 qmsg->length = length;
 qmsg->msgtype = msgtype;
 
-# 55
+# 57
 memcpy(qmsg->data, data, tlength);
 qptr->cur_write_ind = (qptr->cur_write_ind + 1) % 4;
 
@@ -6047,7 +6047,7 @@ return (-3);
 tlength = qmsg->length;
 memcpy(data, qmsg->data, tlength);
 
-# 87
+# 89
 qptr->cur_read_ind = (qptr->cur_read_ind + 1) % 4;
 
 (*msgtype) = qmsg->msgtype;
@@ -6059,63 +6059,63 @@ return (-4);
 }
 }
 
-# 101
+# 103
 static msg_queue ToMainLow_MQ;
 
 signed char ToMainLow_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
 
-# 109
+# 111
 return (send_msg(&ToMainLow_MQ, length, msgtype, data));
 }
 
 signed char ToMainLow_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
 
-# 118
+# 120
 return (recv_msg(&ToMainLow_MQ, maxlength, msgtype, data));
 }
 
-# 124
+# 126
 static msg_queue ToMainHigh_MQ;
 
 signed char ToMainHigh_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
 
-# 132
+# 134
 return (send_msg(&ToMainHigh_MQ, length, msgtype, data));
 }
 
 signed char ToMainHigh_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
 
-# 141
+# 143
 return (recv_msg(&ToMainHigh_MQ, maxlength, msgtype, data));
 }
 
-# 148
+# 150
 static msg_queue FromMainLow_MQ;
 
 signed char FromMainLow_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
 
-# 156
+# 158
 return (send_msg(&FromMainLow_MQ, length, msgtype, data));
 }
 
 signed char FromMainLow_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
 
-# 165
+# 167
 return (recv_msg(&FromMainLow_MQ, maxlength, msgtype, data));
 }
 
-# 172
+# 174
 static msg_queue FromMainHigh_MQ;
 
 signed char FromMainHigh_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
 
-# 180
+# 182
 return (send_msg(&FromMainHigh_MQ, length, msgtype, data));
 }
 
 signed char FromMainHigh_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
 
-# 189
+# 191
 return (recv_msg(&FromMainHigh_MQ, maxlength, msgtype, data));
 }
 
@@ -6134,11 +6134,11 @@ void enter_sleep_mode(void) {
 OSCCONbits.IDLEN = 1;
 
 
-# 212
+# 214
 #asm
     SLEEP
 
-# 214
+# 216
 #endasm 
 
  }
@@ -6186,23 +6186,23 @@ if (!in_main()) {
 return;
 }
 
-# 263
+# 265
 MQ_Main_Willing_to_block = 1;
 while (1) {
 if (check_msg(&ToMainHigh_MQ)) {
 MQ_Main_Willing_to_block = 0;
 
-# 270
+# 272
 return;
 }
 if (check_msg(&ToMainLow_MQ)) {
 MQ_Main_Willing_to_block = 0;
 
-# 277
+# 279
 return;
 }
 Delay1KTCYx(10);
 
-# 283
+# 285
 }
 }

@@ -5,6 +5,7 @@
 #include <plib/i2c.h>
 #endif
 #include "my_i2c.h"
+#include "sensorcomm.h"
 
 static i2c_comm *ic_ptr;
 
@@ -246,7 +247,9 @@ void i2c_int_handler() {
 
     if (msg_ready) {
         ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
-        ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        setBrainReqData(ic_ptr->buffer);
+        sendRequestedData();
+        //ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
         error_buf[0] = ic_ptr->error_count;
@@ -257,7 +260,8 @@ void i2c_int_handler() {
     }
     if (msg_to_send) {
         // send to the queue to *ask* for the data to be sent out
-        ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) ic_ptr->buffer);
+        //ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) ic_ptr->buffer);
+        sendRequestedData();
         msg_to_send = 0;
     }
 }

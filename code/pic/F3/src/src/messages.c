@@ -11,6 +11,8 @@
 // FromMainQueueLow: Writer is main(), Reader is a low priority interrupt
 // FromMainQueueHigh: Writer is main(), Reader is a high priority interrupt
 
+//FromSensorQueue: Writer is a sensor, Reader is i2c.
+
 void init_queue(msg_queue *qptr) {
     unsigned char i;
 

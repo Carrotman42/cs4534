@@ -14,6 +14,11 @@
       <itemPath>../src/uart_thread.h</itemPath>
       <itemPath>../src/user_interrupts.h</itemPath>
       <itemPath>../src/debug.h</itemPath>
+      <itemPath>../../../../common/common.h</itemPath>
+      <itemPath>../../../../common/sensor_types.h</itemPath>
+      <itemPath>../../../../common/communication/brain_rover.h</itemPath>
+      <itemPath>../src/sensorcomm.h</itemPath>
+      <itemPath>../src/testAD.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -32,6 +37,9 @@
       <itemPath>../src/uart_thread.c</itemPath>
       <itemPath>../src/user_interrupts.c</itemPath>
       <itemPath>../src/debug.c</itemPath>
+      <itemPath>../../../../common/communication/brain_rover.c</itemPath>
+      <itemPath>../src/sensorcomm.c</itemPath>
+      <itemPath>../src/testAD.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -41,6 +49,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>../src</Elem>
+    <Elem>../../../../common</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

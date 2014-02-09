@@ -1,0 +1,177 @@
+Version 3.2 HI-TECH Software Intermediate Code
+[s S5 `uc 1 `uc 1 ]
+[n S5 . flags sensorMask ]
+"27 ../src/../../../../common/communication/brain_rover.h
+[v _unpackBrainMsg `(*S5 ~T0 @X0 0 ef1`*uc ]
+[s S1 `uc 1 ]
+[n S1 . data ]
+"8 ../src/testAD.h
+[v _reqADData `(uc ~T0 @X0 0 ef1`*S1 ]
+"12 ../src/sensorcomm.h
+[v _sendADdata `(v ~T0 @X0 0 ef2`*S1`i ]
+"24 ../src/../../../../common/communication/brain_rover.h
+[v _packADData `(i ~T0 @X0 0 ef4`*S1`i`*uc`i ]
+"34 ../src/../../../../common/communication/../../pic/F3/src/src/my_i2c.h
+[v _start_i2c_slave_reply `(v ~T0 @X0 0 ef2`uc`*uc ]
+[; ;sensor_types.h: 8: typedef char uint8;
+[; ;sensor_types.h: 9: typedef short uint16;
+[; ;sensor_types.h: 12: typedef struct {
+[; ;sensor_types.h: 13: uint8 data;
+[; ;sensor_types.h: 14: } sensorADData;
+[; ;messages.h: 10: typedef struct __msg {
+[; ;messages.h: 11: unsigned char full;
+[; ;messages.h: 12: unsigned char length;
+[; ;messages.h: 13: unsigned char msgtype;
+[; ;messages.h: 14: unsigned char data[10];
+[; ;messages.h: 15: } msg;
+[; ;messages.h: 17: typedef struct __msg_queue {
+[; ;messages.h: 18: msg queue[4];
+[; ;messages.h: 19: unsigned char cur_write_ind;
+[; ;messages.h: 20: unsigned char cur_read_ind;
+[; ;messages.h: 21: } msg_queue;
+[; ;messages.h: 43: void init_queues(void);
+[; ;messages.h: 47: void SleepIfOkay(void);
+[; ;messages.h: 51: void block_on_To_msgqueues(void);
+[; ;messages.h: 57: signed char ToMainLow_sendmsg(unsigned char,unsigned char,void *);
+[; ;messages.h: 58: signed char ToMainLow_recvmsg(unsigned char,unsigned char *,void *);
+[; ;messages.h: 64: signed char ToMainHigh_sendmsg(unsigned char,unsigned char,void *);
+[; ;messages.h: 65: signed char ToMainHigh_recvmsg(unsigned char,unsigned char *,void *);
+[; ;messages.h: 71: signed char FromMainLow_sendmsg(unsigned char,unsigned char,void *);
+[; ;messages.h: 72: signed char FromMainLow_recvmsg(unsigned char,unsigned char *,void *);
+[; ;messages.h: 78: signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
+[; ;messages.h: 79: signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
+[; ;my_i2c.h: 7: typedef struct __i2c_comm {
+[; ;my_i2c.h: 8: unsigned char buffer[10];
+[; ;my_i2c.h: 9: unsigned char buflen;
+[; ;my_i2c.h: 10: unsigned char event_count;
+[; ;my_i2c.h: 11: unsigned char status;
+[; ;my_i2c.h: 12: unsigned char error_code;
+[; ;my_i2c.h: 13: unsigned char error_count;
+[; ;my_i2c.h: 14: unsigned char outbuffer[10];
+[; ;my_i2c.h: 15: unsigned char outbuflen;
+[; ;my_i2c.h: 16: unsigned char outbufind;
+[; ;my_i2c.h: 17: unsigned char slave_addr;
+[; ;my_i2c.h: 18: } i2c_comm;
+[; ;my_i2c.h: 32: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 33: void i2c_int_handler(void);
+[; ;my_i2c.h: 34: void start_i2c_slave_reply(unsigned char,unsigned char *);
+[; ;my_i2c.h: 35: void i2c_configure_slave(unsigned char);
+[; ;my_i2c.h: 36: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 37: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 38: unsigned char i2c_master_recv(unsigned char);
+[; ;brain_rover.h: 10: typedef struct {
+[; ;brain_rover.h: 11: uint8 flags;
+[; ;brain_rover.h: 12: uint8 sensorMask;
+[; ;brain_rover.h: 13: } BrainMsg;
+[; ;brain_rover.h: 15: typedef struct {
+[; ;brain_rover.h: 16: int (*adFunc)(sensorADData* data, int len);
+[; ;brain_rover.h: 17: } RoverMsgRouter;
+[; ;brain_rover.h: 24: int packADData(sensorADData* data, int len, char* out, int maxout);
+[; ;brain_rover.h: 25: int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+[; ;brain_rover.h: 26: void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+[; ;brain_rover.h: 27: BrainMsg* unpackBrainMsg(char *buf);
+[; ;brain_rover.h: 33: typedef struct {
+[; ;brain_rover.h: 34: uint8 flags;
+[; ;brain_rover.h: 35: uint8 sensorID;
+[; ;brain_rover.h: 39: uint8 payloadLen;
+[; ;brain_rover.h: 40: char payload[10 - 3];
+[; ;brain_rover.h: 41: } RoverMsg;
+[; ;sensorcomm.h: 10: void setBrainReqData(char* msg);
+[; ;sensorcomm.h: 11: void sendRequestedData();
+[; ;sensorcomm.h: 12: void sendADdata(sensorADData*data, int len);
+[; ;testAD.h: 8: uint8 reqADData(sensorADData* buf);
+[; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+[; ;debug.h: 10: void setDBG(unsigned char );
+[; ;debug.h: 11: void resetDBG(unsigned char );
+[; ;debug.h: 12: void flipDBG(unsigned char );
+"13 ../src/sensorcomm.c
+[v _BrainMsgRecv `*S5 ~T0 @X0 1 s ]
+[; ;sensorcomm.c: 13: static BrainMsg *BrainMsgRecv;
+"15
+[v _setBrainReqData `(v ~T0 @X0 1 ef1`*uc ]
+{
+[; ;sensorcomm.c: 15: void setBrainReqData(char* buf){
+[e :U _setBrainReqData ]
+[v _buf `*uc ~T0 @X0 1 r1 ]
+[f ]
+[; ;sensorcomm.c: 19: BrainMsgRecv = unpackBrainMsg(buf);
+"19
+[e = _BrainMsgRecv ( _unpackBrainMsg (1 _buf ]
+[; ;sensorcomm.c: 20: }
+"20
+[e :UE 8 ]
+}
+"22
+[v _sendRequestedData `(v ~T0 @X0 1 ef ]
+{
+[; ;sensorcomm.c: 22: void sendRequestedData(){
+[e :U _sendRequestedData ]
+[f ]
+[; ;sensorcomm.c: 23: if(BrainMsgRecv->flags == 1){
+"23
+[e $ ! == -> . *U _BrainMsgRecv 0 `i -> 1 `i 10  ]
+{
+[; ;sensorcomm.c: 24: if(BrainMsgRecv->sensorMask == 0){
+"24
+[e $ ! == -> . *U _BrainMsgRecv 1 `i -> 0 `i 11  ]
+{
+"26
+[v _data `S1 ~T0 @X0 -> 10 `i a ]
+"27
+[v _len `uc ~T0 @X0 1 a ]
+[; ;sensorcomm.c: 26: sensorADData data[10];
+[; ;sensorcomm.c: 27: uint8 len = reqADData(data);
+[e = _len ( _reqADData (1 &U _data ]
+[; ;sensorcomm.c: 31: sendADdata(data, len);
+"31
+[e ( _sendADdata (2 , &U _data -> _len `i ]
+"33
+}
+[e :U 11 ]
+"34
+}
+[e :U 10 ]
+[; ;sensorcomm.c: 33: }
+[; ;sensorcomm.c: 34: }
+[; ;sensorcomm.c: 35: }
+"35
+[e :UE 9 ]
+}
+"37
+[v _sendADdata `(v ~T0 @X0 1 ef2`*S1`i ]
+{
+[; ;sensorcomm.c: 37: void sendADdata(sensorADData*data, int len) {
+[e :U _sendADdata ]
+[v _data `*S1 ~T0 @X0 1 r1 ]
+[v _len `i ~T0 @X0 1 r2 ]
+[f ]
+"38
+[v _outBuff `uc ~T0 @X0 -> 100 `i a ]
+"39
+[v _bytes_packed `i ~T0 @X0 1 a ]
+[; ;sensorcomm.c: 38: char outBuff[100];
+[; ;sensorcomm.c: 39: int bytes_packed = packADData(data, len, outBuff, 100);
+[e = _bytes_packed ( _packADData (4 , , , _data _len &U _outBuff -> 100 `i ]
+[; ;sensorcomm.c: 40: if(bytes_packed == 0){
+"40
+[e $ ! == _bytes_packed -> 0 `i 13  ]
+{
+"42
+}
+[; ;sensorcomm.c: 42: }
+[e $U 14  ]
+"43
+[e :U 13 ]
+[; ;sensorcomm.c: 43: else{
+{
+[; ;sensorcomm.c: 44: start_i2c_slave_reply(bytes_packed, outBuff);
+"44
+[e ( _start_i2c_slave_reply (2 , -> _bytes_packed `uc &U _outBuff ]
+"45
+}
+[e :U 14 ]
+[; ;sensorcomm.c: 45: }
+[; ;sensorcomm.c: 46: }
+"46
+[e :UE 12 ]
+}

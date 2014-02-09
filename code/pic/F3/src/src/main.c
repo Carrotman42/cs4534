@@ -250,7 +250,7 @@ void main(void) {
      */
 
     // initialize Timers
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_128);
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_2);
     
 #ifdef __USE18F26J50
     // MTJ added second argument for OpenTimer1()
@@ -396,8 +396,6 @@ void main(void) {
                         }*/
                         case 0xaa:
                         {
-                            setDBG(DBG3);
-                            setDBG(DBG4);
                             if(data_points_count == 0){
                                 msgbuffer[0] = 0xff; //This tells the ARM that nothing is in the buffer
                                 length = 1;
@@ -409,13 +407,10 @@ void main(void) {
                                 length = data_points_count;
                                 data_points_count = 0; //reset data point counters after use.
                             }
-                            resetDBG(DBG4);
                             break;
                         };
                         case 0xab:
                         {
-                            setDBG(DBG3);
-                            setDBG(DBG5);
                             to_send_buffer[0] = 0x04;
                             to_send_buffer[1] = 0x0d;
                             data_points_count = 2;
@@ -424,12 +419,10 @@ void main(void) {
                             }
                             length = data_points_count;
                             data_points_count = 0; //reset data point counters after use.
-                            resetDBG(DBG5);
                             break;
                         };
                     };
                     start_i2c_slave_reply(length, msgbuffer);
-                    resetDBG(DBG3);
                     break;
                 };
                 default:

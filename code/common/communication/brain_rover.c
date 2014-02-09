@@ -1,25 +1,24 @@
 
-#include "common.h"
+#include "../common.h"
 #include "brain_rover.h"
+#include "../../pic/F3/src/src/debug.h"
 
 // Use this method instead of accessing BrainMsg directly
 //   because if the protocol changes we want to just edit this
 //   func in this file, rather than looking everywhere around the
 //   project and changing it everywhere.
 void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
-	// Right now reqSize will be stuck at 0xFF until we figure
-	//   out how to easily do the streaming protocol
 	dest->flags = SENSOR_REQ;
 	dest->sensorMask = sensorMask;
-	dest->len = 0xFF;
 }
 
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one
 //    just in case we change the format of RoverMsg
 static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, int sensorID) {
-	if (payloadLen + sizeof(RoverMsg) < maxout) {
+	if (payloadLen + ROVERMSG_MEMBERS >= maxout) {
 		return 0;
 	}
+        
 	msg->flags = SENSOR_RESP;
 	msg->sensorID = sensorID;
 	msg->payloadLen = payloadLen;
@@ -29,7 +28,7 @@ static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout,
 	while (dest != end) {
 		*dest++ = *data++;				 		
 	}
-	return payloadLen + sizeof(RoverMsg);
+	return payloadLen + ROVERMSG_MEMBERS;
 }
 
 // Usually called on a PIC
@@ -40,7 +39,11 @@ int packADData(sensorADData* data, int len, char* out, int maxout) {
 	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, sensorADid);
 }
 
+BrainMsg* unpackBrainMsg(char *buf){
+    return (BrainMsg*) buf;
+}
 
+#ifndef PIC
 // Usually called on the ARM. Will move the data along to the next method for processing
 int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 	RoverMsg* msg = (RoverMsg*)in;
@@ -61,3 +64,4 @@ int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 		return 1;
 	}
 }
+#endif

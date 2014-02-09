@@ -5982,18 +5982,26 @@ void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
 
-# 16 "../src/user_interrupts.c"
+# 8 "../src/debug.h"
+enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+
+void setDBG(unsigned char );
+void resetDBG(unsigned char );
+void flipDBG(unsigned char );
+
+# 17 "../src/user_interrupts.c"
 void timer0_int_handler() {
 unsigned int val;
 int length, msgtype;
 
-# 25
-WriteTimer0(0);
+# 27
+WriteTimer0(0xF800);
 
 length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
 if (length == sizeof (val)) {
 ToMainHigh_sendmsg(sizeof (val), 10, (void *) &val);
 }
+
 }
 
 
@@ -6002,7 +6010,7 @@ ToMainHigh_sendmsg(sizeof (val), 10, (void *) &val);
 void timer1_int_handler() {
 unsigned int result;
 
-# 44
+# 47
 result = ReadTimer1();
 ToMainLow_sendmsg(0, 11, (void *) 0);
 

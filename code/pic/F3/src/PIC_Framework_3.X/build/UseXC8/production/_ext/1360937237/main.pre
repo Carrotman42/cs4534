@@ -6148,7 +6148,7 @@ TRISB = 0x0;
 LATB = 0x0;
 
 # 253
-OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110110);
+OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110000);
 
 # 262
 OpenTimer1(0b11111111 & 0b11111111 & 0b11111111 & 0b11111101 & 0b11110111 & 0b11111111);
@@ -6211,8 +6211,6 @@ switch (last_reg_recvd) {
 # 397
 case 0xaa:
 {
-setDBG(DBG3);
-setDBG(DBG4);
 if(data_points_count == 0){
 msgbuffer[0] = 0xff;
 length = 1;
@@ -6224,13 +6222,10 @@ msgbuffer[j] = to_send_buffer[j];
 length = data_points_count;
 data_points_count = 0;
 }
-resetDBG(DBG4);
 break;
 };
 case 0xab:
 {
-setDBG(DBG3);
-setDBG(DBG5);
 to_send_buffer[0] = 0x04;
 to_send_buffer[1] = 0x0d;
 data_points_count = 2;
@@ -6239,12 +6234,10 @@ msgbuffer[j] = to_send_buffer[j];
 }
 length = data_points_count;
 data_points_count = 0;
-resetDBG(DBG5);
 break;
 };
 };
 start_i2c_slave_reply(length, msgbuffer);
-resetDBG(DBG3);
 break;
 };
 default:
