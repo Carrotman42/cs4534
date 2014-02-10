@@ -120,7 +120,7 @@ interrupt low_priority
 #pragma interruptlow InterruptHandlerLow
 #endif
 void InterruptHandlerLow() {
-    // check to see if we have an interrupt on timer 1
+    /*// check to see if we have an interrupt on timer 1
     if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
@@ -130,6 +130,6 @@ void InterruptHandlerLow() {
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
         uart_recv_int_handler();
-    }
+    }*/
 }
 

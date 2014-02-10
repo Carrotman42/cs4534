@@ -7,6 +7,7 @@
 ../src/debug.h  \
 ../src/../../../../common/sensor_types.h  \
 ../src/my_i2c.h  \
+../src/maindefs.h  \
 ../src/../../../../common/common.h  \
 ../src/../../../../common/communication/../sensor_types.h  \
 ../src/../../../../common/communication/../../pic/F3/src/src/my_i2c.h  \

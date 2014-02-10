@@ -10,6 +10,7 @@ extern "C" {
     void setDBG(unsigned char );
     void resetDBG(unsigned char );
     void flipDBG(unsigned char );
+    void readNum(int );
 
 
 #ifdef	__cplusplus

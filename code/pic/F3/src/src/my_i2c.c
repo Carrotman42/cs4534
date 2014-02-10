@@ -6,6 +6,12 @@
 #endif
 #include "my_i2c.h"
 #include "sensorcomm.h"
+#include "debug.h"
+
+#ifdef DEBUG_ON
+#include "testAD.h"
+#endif
+
 
 static i2c_comm *ic_ptr;
 
@@ -99,6 +105,7 @@ void handle_start(unsigned char data_read) {
 //    master code should be in a subroutine called "i2c_master_handler()"
 
 void i2c_int_handler() {
+
     unsigned char i2c_data;
     unsigned char data_read = 0;
     unsigned char data_written = 0;
@@ -177,6 +184,8 @@ void i2c_int_handler() {
             case I2C_SLAVE_SEND:
             {
                 if (ic_ptr->outbufind < ic_ptr->outbuflen) {
+            setDBG(DBG2);
+            resetDBG(DBG2);
                     SSPBUF = ic_ptr->outbuffer[ic_ptr->outbufind];
                     ic_ptr->outbufind++;
                     data_written = 1;
@@ -233,6 +242,9 @@ void i2c_int_handler() {
     // release the clock stretching bit (if we should)
     if (data_read || data_written) {
         // release the clock
+
+            setDBG(DBG5);
+            resetDBG(DBG5);
         if (SSPCON1bits.CKP == 0) {
             SSPCON1bits.CKP = 1;
         }
@@ -248,8 +260,8 @@ void i2c_int_handler() {
     if (msg_ready) {
         ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         setBrainReqData(ic_ptr->buffer);
-        sendRequestedData();
         //ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
         error_buf[0] = ic_ptr->error_count;
@@ -261,6 +273,16 @@ void i2c_int_handler() {
     if (msg_to_send) {
         // send to the queue to *ask* for the data to be sent out
         //ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) ic_ptr->buffer);
+/*#ifdef DEBUG_ON
+        reqADData();
+        ic_ptr->buffer[0] = 0;
+        ic_ptr->buffer[1] = 0;
+        ic_ptr->buffer[2] = 0;
+        ic_ptr->buffer[3] = 0;
+        ic_ptr->buffer[4] = 0;
+        ic_ptr->buflen = 0;
+#endif
+*/
         sendRequestedData();
         msg_to_send = 0;
     }

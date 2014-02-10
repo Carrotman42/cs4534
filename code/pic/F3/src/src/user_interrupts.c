@@ -24,12 +24,12 @@ void timer0_int_handler() {
     LATBbits.LATB0 = !LATBbits.LATB0;
 #endif
     // reset the timer
-    WriteTimer0(0xF800);
+    WriteTimer0(0xFD00);
     // try to receive a message and, if we get one, echo it back
-    length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
+    /*length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
     if (length == sizeof (val)) {
         ToMainHigh_sendmsg(sizeof (val), MSGT_TIMER0, (void *) &val);
-    }
+    }*/
     //resetDBG(DBG1);
 }
 
@@ -45,7 +45,7 @@ void timer1_int_handler() {
 #endif
 
     result = ReadTimer1();
-    ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
+    //ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
 
     // reset the timer
     WriteTimer1(0);
