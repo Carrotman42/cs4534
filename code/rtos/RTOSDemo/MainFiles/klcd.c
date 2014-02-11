@@ -137,7 +137,9 @@ void LCDwriteLn(int line, char* data) {
 
 void lcdSignal(SignalLCDMsg* msg) {
 	DBGbit(0, 1);
-	GLCD_DisplayString(0, 1,0, (unsigned char*)"3.4V");
+	GLCD_DisplayString(0, 1,0, (unsigned char*)"0.5V/div");
+	GLCD_DisplayString(60, 40,0, (unsigned char*)"20ms/div");
+	
 	GLCD_WindowMax();
 	// It's okay to have static vars: we're guarenteed to always be in the same task.
 	//   ps: I hope the memory model of freertos guarentees that... It seems appropriate
@@ -162,7 +164,7 @@ void lcdSignal(SignalLCDMsg* msg) {
 		}
 	}	*/
 
-	int max = 0xFF;
+	float max = 0xFF;
 	// Make sure all 0s still displays correctly
 	if (max == 0) max = 1;
 	else max *= 1; // scale it for debugging
@@ -173,24 +175,25 @@ void lcdSignal(SignalLCDMsg* msg) {
 		int i;
 		for (i = 0; i < LCDWIDTH; i++) {
 			GLCD_PutPixel(i, LCDHEIGHT-1);
-			if ((i % 10) == 0) {
+			if ((i % 32) == 0) {
 				GLCD_PutPixel(i, LCDHEIGHT - 2);
 				GLCD_PutPixel(i, LCDHEIGHT - 3);
 			}
 		}
 		for (i = 0; i < LCDHEIGHT; i++) {
-			GLCD_PutPixel(0, i);
+			int ni = LCDHEIGHT - i;
+			GLCD_PutPixel(0, ni);
 			
-			if ((i % 10) == 0) {
-				GLCD_PutPixel(1, i);
-				GLCD_PutPixel(2, i);
+			if ((i % 26) == 0) {
+				GLCD_PutPixel(1, ni);
+				GLCD_PutPixel(2, ni);
 			}
 		}
 	}
 	
 	#define LOOP(s) for (x = s, data = &msg->data[s]; x < SIGNAL_SAMPLES; x+=2, data+=2)
 	// TODO: Figure out what kind of fp support we have
-	#define Y int y = LCDHEIGHT - (*data * (LCDHEIGHT) / max);
+	#define Y int y = LCDHEIGHT - (int)(*data * (float)(LCDHEIGHT / max));
 		 		
 	// Use a fancy technique from old interleaved tvs: since writes to the LCD screen are effectively visible to the human
 	//    eye, we split it up and rewrite every other line. At fast refresh speeds it eases how it looks (note: could be confirmation

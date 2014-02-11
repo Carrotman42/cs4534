@@ -52,6 +52,8 @@ void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPrio
 #define SAVED_SIZE SIGNAL_SAMPLES
 static char saved[SAVED_SIZE] = {0};
 static int savedPos = 0;
+static int validBuf = 0;
+static int copyBuf = 0, lcdBuf = 0;
 
 void copyToLCD() {
 	static int times = 0;
@@ -196,7 +198,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				break;
 		}
 		if (err) {
-			LCDwriteLn(1, err);
+			//LCDwriteLn(1, err);
 		} else {
 			//LCDwriteLn(1, "noerr");
 		}

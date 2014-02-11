@@ -49,7 +49,7 @@ TASK_FUNC_NOARG(PumpSensor) {
 		DBGbit(1, 1);
 		SendADRequest(&vtI2C0);
 		DBGbit(1, 0);
-		vTaskDelay(100/portTICK_RATE_MS);
+		vTaskDelay(30/portTICK_RATE_MS);
 	}
 } ENDTASK
 
