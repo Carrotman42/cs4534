@@ -5957,7 +5957,7 @@ void resetDBG(unsigned char );
 void flipDBG(unsigned char );
 void debugNum(int );
 
-# 13 "../src/my_adc.c"
+# 12 "../src/my_adc.c"
 static char ADCBuffer[5];
 static char count = 0;
 
@@ -5967,20 +5967,18 @@ ADCBuffer[count++] = data;
 }
 
 void init_adc(){
-OpenADC(0b10011111 & 0b11111111 & 0b11110001,
-0b10001111 & 0b11111111 & 0b11111110 & 0b11111111,
+OpenADC(0b10001111 & 0b11111111 & 0b11110001,
+0b10001111 & 0b11111111 & 0b11111111 & 0b11111111,
 0xC);
 
-SetChanADC(0b10001111);
-Delay10TCYx(50);
 
 TRISAbits.TRISA1 = 1;
 TRISAbits.TRISA2 = 1;
 
-# 38
+# 35
 (PIR1bits.ADIF=0,INTCONbits.PEIE=1,PIE1bits.ADIE=1);
 
-# 44
+# 41
 }
 
 void adc_int_handler() {
@@ -5998,4 +5996,3 @@ count = 0;
 }
 
 }
-

@@ -95,11 +95,11 @@ DBG5 4
 [v _SleepIfOkay SleepIfOkay `(v  1 e 0 0 ]
 "259
 [v _block_on_To_msgqueues block_on_To_msgqueues `(v  1 e 0 0 ]
-"16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
+"15 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _addBuffer addBuffer `(v  1 s 0 addBuffer ]
-"21
+"20
 [v _init_adc init_adc `(v  1 e 0 0 ]
-"46
+"43
 [v _adc_int_handler adc_int_handler `(v  1 e 0 0 ]
 "21 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
 [v _i2c_configure_master i2c_configure_master `(v  1 e 0 0 ]
@@ -281,16 +281,12 @@ DBG5 4
 [v ___asftsub __asftsub `(f  1 e 3 0 ]
 "4 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\aslmul.c
 [v ___aslmul __aslmul `(ul  1 e 4 0 ]
-"8 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d10tcyx.c
-[v _Delay10TCYx Delay10TCYx `(v  1 e 0 0 ]
 "8 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c
 [v _Delay1KTCYx Delay1KTCYx `(v  1 e 0 0 ]
 "68 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcopen.c
 [v _OpenADC OpenADC `(v  1 e 0 0 ]
 "24 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcread.c
 [v _ReadADC ReadADC `(i  1 e 2 0 ]
-"30 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcsetch.c
-[v _SetChanADC SetChanADC `(v  1 e 0 0 ]
 "18 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c
 [v _OpenTimer0 OpenTimer0 `(v  1 e 0 0 ]
 "16 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c
@@ -313,9 +309,9 @@ DBG5 4
 [v _FromMainHigh_MQ FromMainHigh_MQ `S458  1 s 54 FromMainHigh_MQ ]
 "193
 [v _MQ_Main_Willing_to_block MQ_Main_Willing_to_block `uc  1 s 1 MQ_Main_Willing_to_block ]
-"13 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
+"12 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _ADCBuffer ADCBuffer `[5]uc  1 s 5 ADCBuffer ]
-"14
+"13
 [v _count count `uc  1 s 1 count ]
 [s S265 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 slave_addr 1 120 ]
 "16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
@@ -379,7 +375,7 @@ DBG5 4
 ]
 [u S1499 . 1 `S1467 1 . 1 0 `S1476 1 . 1 0 `S1478 1 . 1 0 `S1481 1 . 1 0 `S1484 1 . 1 0 `S1487 1 . 1 0 `S1490 1 . 1 0 `S1493 1 . 1 0 `S1496 1 . 1 0 ]
 [v _LATBbits LATBbits `VES1499  1 e 1 @3978 ]
-[s S1699 . 1 `uc 1 TRISA0 1 0 :1:0 
+[s S1689 . 1 `uc 1 TRISA0 1 0 :1:0 
 `uc 1 TRISA1 1 0 :1:1 
 `uc 1 TRISA2 1 0 :1:2 
 `uc 1 TRISA3 1 0 :1:3 
@@ -387,15 +383,15 @@ DBG5 4
 `uc 1 TRISA5 1 0 :1:5 
 ]
 "2597
-[s S1706 . 1 `uc 1 RA0 1 0 :1:0 
+[s S1696 . 1 `uc 1 RA0 1 0 :1:0 
 `uc 1 RA1 1 0 :1:1 
 `uc 1 RA2 1 0 :1:2 
 `uc 1 RA3 1 0 :1:3 
 `uc 1 . 1 0 :1:4 
 `uc 1 RA5 1 0 :1:5 
 ]
-[u S1713 . 1 `S1699 1 . 1 0 `S1706 1 . 1 0 ]
-[v _TRISAbits TRISAbits `VES1713  1 e 1 @3986 ]
+[u S1703 . 1 `S1689 1 . 1 0 `S1696 1 . 1 0 ]
+[v _TRISAbits TRISAbits `VES1703  1 e 1 @3986 ]
 "2722
 [v _TRISB TRISB `VEuc  1 e 1 @3987 ]
 [s S935 . 1 `uc 1 TRISC0 1 0 :1:0 
@@ -790,7 +786,7 @@ DBG5 4
 [v _OSCCONbits OSCCONbits `VES478  1 e 1 @4051 ]
 "8137
 [v _T0CON T0CON `VEuc  1 e 1 @4053 ]
-[s S2043 . 1 `uc 1 T0PS 1 0 :3:0 
+[s S2030 . 1 `uc 1 T0PS 1 0 :3:0 
 `uc 1 PSA 1 0 :1:3 
 `uc 1 T0SE 1 0 :1:4 
 `uc 1 T0CS 1 0 :1:5 
@@ -798,12 +794,12 @@ DBG5 4
 `uc 1 TMR0ON 1 0 :1:7 
 ]
 "8157
-[s S2050 . 1 `uc 1 T0PS0 1 0 :1:0 
+[s S2037 . 1 `uc 1 T0PS0 1 0 :1:0 
 `uc 1 T0PS1 1 0 :1:1 
 `uc 1 T0PS2 1 0 :1:2 
 ]
-[u S2054 . 1 `S2043 1 . 1 0 `S2050 1 . 1 0 ]
-[v _T0CONbits T0CONbits `VES2054  1 e 1 @4053 ]
+[u S2041 . 1 `S2030 1 . 1 0 `S2037 1 . 1 0 ]
+[v _T0CONbits T0CONbits `VES2041  1 e 1 @4053 ]
 "8212
 [v _TMR0L TMR0L `VEuc  1 e 1 @4054 ]
 "8218
@@ -929,19 +925,10 @@ DBG5 4
 [v init_i2c@ic ic `*.39S265  1 p 2 14 ]
 "300
 } 0
-"21 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
+"20 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _init_adc init_adc `(v  1 e 0 0 ]
 {
-"44
-} 0
-"30 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcsetch.c
-[v _SetChanADC SetChanADC `(v  1 e 0 0 ]
-{
-[v SetChanADC@channel channel `uc  1 a 1 wreg ]
-[v SetChanADC@channel channel `uc  1 a 1 wreg ]
-"34
-[v SetChanADC@channel channel `uc  1 a 1 15 ]
-"36
+"41
 } 0
 "68 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcopen.c
 [v _OpenADC OpenADC `(v  1 e 0 0 ]
@@ -955,14 +942,6 @@ DBG5 4
 "72
 [v OpenADC@config config `uc  1 a 1 18 ]
 "89
-} 0
-"8 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d10tcyx.c
-[v _Delay10TCYx Delay10TCYx `(v  1 e 0 0 ]
-{
-[v Delay10TCYx@unit unit `uc  1 a 1 wreg ]
-[v Delay10TCYx@unit unit `uc  1 a 1 wreg ]
-[v Delay10TCYx@unit unit `uc  1 a 1 14 ]
-"13
 } 0
 "305 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
 [v _i2c_configure_slave i2c_configure_slave `(v  1 e 0 0 ]
@@ -1100,12 +1079,12 @@ DBG5 4
 {
 "147
 } 0
-"46 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
+"43 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _adc_int_handler adc_int_handler `(v  1 e 0 0 ]
 {
-"47
+"44
 [v adc_int_handler@data data `ui  1 a 2 27 ]
-"60
+"57
 } 0
 "69 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c
 [v _debugNum debugNum `(v  1 e 0 0 ]
@@ -1129,13 +1108,13 @@ DBG5 4
 [v resetDBG@b b `uc  1 a 1 0 ]
 "46
 } 0
-"16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
+"15 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _addBuffer addBuffer `(v  1 s 0 addBuffer ]
 {
 [v addBuffer@data data `uc  1 a 1 wreg ]
 [v addBuffer@data data `uc  1 a 1 wreg ]
 [v addBuffer@data data `uc  1 a 1 0 ]
-"19
+"18
 } 0
 "127 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
@@ -1216,9 +1195,9 @@ DBG5 4
 "16 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c
 [v _WriteTimer0 WriteTimer0 `(v  1 e 0 0 ]
 {
-[u S2077 Timers 2 `ui 1 lt 2 0 `[2]uc 1 bt 2 0 ]
+[u S2064 Timers 2 `ui 1 lt 2 0 `[2]uc 1 bt 2 0 ]
 "18
-[v WriteTimer0@timer timer `S2077  1 a 2 48 ]
+[v WriteTimer0@timer timer `S2064  1 a 2 48 ]
 "16
 [v WriteTimer0@timer0 timer0 `ui  1 p 2 46 ]
 "24

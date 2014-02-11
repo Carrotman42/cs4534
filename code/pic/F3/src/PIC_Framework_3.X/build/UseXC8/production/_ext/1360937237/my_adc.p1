@@ -1,10 +1,6 @@
 Version 3.2 HI-TECH Software Intermediate Code
 "2040 C:\Program Files\Microchip\xc8\v1.30\include\plib\adc.h
 [v _OpenADC `(v ~T0 @X0 0 ef3`uc`uc`uc ]
-"2084
-[v _SetChanADC `(v ~T0 @X0 0 ef1`uc ]
-"19 C:\Program Files\Microchip\xc8\v1.30\include\plib\delays.h
-[v _Delay10TCYx `(v ~T0 @X0 0 ef1`uc ]
 [s S188 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S188 . TRISA0 TRISA1 TRISA2 TRISA3 . TRISA5 ]
 [s S189 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
@@ -4649,99 +4645,93 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;debug.h: 11: void resetDBG(unsigned char );
 [; ;debug.h: 12: void flipDBG(unsigned char );
 [; ;debug.h: 13: void debugNum(int );
-"13 ../src/my_adc.c
+"12 ../src/my_adc.c
 [v _ADCBuffer `uc ~T0 @X0 -> 5 `i s ]
-[; ;my_adc.c: 13: static char ADCBuffer[5];
-"14
+[; ;my_adc.c: 12: static char ADCBuffer[5];
+"13
 [v _count `uc ~T0 @X0 1 s ]
 [i _count
 -> -> 0 `i `uc
 ]
-[; ;my_adc.c: 14: static char count = 0;
-"16
+[; ;my_adc.c: 13: static char count = 0;
+"15
 [v _addBuffer `(v ~T0 @X0 1 sf1`uc ]
 {
-[; ;my_adc.c: 16: static void addBuffer(char data){
+[; ;my_adc.c: 15: static void addBuffer(char data){
 [e :U _addBuffer ]
 [v _data `uc ~T0 @X0 1 r1 ]
 [f ]
-[; ;my_adc.c: 17: if(count < 7)
-"17
+[; ;my_adc.c: 16: if(count < 7)
+"16
 [e $ ! < -> _count `i -> 7 `i 584  ]
-[; ;my_adc.c: 18: ADCBuffer[count++] = data;
-"18
+[; ;my_adc.c: 17: ADCBuffer[count++] = data;
+"17
 [e = *U + &U _ADCBuffer * -> ++ _count -> -> 1 `i `uc `ux -> -> # *U &U _ADCBuffer `ui `ux _data ]
 [e :U 584 ]
-[; ;my_adc.c: 19: }
-"19
+[; ;my_adc.c: 18: }
+"18
 [e :UE 583 ]
 }
-"21
+"20
 [v _init_adc `(v ~T0 @X0 1 ef ]
 {
-[; ;my_adc.c: 21: void init_adc(){
+[; ;my_adc.c: 20: void init_adc(){
 [e :U _init_adc ]
 [f ]
-[; ;my_adc.c: 22: OpenADC(0b10011111 & 0b11111111 & 0b11110001,
-[; ;my_adc.c: 23: 0b10001111 & 0b11111111 & 0b11111110 & 0b11111111,
-[; ;my_adc.c: 24: 0xC);
-"24
-[e ( _OpenADC (3 , , -> & & -> 159 `i -> 255 `i -> 241 `i `uc -> & & & -> 143 `i -> 255 `i -> 254 `i -> 255 `i `uc -> -> 12 `i `uc ]
-[; ;my_adc.c: 26: SetChanADC(0b10001111);
+[; ;my_adc.c: 21: OpenADC(0b10001111 & 0b11111111 & 0b11110001,
+[; ;my_adc.c: 22: 0b10001111 & 0b11111111 & 0b11111111 & 0b11111111,
+[; ;my_adc.c: 23: 0xC);
+"23
+[e ( _OpenADC (3 , , -> & & -> 143 `i -> 255 `i -> 241 `i `uc -> & & & -> 143 `i -> 255 `i -> 255 `i -> 255 `i `uc -> -> 12 `i `uc ]
+[; ;my_adc.c: 26: TRISAbits.TRISA1 = 1;
 "26
-[e ( _SetChanADC (1 -> -> 143 `i `uc ]
-[; ;my_adc.c: 27: Delay10TCYx(50);
-"27
-[e ( _Delay10TCYx (1 -> -> 50 `i `uc ]
-[; ;my_adc.c: 29: TRISAbits.TRISA1 = 1;
-"29
 [e = . . _TRISAbits 0 1 -> -> 1 `i `uc ]
-[; ;my_adc.c: 30: TRISAbits.TRISA2 = 1;
-"30
+[; ;my_adc.c: 27: TRISAbits.TRISA2 = 1;
+"27
 [e = . . _TRISAbits 0 2 -> -> 1 `i `uc ]
-[; ;my_adc.c: 38: (PIR1bits.ADIF=0,INTCONbits.PEIE=1,PIE1bits.ADIE=1);
-"38
+[; ;my_adc.c: 35: (PIR1bits.ADIF=0,INTCONbits.PEIE=1,PIE1bits.ADIE=1);
+"35
 [e ; ; = . . _PIR1bits 0 6 -> -> 0 `i `uc = . . _INTCONbits 1 6 -> -> 1 `i `uc = . . _PIE1bits 0 6 -> -> 1 `i `uc ]
-[; ;my_adc.c: 44: }
-"44
+[; ;my_adc.c: 41: }
+"41
 [e :UE 585 ]
 }
-"46
+"43
 [v _adc_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;my_adc.c: 46: void adc_int_handler() {
+[; ;my_adc.c: 43: void adc_int_handler() {
 [e :U _adc_int_handler ]
 [f ]
-"47
+"44
 [v _data `ui ~T0 @X0 1 a ]
-[; ;my_adc.c: 47: unsigned int data;
-[; ;my_adc.c: 49: data = ReadADC();
-"49
+[; ;my_adc.c: 44: unsigned int data;
+[; ;my_adc.c: 46: data = ReadADC();
+"46
 [e = _data -> ( _ReadADC ..  `ui ]
-[; ;my_adc.c: 50: data >>= 2;
-"50
+[; ;my_adc.c: 47: data >>= 2;
+"47
 [e =>> _data -> 2 `i ]
-[; ;my_adc.c: 53: debugNum(2);
-"53
+[; ;my_adc.c: 50: debugNum(2);
+"50
 [e ( _debugNum (1 -> 2 `i ]
-[; ;my_adc.c: 54: addBuffer((char) data);
-"54
+[; ;my_adc.c: 51: addBuffer((char) data);
+"51
 [e ( _addBuffer (1 -> _data `uc ]
-[; ;my_adc.c: 55: if(count >= 7){
-"55
+[; ;my_adc.c: 52: if(count >= 7){
+"52
 [e $ ! >= -> _count `i -> 7 `i 587  ]
 {
-[; ;my_adc.c: 56: ToMainHigh_sendmsg(7,50, ADCBuffer);
-"56
+[; ;my_adc.c: 53: ToMainHigh_sendmsg(7,50, ADCBuffer);
+"53
 [e ( _ToMainHigh_sendmsg (3 , , -> -> 7 `i `uc -> -> 50 `i `uc -> &U _ADCBuffer `*v ]
-[; ;my_adc.c: 57: count = 0;
-"57
+[; ;my_adc.c: 54: count = 0;
+"54
 [e = _count -> -> 0 `i `uc ]
-"58
+"55
 }
 [e :U 587 ]
-[; ;my_adc.c: 58: }
-[; ;my_adc.c: 60: }
-"60
+[; ;my_adc.c: 55: }
+[; ;my_adc.c: 57: }
+"57
 [e :UE 586 ]
 }

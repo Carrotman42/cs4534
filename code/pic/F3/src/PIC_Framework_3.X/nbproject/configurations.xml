@@ -19,6 +19,7 @@
       <itemPath>../../../../common/communication/brain_rover.h</itemPath>
       <itemPath>../src/sensorcomm.h</itemPath>
       <itemPath>../src/testAD.h</itemPath>
+      <itemPath>../src/my_adc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -40,6 +41,7 @@
       <itemPath>../../../../common/communication/brain_rover.c</itemPath>
       <itemPath>../src/sensorcomm.c</itemPath>
       <itemPath>../src/testAD.c</itemPath>
+      <itemPath>../src/my_adc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
