@@ -11,7 +11,7 @@ typedef struct __i2c_comm {
     unsigned char status;
     unsigned char error_code;
     unsigned char error_count;
-    unsigned char outbuffer[MAXI2CBUF];
+    unsigned char outbuffer[103];
     unsigned char outbuflen;
     unsigned char outbufind;
     unsigned char slave_addr;

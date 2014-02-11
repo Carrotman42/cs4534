@@ -43,7 +43,6 @@ BrainMsg* unpackBrainMsg(char *buf){
     return (BrainMsg*) buf;
 }
 
-#ifndef PIC
 // Usually called on the ARM. Will move the data along to the next method for processing
 int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 	RoverMsg* msg = (RoverMsg*)in;
@@ -64,4 +63,3 @@ int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 		return 1;
 	}
 }
-#endif

@@ -1,15 +1,33 @@
 Version 3.2 HI-TECH Software Intermediate Code
+"13 ../src/debug.h
+[v _debugNum `(v ~T0 @X0 0 ef1`i ]
+[s S322 :1 `uc 1 :1 `uc 1 ]
+[n S322 . . GO_NOT_DONE ]
+[s S323 :1 `uc 1 :1 `uc 1 :4 `uc 1 ]
+[n S323 . ADON GO_nDONE CHS ]
+[s S324 :1 `uc 1 :1 `uc 1 ]
+[n S324 . . GO_NOT_DONE ]
+[s S325 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S325 . . DONE CHS0 CHS1 CHS2 CHS3 . ADCAL ]
+[s S326 :1 `uc 1 :1 `uc 1 ]
+[n S326 . . GO_DONE ]
+[s S327 :1 `uc 1 :1 `uc 1 ]
+[n S327 . . GO ]
+[s S328 :1 `uc 1 :1 `uc 1 ]
+[n S328 . . NOT_DONE ]
+[s S329 :1 `uc 1 :1 `uc 1 ]
+[n S329 . . nDONE ]
+[s S330 :1 `uc 1 :1 `uc 1 ]
+[n S330 . . GODONE ]
+[u S321 `S322 1 `S323 1 `S324 1 `S325 1 `S326 1 `S327 1 `S328 1 `S329 1 `S330 1 ]
+[n S321 . . . . . . . . . . ]
+"5786 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+[v _ADCON0bits `VS321 ~T0 @X0 0 e@4034 ]
 "121 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer0 `(v ~T0 @X0 0 ef1`ui ]
-"79 ../src/messages.h
-[v _FromMainHigh_recvmsg `(c ~T0 @X0 0 ef3`uc`*uc`*v ]
-"64
-[v _ToMainHigh_sendmsg `(c ~T0 @X0 0 ef3`uc`uc`*v ]
-"238 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
+"238
 [v _ReadTimer1 `(ui ~T0 @X0 0 ef ]
-"57 ../src/messages.h
-[v _ToMainLow_sendmsg `(c ~T0 @X0 0 ef3`uc`uc`*v ]
-"239 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
+"239
 [v _WriteTimer1 `(v ~T0 @X0 0 ef1`ui ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
@@ -4619,7 +4637,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.h: 11: unsigned char status;
 [; ;my_i2c.h: 12: unsigned char error_code;
 [; ;my_i2c.h: 13: unsigned char error_count;
-[; ;my_i2c.h: 14: unsigned char outbuffer[10];
+[; ;my_i2c.h: 14: unsigned char outbuffer[103];
 [; ;my_i2c.h: 15: unsigned char outbuflen;
 [; ;my_i2c.h: 16: unsigned char outbufind;
 [; ;my_i2c.h: 17: unsigned char slave_addr;
@@ -4635,59 +4653,42 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
 [; ;debug.h: 12: void flipDBG(unsigned char );
+[; ;debug.h: 13: void debugNum(int );
 "17 ../src/user_interrupts.c
 [v _timer0_int_handler `(v ~T0 @X0 1 ef ]
 {
 [; ;user_interrupts.c: 17: void timer0_int_handler() {
 [e :U _timer0_int_handler ]
 [f ]
+[; ;user_interrupts.c: 18: debugNum(1);
 "18
-[v _val `ui ~T0 @X0 1 a ]
-"19
-[v _length `i ~T0 @X0 1 a ]
-[v _msgtype `i ~T0 @X0 1 a ]
-[; ;user_interrupts.c: 18: unsigned int val;
-[; ;user_interrupts.c: 19: int length, msgtype;
-[; ;user_interrupts.c: 27: WriteTimer0(0xF800);
-"27
-[e ( _WriteTimer0 (1 -> 63488 `ui ]
-[; ;user_interrupts.c: 29: length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
-"29
-[e = _length -> ( _FromMainHigh_recvmsg (3 , , -> -> # _val `ui `uc -> &U _msgtype `*uc -> &U _val `*v `i ]
-[; ;user_interrupts.c: 30: if (length == sizeof (val)) {
-"30
-[e $ ! == -> _length `ui -> # _val `ui 586  ]
-{
-[; ;user_interrupts.c: 31: ToMainHigh_sendmsg(sizeof (val), 10, (void *) &val);
+[e ( _debugNum (1 -> 1 `i ]
+[; ;user_interrupts.c: 21: ADCON0bits.GO = 1;
+"21
+[e = . . _ADCON0bits 5 1 -> -> 1 `i `uc ]
+[; ;user_interrupts.c: 31: WriteTimer0(0xFFFF-375);
 "31
-[e ( _ToMainHigh_sendmsg (3 , , -> -> # _val `ui `uc -> -> 10 `i `uc -> &U _val `*v ]
-"32
-}
-[e :U 586 ]
-[; ;user_interrupts.c: 32: }
-[; ;user_interrupts.c: 34: }
-"34
+[e ( _WriteTimer0 (1 - -> 65535 `ui -> -> 375 `i `ui ]
+[; ;user_interrupts.c: 46: }
+"46
 [e :UE 585 ]
 }
-"39
+"51
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;user_interrupts.c: 39: void timer1_int_handler() {
+[; ;user_interrupts.c: 51: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-"40
-[v _result `ui ~T0 @X0 1 a ]
-[; ;user_interrupts.c: 40: unsigned int result;
-[; ;user_interrupts.c: 47: result = ReadTimer1();
-"47
-[e = _result ( _ReadTimer1 ..  ]
-[; ;user_interrupts.c: 48: ToMainLow_sendmsg(0, 11, (void *) 0);
-"48
-[e ( _ToMainLow_sendmsg (3 , , -> -> 0 `i `uc -> -> 11 `i `uc -> -> 0 `i `*v ]
-[; ;user_interrupts.c: 51: WriteTimer1(0);
-"51
-[e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
-[; ;user_interrupts.c: 52: }
 "52
-[e :UE 587 ]
+[v _result `ui ~T0 @X0 1 a ]
+[; ;user_interrupts.c: 52: unsigned int result;
+[; ;user_interrupts.c: 59: result = ReadTimer1();
+"59
+[e = _result ( _ReadTimer1 ..  ]
+[; ;user_interrupts.c: 63: WriteTimer1(0);
+"63
+[e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
+[; ;user_interrupts.c: 64: }
+"64
+[e :UE 586 ]
 }

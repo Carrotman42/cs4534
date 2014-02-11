@@ -2,6 +2,8 @@
 #include "interrupts.h"
 #include "user_interrupts.h"
 #include "messages.h"
+#include "my_adc.h"
+#include "debug.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -120,7 +122,13 @@ interrupt low_priority
 #pragma interruptlow InterruptHandlerLow
 #endif
 void InterruptHandlerLow() {
-    // check to see if we have an interrupt on timer 1
+
+    if (PIR1bits.ADIF) {
+        PIR1bits.ADIF = 0;
+        adc_int_handler();
+    }
+
+    /*// check to see if we have an interrupt on timer 1
     if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
@@ -135,6 +143,6 @@ void InterruptHandlerLow() {
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
         uart_recv_int_handler();
-    }
+    }*/
 }
 

@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
     void init_adc();
-    unsigned int adc_get_data();
+    void adc_int_handler();
 
 #ifdef	__cplusplus
 }

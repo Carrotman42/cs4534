@@ -45,10 +45,8 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _timer0_int_handler `(v ~T0 @X0 0 ef ]
 "47 ../src/messages.h
 [v _SleepIfOkay `(v ~T0 @X0 0 ef ]
-"12 ../src/user_interrupts.h
-[v _timer1_int_handler `(v ~T0 @X0 0 ef ]
-"16 ../src/my_uart.h
-[v _uart_recv_int_handler `(v ~T0 @X0 0 ef ]
+"9 ../src/my_adc.h
+[v _adc_int_handler `(v ~T0 @X0 0 ef ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
 "46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
@@ -4662,7 +4660,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.h: 11: unsigned char status;
 [; ;my_i2c.h: 12: unsigned char error_code;
 [; ;my_i2c.h: 13: unsigned char error_count;
-[; ;my_i2c.h: 14: unsigned char outbuffer[10];
+[; ;my_i2c.h: 14: unsigned char outbuffer[103];
 [; ;my_i2c.h: 15: unsigned char outbuflen;
 [; ;my_i2c.h: 16: unsigned char outbufind;
 [; ;my_i2c.h: 17: unsigned char slave_addr;
@@ -4674,73 +4672,69 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.h: 36: void i2c_configure_master(unsigned char);
 [; ;my_i2c.h: 37: unsigned char i2c_master_send(unsigned char,unsigned char *);
 [; ;my_i2c.h: 38: unsigned char i2c_master_recv(unsigned char);
-"14 ../src/interrupts.c
+[; ;my_adc.h: 8: void init_adc();
+[; ;my_adc.h: 9: void adc_int_handler();
+[; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+[; ;debug.h: 10: void setDBG(unsigned char );
+[; ;debug.h: 11: void resetDBG(unsigned char );
+[; ;debug.h: 12: void flipDBG(unsigned char );
+[; ;debug.h: 13: void debugNum(int );
+"16 ../src/interrupts.c
 [v _enable_interrupts `(v ~T0 @X0 1 ef ]
 {
-[; ;interrupts.c: 14: void enable_interrupts() {
+[; ;interrupts.c: 16: void enable_interrupts() {
 [e :U _enable_interrupts ]
 [f ]
-[; ;interrupts.c: 17: RCONbits.IPEN = 1;
-"17
-[e = . . _RCONbits 5 6 -> -> 1 `i `uc ]
-[; ;interrupts.c: 18: INTCONbits.GIEH = 1;
-"18
-[e = . . _INTCONbits 2 7 -> -> 1 `i `uc ]
-[; ;interrupts.c: 19: INTCONbits.GIEL = 1;
+[; ;interrupts.c: 19: RCONbits.IPEN = 1;
 "19
-[e = . . _INTCONbits 2 6 -> -> 1 `i `uc ]
-[; ;interrupts.c: 20: }
+[e = . . _RCONbits 5 6 -> -> 1 `i `uc ]
+[; ;interrupts.c: 20: INTCONbits.GIEH = 1;
 "20
+[e = . . _INTCONbits 2 7 -> -> 1 `i `uc ]
+[; ;interrupts.c: 21: INTCONbits.GIEL = 1;
+"21
+[e = . . _INTCONbits 2 6 -> -> 1 `i `uc ]
+[; ;interrupts.c: 22: }
+"22
 [e :UE 585 ]
 }
-"22
+"24
 [v _in_high_int `(i ~T0 @X0 1 ef ]
 {
-[; ;interrupts.c: 22: int in_high_int() {
+[; ;interrupts.c: 24: int in_high_int() {
 [e :U _in_high_int ]
 [f ]
-[; ;interrupts.c: 23: return (!INTCONbits.GIEH);
-"23
+[; ;interrupts.c: 25: return (!INTCONbits.GIEH);
+"25
 [e ) -> ! != -> . . _INTCONbits 2 7 `i -> -> -> 0 `i `Vuc `i `i ]
 [e $UE 586  ]
-[; ;interrupts.c: 24: }
-"24
+[; ;interrupts.c: 26: }
+"26
 [e :UE 586 ]
 }
-"26
+"28
 [v _low_int_active `(i ~T0 @X0 1 ef ]
 {
-[; ;interrupts.c: 26: int low_int_active() {
+[; ;interrupts.c: 28: int low_int_active() {
 [e :U _low_int_active ]
 [f ]
-[; ;interrupts.c: 27: return (!INTCONbits.GIEL);
-"27
+[; ;interrupts.c: 29: return (!INTCONbits.GIEL);
+"29
 [e ) -> ! != -> . . _INTCONbits 2 6 `i -> -> -> 0 `i `Vuc `i `i ]
 [e $UE 587  ]
-[; ;interrupts.c: 28: }
-"28
+[; ;interrupts.c: 30: }
+"30
 [e :UE 587 ]
 }
-"30
+"32
 [v _in_low_int `(i ~T0 @X0 1 ef ]
 {
-[; ;interrupts.c: 30: int in_low_int() {
+[; ;interrupts.c: 32: int in_low_int() {
 [e :U _in_low_int ]
 [f ]
-[; ;interrupts.c: 31: if (INTCONbits.GIEL == 1) {
-"31
-[e $ ! == -> . . _INTCONbits 2 6 `i -> 1 `i 589  ]
-{
-[; ;interrupts.c: 32: return (0);
-"32
-[e ) -> 0 `i ]
-[e $UE 588  ]
+[; ;interrupts.c: 33: if (INTCONbits.GIEL == 1) {
 "33
-}
-[; ;interrupts.c: 33: } else if (in_high_int()) {
-[e $U 590  ]
-[e :U 589 ]
-[e $ ! != ( _in_high_int ..  -> 0 `i 591  ]
+[e $ ! == -> . . _INTCONbits 2 6 `i -> 1 `i 589  ]
 {
 [; ;interrupts.c: 34: return (0);
 "34
@@ -4748,135 +4742,132 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e $UE 588  ]
 "35
 }
-[; ;interrupts.c: 35: } else {
-[e $U 592  ]
-[e :U 591 ]
+[; ;interrupts.c: 35: } else if (in_high_int()) {
+[e $U 590  ]
+[e :U 589 ]
+[e $ ! != ( _in_high_int ..  -> 0 `i 591  ]
 {
-[; ;interrupts.c: 36: return (1);
+[; ;interrupts.c: 36: return (0);
 "36
-[e ) -> 1 `i ]
+[e ) -> 0 `i ]
 [e $UE 588  ]
 "37
 }
+[; ;interrupts.c: 37: } else {
+[e $U 592  ]
+[e :U 591 ]
+{
+[; ;interrupts.c: 38: return (1);
+"38
+[e ) -> 1 `i ]
+[e $UE 588  ]
+"39
+}
 [e :U 592 ]
 [e :U 590 ]
-[; ;interrupts.c: 37: }
-[; ;interrupts.c: 38: }
-"38
+[; ;interrupts.c: 39: }
+[; ;interrupts.c: 40: }
+"40
 [e :UE 588 ]
 }
-"40
+"42
 [v _in_main `(i ~T0 @X0 1 ef ]
 {
-[; ;interrupts.c: 40: int in_main() {
+[; ;interrupts.c: 42: int in_main() {
 [e :U _in_main ]
 [f ]
-[; ;interrupts.c: 41: if ((!in_low_int()) && (!in_high_int())) {
-"41
+[; ;interrupts.c: 43: if ((!in_low_int()) && (!in_high_int())) {
+"43
 [e $ ! && ! != ( _in_low_int ..  -> 0 `i ! != ( _in_high_int ..  -> 0 `i 594  ]
 {
-[; ;interrupts.c: 42: return (1);
-"42
-[e ) -> 1 `i ]
-[e $UE 593  ]
-"43
-}
-[; ;interrupts.c: 43: } else {
-[e $U 595  ]
-[e :U 594 ]
-{
-[; ;interrupts.c: 44: return (0);
+[; ;interrupts.c: 44: return (1);
 "44
-[e ) -> 0 `i ]
+[e ) -> 1 `i ]
 [e $UE 593  ]
 "45
 }
-[e :U 595 ]
-[; ;interrupts.c: 45: }
-[; ;interrupts.c: 46: }
+[; ;interrupts.c: 45: } else {
+[e $U 595  ]
+[e :U 594 ]
+{
+[; ;interrupts.c: 46: return (0);
 "46
+[e ) -> 0 `i ]
+[e $UE 593  ]
+"47
+}
+[e :U 595 ]
+[; ;interrupts.c: 47: }
+[; ;interrupts.c: 48: }
+"48
 [e :UE 593 ]
 }
-[v F5103 `(v ~T0 @X0 1 tf ]
-"83
-[v _InterruptHandlerHigh `IF5103 ~T0 @X0 1 e ]
+[v F5119 `(v ~T0 @X0 1 tf ]
+"85
+[v _InterruptHandlerHigh `IF5119 ~T0 @X0 1 e ]
 {
-[; ;interrupts.c: 78: interrupt
-[; ;interrupts.c: 83: void InterruptHandlerHigh() {
+[; ;interrupts.c: 80: interrupt
+[; ;interrupts.c: 85: void InterruptHandlerHigh() {
 [e :U _InterruptHandlerHigh ]
 [f ]
-[; ;interrupts.c: 88: if (PIR1bits.SSPIF) {
-"88
+[; ;interrupts.c: 90: if (PIR1bits.SSPIF) {
+"90
 [e $ ! != -> . . _PIR1bits 1 1 `i -> -> -> 0 `i `Vuc `i 597  ]
 {
-[; ;interrupts.c: 90: PIR1bits.SSPIF = 0;
-"90
-[e = . . _PIR1bits 1 1 -> -> 0 `i `uc ]
-[; ;interrupts.c: 92: i2c_int_handler();
+[; ;interrupts.c: 92: PIR1bits.SSPIF = 0;
 "92
+[e = . . _PIR1bits 1 1 -> -> 0 `i `uc ]
+[; ;interrupts.c: 94: i2c_int_handler();
+"94
 [e ( _i2c_int_handler ..  ]
-"93
+"95
 }
 [e :U 597 ]
-[; ;interrupts.c: 93: }
-[; ;interrupts.c: 96: if (INTCONbits.TMR0IF) {
-"96
+[; ;interrupts.c: 95: }
+[; ;interrupts.c: 98: if (INTCONbits.TMR0IF) {
+"98
 [e $ ! != -> . . _INTCONbits 0 2 `i -> -> -> 0 `i `Vuc `i 598  ]
 {
-[; ;interrupts.c: 97: INTCONbits.TMR0IF = 0;
-"97
-[e = . . _INTCONbits 0 2 -> -> 0 `i `uc ]
-[; ;interrupts.c: 99: timer0_int_handler();
+[; ;interrupts.c: 99: INTCONbits.TMR0IF = 0;
 "99
+[e = . . _INTCONbits 0 2 -> -> 0 `i `uc ]
+[; ;interrupts.c: 101: timer0_int_handler();
+"101
 [e ( _timer0_int_handler ..  ]
-"100
+"102
 }
 [e :U 598 ]
-[; ;interrupts.c: 100: }
-[; ;interrupts.c: 109: SleepIfOkay();
-"109
+[; ;interrupts.c: 102: }
+[; ;interrupts.c: 111: SleepIfOkay();
+"111
 [e ( _SleepIfOkay ..  ]
-[; ;interrupts.c: 110: }
-"110
+[; ;interrupts.c: 112: }
+"112
 [e :UE 596 ]
 }
-[v F5105 `(v ~T0 @X0 1 tf ]
-"122
-[v _InterruptHandlerLow `ILF5105 ~T0 @X0 1 e ]
+[v F5121 `(v ~T0 @X0 1 tf ]
+"124
+[v _InterruptHandlerLow `ILF5121 ~T0 @X0 1 e ]
 {
-[; ;interrupts.c: 117: interrupt low_priority
-[; ;interrupts.c: 122: void InterruptHandlerLow() {
+[; ;interrupts.c: 119: interrupt low_priority
+[; ;interrupts.c: 124: void InterruptHandlerLow() {
 [e :U _InterruptHandlerLow ]
 [f ]
-[; ;interrupts.c: 124: if (PIR1bits.TMR1IF) {
-"124
-[e $ ! != -> . . _PIR1bits 0 0 `i -> -> -> 0 `i `Vuc `i 600  ]
-{
-[; ;interrupts.c: 125: PIR1bits.TMR1IF = 0;
-"125
-[e = . . _PIR1bits 0 0 -> -> 0 `i `uc ]
-[; ;interrupts.c: 126: timer1_int_handler();
+[; ;interrupts.c: 126: if (PIR1bits.ADIF) {
 "126
-[e ( _timer1_int_handler ..  ]
+[e $ ! != -> . . _PIR1bits 0 6 `i -> -> -> 0 `i `Vuc `i 600  ]
+{
+[; ;interrupts.c: 127: PIR1bits.ADIF = 0;
 "127
+[e = . . _PIR1bits 0 6 -> -> 0 `i `uc ]
+[; ;interrupts.c: 128: adc_int_handler();
+"128
+[e ( _adc_int_handler ..  ]
+"129
 }
 [e :U 600 ]
-[; ;interrupts.c: 127: }
-[; ;interrupts.c: 130: if (PIR1bits.RCIF) {
-"130
-[e $ ! != -> . . _PIR1bits 0 5 `i -> -> -> 0 `i `Vuc `i 601  ]
-{
-[; ;interrupts.c: 131: PIR1bits.RCIF = 0;
-"131
-[e = . . _PIR1bits 0 5 -> -> 0 `i `uc ]
-[; ;interrupts.c: 132: uart_recv_int_handler();
-"132
-[e ( _uart_recv_int_handler ..  ]
-"133
-}
-[e :U 601 ]
-[; ;interrupts.c: 133: }
-[; ;interrupts.c: 134: }
-"134
+[; ;interrupts.c: 129: }
+[; ;interrupts.c: 147: }
+"147
 [e :UE 599 ]
 }

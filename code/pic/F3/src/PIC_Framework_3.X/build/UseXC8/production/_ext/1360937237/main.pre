@@ -6037,7 +6037,7 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[10];
+unsigned char outbuffer[103];
 unsigned char outbuflen;
 unsigned char outbufind;
 unsigned char slave_addr;
@@ -6051,23 +6051,6 @@ void i2c_configure_slave(unsigned char);
 void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
-
-# 1 "../src/uart_thread.h"
-typedef struct __uart_thread_struct {
-
-int data;
-} uart_thread_struct;
-
-int uart_lthread(uart_thread_struct *,int,int,unsigned char*);
-
-# 1 "../src/timer1_thread.h"
-typedef struct __timer1_thread_struct {
-
-unsigned int msgcount;
-} timer1_thread_struct;
-
-void init_timer1_lthread(timer1_thread_struct *);
-int timer1_lthread(timer1_thread_struct *,int,int,unsigned char*);
 
 # 1 "../src/timer0_thread.h"
 typedef struct __timer0_thread_struct {
@@ -6083,9 +6066,67 @@ enum {DBG1, DBG2, DBG3, DBG4, DBG5};
 void setDBG(unsigned char );
 void resetDBG(unsigned char );
 void flipDBG(unsigned char );
+void debugNum(int );
+
+# 8 "../src/../../../../common/communication/../sensor_types.h"
+typedef char uint8;
+typedef short uint16;
 
 
-# 25 "../src/main.c"
+typedef struct {
+uint8 data;
+} sensorADData;
+
+# 10 "../src/../../../../common/communication/brain_rover.h"
+typedef struct {
+uint8 flags;
+uint8 sensorMask;
+} BrainMsg;
+
+typedef struct {
+int (*adFunc)(sensorADData* data, int len);
+} RoverMsgRouter;
+
+# 24
+int packADData(sensorADData* data, int len, char* out, int maxout);
+int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+BrainMsg* unpackBrainMsg(char *buf);
+
+# 34
+typedef struct {
+uint8 flags;
+uint8 sensorID;
+
+
+
+uint8 payloadLen;
+
+
+
+char payload[];
+} RoverMsg;
+
+# 10 "../src/sensorcomm.h"
+typedef struct{
+uint8 len;
+sensorADData data[100];
+} sensorADaccumulator;
+
+void setBrainReqData(char* msg);
+void sendRequestedData();
+void sendADdata();
+void addDataPoints(int sensorid, void* data, int len);
+void addADDataPoints(sensorADData* data, int len);
+void resetADacc();
+void resetAccumulators();
+
+# 8 "../src/my_adc.h"
+void init_adc();
+void adc_int_handler();
+
+
+# 27 "../src/main.c"
 #pragma config WDTEN = OFF
 #pragma config STVREN = OFF
 
@@ -6110,36 +6151,37 @@ void flipDBG(unsigned char );
 
 #pragma config CCP2MX = DEFAULT
 
-# 186
+# 188
 void main(void) {
-char c;
+
 signed char length;
 unsigned char msgtype;
 unsigned char last_reg_recvd;
-uart_comm uc;
+
 i2c_comm ic;
 unsigned char msgbuffer[10 + 1];
 unsigned char to_send_buffer[10+1];
 int data_points_count = 0;
-unsigned char i;
-uart_thread_struct uthread_data;
-timer1_thread_struct t1thread_data;
+
+
+
 timer0_thread_struct t0thread_data;
 
-# 207
+# 209
 OSCCON = 0x82;
 OSCTUNEbits.PLLEN = 0;
 
-# 226
-init_uart_recv(&uc);
+# 227
+resetAccumulators();
+
+init_adc();
+
+
 
 
 init_i2c(&ic);
 
-
-init_timer1_lthread(&t1thread_data);
-
-
+# 240
 init_queues();
 
 
@@ -6147,40 +6189,31 @@ init_queues();
 TRISB = 0x0;
 LATB = 0x0;
 
-# 253
-OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110000);
+# 258
+OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110001);
 
-# 262
-OpenTimer1(0b11111111 & 0b11111111 & 0b11111111 & 0b11111101 & 0b11110111 & 0b11111111);
-
-# 269
-IPR1bits.TMR1IP = 0;
-
-IPR1bits.RCIP = 0;
-
+# 278
 IPR1bits.SSPIP = 1;
 
-# 282
+IPR1bits.ADIP = 0;
+
+# 290
 i2c_configure_slave(0x9E);
 
-# 297
+# 305
 PIE1bits.SSPIE = 1;
 
-# 308
-OpenUSART(0b01111111 & 0b11111111 & 0b11111110 & 0b11111101 &
-0b11111111 & 0b11101111, 0x19);
-
-# 315
+# 323
 enable_interrupts();
 
-# 335
+# 343
 while (1) {
 
 
 
 block_on_To_msgqueues();
 
-# 346
+# 354
 length = ToMainHigh_recvmsg(10, &msgtype, (void *) msgbuffer);
 if (length < 0) {
 
@@ -6191,7 +6224,7 @@ if (length != -4) {
 switch (msgtype) {
 case 10:
 {
-timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
+
 break;
 };
 case 40:
@@ -6205,10 +6238,10 @@ break;
 case 42:
 {
 
-# 376
+# 384
 switch (last_reg_recvd) {
 
-# 397
+# 405
 case 0xaa:
 {
 if(data_points_count == 0){
@@ -6237,9 +6270,17 @@ data_points_count = 0;
 break;
 };
 };
+msgbuffer[0] = 0xaa;
+length = 1;
 start_i2c_slave_reply(length, msgbuffer);
 break;
 };
+case 50:
+{
+addDataPoints(0, msgbuffer, length);
+break;
+};
+
 default:
 {
 
@@ -6259,23 +6300,13 @@ if (length != -4) {
 switch (msgtype) {
 case 50:
 {
-if(data_points_count <= 10+1){
-to_send_buffer[data_points_count];
-data_points_count++;
-}
+addDataPoints(0, msgbuffer, length);
+
+# 469
 break;
 };
-case 11:
-{
-timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
-break;
-};
-case 30:
-case 31:
-{
-uart_lthread(&uthread_data, msgtype, length, msgbuffer);
-break;
-};
+
+# 482
 default:
 {
 

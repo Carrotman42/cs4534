@@ -5953,7 +5953,7 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[10];
+unsigned char outbuffer[103];
 unsigned char outbuflen;
 unsigned char outbufind;
 unsigned char slave_addr;
@@ -5993,7 +5993,7 @@ int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
 void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
 BrainMsg* unpackBrainMsg(char *buf);
 
-# 33
+# 34
 typedef struct {
 uint8 flags;
 uint8 sensorID;
@@ -6001,15 +6001,38 @@ uint8 sensorID;
 
 
 uint8 payloadLen;
-char payload[10 - 3];
+
+
+
+char payload[];
 } RoverMsg;
 
 # 10 "../src/sensorcomm.h"
+typedef struct{
+uint8 len;
+sensorADData data[100];
+} sensorADaccumulator;
+
 void setBrainReqData(char* msg);
 void sendRequestedData();
-void sendADdata(sensorADData*data, int len);
+void sendADdata();
+void addDataPoints(int sensorid, void* data, int len);
+void addADDataPoints(sensorADData* data, int len);
+void resetADacc();
+void resetAccumulators();
 
-# 10 "../src/my_i2c.c"
+# 8 "../src/debug.h"
+enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+
+void setDBG(unsigned char );
+void resetDBG(unsigned char );
+void flipDBG(unsigned char );
+void debugNum(int );
+
+# 7 "../src/testAD.h"
+void reqADData();
+
+# 16 "../src/my_i2c.c"
 static i2c_comm *ic_ptr;
 
 
@@ -6019,13 +6042,13 @@ void i2c_configure_master(unsigned char slave_addr) {
 
 }
 
-# 31
+# 37
 unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
 
 return(0);
 }
 
-# 49
+# 55
 unsigned char i2c_master_recv(unsigned char length) {
 
 return(0);
@@ -6072,8 +6095,9 @@ ic_ptr->status = 0x6;
 }
 }
 
-# 101
+# 107
 void i2c_int_handler() {
+
 unsigned char i2c_data;
 unsigned char data_read = 0;
 unsigned char data_written = 0;
@@ -6152,6 +6176,8 @@ break;
 case 0x8:
 {
 if (ic_ptr->outbufind < ic_ptr->outbuflen) {
+
+
 SSPBUF = ic_ptr->outbuffer[ic_ptr->outbufind];
 ic_ptr->outbufind++;
 data_written = 1;
@@ -6208,6 +6234,9 @@ break;
 
 if (data_read || data_written) {
 
+
+
+
 if (SSPCON1bits.CKP == 0) {
 SSPCON1bits.CKP = 1;
 }
@@ -6223,7 +6252,7 @@ ic_ptr->error_code = 0x7;
 if (msg_ready) {
 ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
 setBrainReqData(ic_ptr->buffer);
-sendRequestedData();
+
 
 ic_ptr->buflen = 0;
 } else if (ic_ptr->error_count >= 1) {
@@ -6235,7 +6264,7 @@ ic_ptr->error_count = 0;
 }
 if (msg_to_send) {
 
-
+# 286
 sendRequestedData();
 msg_to_send = 0;
 }
@@ -6257,7 +6286,7 @@ ic_ptr->error_count = 0;
 
 void i2c_configure_slave(unsigned char addr) {
 
-# 295
+# 317
 TRISCbits.TRISC3 = 1;
 TRISCbits.TRISC4 = 1;
 
@@ -6276,7 +6305,7 @@ SSPSTAT |= 0b10000000;
 TRISCbits.TRISC3 = 1;
 TRISCbits.TRISC4 = 1;
 
-# 332
+# 354
 SSPCON2bits.SEN = 1;
 SSPCON1 |= 0b00100000;
 
