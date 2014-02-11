@@ -13,10 +13,12 @@
 #include "messages.h"
 #include "my_uart.h"
 #include "my_i2c.h"
-#include "uart_thread.h"
-#include "timer1_thread.h"
+//#include "uart_thread.h"
+//#include "timer1_thread.h"
 #include "timer0_thread.h"
 #include "debug.h"
+#include "sensorcomm.h"
+#include "my_adc.h"
 
 
 //Setup configuration registers
@@ -184,18 +186,18 @@ The PIC selected is not supported or the preprocessor directives are wrong.
 
 
 void main(void) {
-    char c;
+    //char c;
     signed char length;
     unsigned char msgtype;
     unsigned char last_reg_recvd;
-    uart_comm uc;
+    //uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
     unsigned char to_send_buffer[MSGLEN+1];
     int data_points_count = 0;
-    unsigned char i;
-    uart_thread_struct uthread_data; // info for uart_lthread
-    timer1_thread_struct t1thread_data; // info for timer1_lthread
+    //unsigned char i;
+    //uart_thread_struct uthread_data; // info for uart_lthread
+    //timer1_thread_struct t1thread_data; // info for timer1_lthread
     timer0_thread_struct t0thread_data; // info for timer0_lthread
 
 #ifdef __USE18F2680
@@ -222,14 +224,17 @@ void main(void) {
 #endif
 #endif
 
+    resetAccumulators();
+
+    init_adc();
     // initialize my uart recv handling code
-    init_uart_recv(&uc);
+    //init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
 
     // init the timer1 lthread
-    init_timer1_lthread(&t1thread_data);
+    //init_timer1_lthread(&t1thread_data);
 
     // initialize message queues before enabling any interrupts
     init_queues();
@@ -250,7 +255,7 @@ void main(void) {
      */
 
     // initialize Timers
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_2);
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
     
 #ifdef __USE18F26J50
     // MTJ added second argument for OpenTimer1()
@@ -259,18 +264,21 @@ void main(void) {
 #ifdef __USE18F46J50
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
-    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+    //OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #endif
 #endif
 
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     // Timer1 interrupt
-    IPR1bits.TMR1IP = 0;
+    //IPR1bits.TMR1IP = 0;
     // USART RX interrupt
-    IPR1bits.RCIP = 0;
+    //IPR1bits.RCIP = 0;
     // I2C interrupt
     IPR1bits.SSPIP = 1;
+    
+    IPR1bits.ADIP = 0;
+
 
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
 #if 1
@@ -305,8 +313,8 @@ void main(void) {
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
         USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #else
-    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+//    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
+//        USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #endif
 #endif
 
@@ -353,7 +361,7 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_TIMER0:
                 {
-                    timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
+                    //timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
                     break;
                 };
                 case MSGT_I2C_DATA:
@@ -422,9 +430,17 @@ void main(void) {
                             break;
                         };
                     };
+                    msgbuffer[0] = 0xaa;
+                    length = 1;
                     start_i2c_slave_reply(length, msgbuffer);
                     break;
                 };
+                case MSGT_AD:
+                {
+                    addDataPoints(sensorADid, msgbuffer, length);
+                    break;
+                };
+
                 default:
                 {
                     // Your code should handle this error
@@ -444,13 +460,15 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_AD:
                 {
+                    addDataPoints(sensorADid, msgbuffer, length);
+                    /*
                     if(data_points_count <= MSGLEN+1){       //if a new sample comes in, just ignore them.
                         to_send_buffer[data_points_count];
                         data_points_count++;
-                    }
+                    }*/
                     break;
                 };
-                case MSGT_TIMER1:
+                /*case MSGT_TIMER1:
                 {
                     timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
@@ -460,7 +478,7 @@ void main(void) {
                 {
                     uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
-                };
+                };*/
                 default:
                 {
                     // Your code should handle this error

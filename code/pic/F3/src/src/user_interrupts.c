@@ -15,21 +15,33 @@
 // This one does the action I wanted for this program on a timer0 interrupt
 
 void timer0_int_handler() {
-    unsigned int val;
-    int length, msgtype;
+    debugNum(1);
 
+
+    ADCON0bits.GO = 1;
+
+    //setDBG(DBG4);
+    //while(ADCON0bits.GO == 1);
+    //resetDBG(DBG4);
+
+    
+    // reset the timer
+    //WriteTimer0(0xFFFF-750);
+
+    WriteTimer0(0xFFFF-375);
+    //unsigned int val;
+    //int length, msgtype;
+    
     //setDBG(DBG1);
     // toggle an LED
 #ifdef __USE18F2680
     LATBbits.LATB0 = !LATBbits.LATB0;
 #endif
-    // reset the timer
-    WriteTimer0(0xF800);
     // try to receive a message and, if we get one, echo it back
-    length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
+    /*length = FromMainHigh_recvmsg(sizeof(val), (unsigned char *)&msgtype, (void *) &val);
     if (length == sizeof (val)) {
         ToMainHigh_sendmsg(sizeof (val), MSGT_TIMER0, (void *) &val);
-    }
+    }*/
     //resetDBG(DBG1);
 }
 
@@ -45,7 +57,7 @@ void timer1_int_handler() {
 #endif
 
     result = ReadTimer1();
-    ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
+    //ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
 
     // reset the timer
     WriteTimer1(0);

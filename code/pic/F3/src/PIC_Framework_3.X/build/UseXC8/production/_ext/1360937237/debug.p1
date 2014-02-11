@@ -21,6 +21,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S147 . . . . . . . . . . ]
 "2113 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _LATBbits `VS147 ~T0 @X0 0 e@3978 ]
+"71 ../src/debug.c
+[c E5003 0 1 2 3 4 .. ]
+[n E5003 . DBG1 DBG2 DBG3 DBG4 DBG5  ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
 "46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
@@ -4596,6 +4599,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
 [; ;debug.h: 12: void flipDBG(unsigned char );
+[; ;debug.h: 13: void debugNum(int );
 "4 ../src/debug.c
 [v _setDBG `(v ~T0 @X0 1 ef1`uc ]
 {
@@ -4835,4 +4839,85 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;debug.c: 67: }
 "67
 [e :UE 599 ]
+}
+"69
+[v _debugNum `(v ~T0 @X0 1 ef1`i ]
+{
+[; ;debug.c: 69: void debugNum(int num){
+[e :U _debugNum ]
+[v _num `i ~T0 @X0 1 r1 ]
+[f ]
+[; ;debug.c: 70: if(num & 1){
+"70
+[e $ ! != & _num -> 1 `i -> 0 `i 609  ]
+{
+[; ;debug.c: 71: setDBG(DBG1);
+"71
+[e ( _setDBG (1 -> . `E5003 0 `uc ]
+[; ;debug.c: 72: resetDBG(DBG1);
+"72
+[e ( _resetDBG (1 -> . `E5003 0 `uc ]
+"73
+}
+[e :U 609 ]
+[; ;debug.c: 73: }
+[; ;debug.c: 74: if(num & 2){
+"74
+[e $ ! != & _num -> 2 `i -> 0 `i 610  ]
+{
+[; ;debug.c: 75: setDBG(DBG2);
+"75
+[e ( _setDBG (1 -> . `E5003 1 `uc ]
+[; ;debug.c: 76: resetDBG(DBG2);
+"76
+[e ( _resetDBG (1 -> . `E5003 1 `uc ]
+"77
+}
+[e :U 610 ]
+[; ;debug.c: 77: }
+[; ;debug.c: 78: if(num & 4){
+"78
+[e $ ! != & _num -> 4 `i -> 0 `i 611  ]
+{
+[; ;debug.c: 79: setDBG(DBG3);
+"79
+[e ( _setDBG (1 -> . `E5003 2 `uc ]
+[; ;debug.c: 80: resetDBG(DBG3);
+"80
+[e ( _resetDBG (1 -> . `E5003 2 `uc ]
+"81
+}
+[e :U 611 ]
+[; ;debug.c: 81: }
+[; ;debug.c: 82: if(num & 8){
+"82
+[e $ ! != & _num -> 8 `i -> 0 `i 612  ]
+{
+[; ;debug.c: 83: setDBG(DBG4);
+"83
+[e ( _setDBG (1 -> . `E5003 3 `uc ]
+[; ;debug.c: 84: resetDBG(DBG4);
+"84
+[e ( _resetDBG (1 -> . `E5003 3 `uc ]
+"85
+}
+[e :U 612 ]
+[; ;debug.c: 85: }
+[; ;debug.c: 86: if(num & 16){
+"86
+[e $ ! != & _num -> 16 `i -> 0 `i 613  ]
+{
+[; ;debug.c: 87: setDBG(DBG5);
+"87
+[e ( _setDBG (1 -> . `E5003 4 `uc ]
+[; ;debug.c: 88: resetDBG(DBG5);
+"88
+[e ( _resetDBG (1 -> . `E5003 4 `uc ]
+"89
+}
+[e :U 613 ]
+[; ;debug.c: 89: }
+[; ;debug.c: 91: }
+"91
+[e :UE 608 ]
 }

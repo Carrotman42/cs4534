@@ -5979,7 +5979,7 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[10];
+unsigned char outbuffer[103];
 unsigned char outbuflen;
 unsigned char outbufind;
 unsigned char slave_addr;
@@ -5994,7 +5994,19 @@ void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
 
-# 14 "../src/interrupts.c"
+# 8 "../src/my_adc.h"
+void init_adc();
+void adc_int_handler();
+
+# 8 "../src/debug.h"
+enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+
+void setDBG(unsigned char );
+void resetDBG(unsigned char );
+void flipDBG(unsigned char );
+void debugNum(int );
+
+# 16 "../src/interrupts.c"
 void enable_interrupts() {
 
 
@@ -6029,10 +6041,10 @@ return (0);
 }
 }
 
-# 78
+# 80
 interrupt
 
-# 83
+# 85
 void InterruptHandlerHigh() {
 
 
@@ -6052,25 +6064,21 @@ INTCONbits.TMR0IF = 0;
 timer0_int_handler();
 }
 
-# 109
+# 111
 SleepIfOkay();
 }
 
-# 117
+# 119
 interrupt low_priority
 
-# 122
+# 124
 void InterruptHandlerLow() {
 
-if (PIR1bits.TMR1IF) {
-PIR1bits.TMR1IF = 0;
-timer1_int_handler();
+if (PIR1bits.ADIF) {
+PIR1bits.ADIF = 0;
+adc_int_handler();
 }
 
-
-if (PIR1bits.RCIF) {
-PIR1bits.RCIF = 0;
-uart_recv_int_handler();
-}
+# 147
 }
 

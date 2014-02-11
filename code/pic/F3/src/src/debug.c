@@ -65,3 +65,27 @@ void flipDBG(unsigned char b) {
             break;
     }
 }
+
+void debugNum(int num){
+    if(num & 1){
+        setDBG(DBG1);
+        resetDBG(DBG1);
+    }
+    if(num & 2){
+        setDBG(DBG2);
+        resetDBG(DBG2);
+    }
+    if(num & 4){
+        setDBG(DBG3);
+        resetDBG(DBG3);
+    }
+    if(num & 8){
+        setDBG(DBG4);
+        resetDBG(DBG4);
+    }
+    if(num & 16){
+        setDBG(DBG5);
+        resetDBG(DBG5);
+    }
+
+}
