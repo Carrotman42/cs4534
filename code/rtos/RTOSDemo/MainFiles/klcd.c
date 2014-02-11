@@ -45,13 +45,9 @@ typedef struct {
 
 
 static const short backcolor = rgb(0,0,15);
+static const short axiscolor = rgb(31,63,0);
 static const short forecolor = rgb(31, 63, 31);
 static const short thcolor = rgb(0,15,0);
-
-void StartSignalTest() {
-	StartLCD();																							 
-	StartTestSignalTask();
-}
 
 void StartLCD() {
 	MAKE_Q(lcdCmd.toLCD, LCDMsg*, 4);
@@ -104,7 +100,7 @@ TASK_FUNC_NOARG(TestSignalTask) {
 		SignalLCDMsg* msg = LCDgetSignalBuffer();
 		
 		int i;
-		short* dest = &(msg->data[0]);
+		char* dest = &(msg->data[0]);
 		for (i = 0; i < SIGNAL_SAMPLES; i++) {
 			dest[i] = sin(count)*100;
 			count += 0.15;
@@ -114,7 +110,7 @@ TASK_FUNC_NOARG(TestSignalTask) {
 		
 		if (++times % 10 == 0) {
 			TextLCDMsg* msg = LCDgetTextBuffer();
-			msg->line = 2;
+			msg->line = 10;
 			msg->text[0] = '0' + (times/10) % 10;
 			msg->text[1] = 0;
 			LCDcommitBuffer(msg);
@@ -122,12 +118,11 @@ TASK_FUNC_NOARG(TestSignalTask) {
 	}
 } ENDTASK
 
-
 void LCDwriteLn(int line, char* data) {
 	TextLCDMsg* msg = LCDgetTextBuffer();
 	msg->line = line;
 	
-	msg->size = 1; // could be 0
+	msg->size = 0; // could be 1
 	int i = 0;
 	while (1) {
 		char d = *data++;
@@ -141,15 +136,18 @@ void LCDwriteLn(int line, char* data) {
 }
 
 void lcdSignal(SignalLCDMsg* msg) {
+	DBGbit(0, 1);
+	GLCD_DisplayString(0, 1,0, (unsigned char*)"3.4V");
 	GLCD_WindowMax();
 	// It's okay to have static vars: we're guarenteed to always be in the same task.
 	//   ps: I hope the memory model of freertos guarentees that... It seems appropriate
 	//          to assume.
 	static short last[LCDWIDTH];
-	// Autoscale: find the largest value
-	int max = 0;
-	short *data = &msg->data[0];
+	char *data;
 	int x;
+	// Autoscale: find the largest value
+	/*int max = 0;
+	data = &msg->data[0];
 	for (x = 0; x < SIGNAL_SAMPLES; x++, data++) {
 		short val = *data;
 		if (val > 0) {
@@ -162,47 +160,77 @@ void lcdSignal(SignalLCDMsg* msg) {
 				max = val;
 			}
 		}
-	}
+	}	*/
 
+	int max = 0xFF;
 	// Make sure all 0s still displays correctly
 	if (max == 0) max = 1;
-	else max *= 5; // scale it for debugging
+	else max *= 1; // scale it for debugging
 
+	// Draw Axis
+	{
+		GLCD_SetTextColor(axiscolor);
+		int i;
+		for (i = 0; i < LCDWIDTH; i++) {
+			GLCD_PutPixel(i, LCDHEIGHT-1);
+			if ((i % 10) == 0) {
+				GLCD_PutPixel(i, LCDHEIGHT - 2);
+				GLCD_PutPixel(i, LCDHEIGHT - 3);
+			}
+		}
+		for (i = 0; i < LCDHEIGHT; i++) {
+			GLCD_PutPixel(0, i);
+			
+			if ((i % 10) == 0) {
+				GLCD_PutPixel(1, i);
+				GLCD_PutPixel(2, i);
+			}
+		}
+	}
+	
 	#define LOOP(s) for (x = s, data = &msg->data[s]; x < SIGNAL_SAMPLES; x+=2, data+=2)
 	// TODO: Figure out what kind of fp support we have
-	#define Y int y = *data * (LCDHEIGHT/2) / max + LCDHEIGHT/2;
+	#define Y int y = LCDHEIGHT - (*data * (LCDHEIGHT) / max);
 		 		
 	// Use a fancy technique from old interleaved tvs: since writes to the LCD screen are effectively visible to the human
 	//    eye, we split it up and rewrite every other line. At fast refresh speeds it eases how it looks (note: could be confirmation
 	//    bias, but this at least doesn't have any real negative issues.
-	   
+	
 	GLCD_SetTextColor(backcolor);
-	LOOP(0) {				   			
-		GLCD_PutPixel(x, last[x]);
+	LOOP(0) {
+		int l = last[x];
+		Y;
+		last[x] = y;
+		if (l != y) {
+			GLCD_PutPixel(x, l);
+		}
 	}
 	
 	GLCD_SetTextColor(forecolor);
-	LOOP(0) {
-		Y;
-		last[x] = y;			   
-		GLCD_PutPixel(x, y);
+	LOOP(0) {	   
+		GLCD_PutPixel(x, last[x]);
 	}
 
 	GLCD_SetTextColor(backcolor);
-	LOOP(1) {				   			   
-		GLCD_PutPixel(x, last[x]);
+	LOOP(1) {				   		
+		int l = last[x];
+		Y;
+		last[x] = y;
+		if (l != y) {
+			GLCD_PutPixel(x, l);
+		}
 	}
 	
 	GLCD_SetTextColor(forecolor);
 	LOOP(1) {
-		Y;
-		last[x] = y;			   
-		GLCD_PutPixel(x, y);
+		GLCD_PutPixel(x, last[x]);
 	}
 
 
 	// Not needed, but may help with things sometimes.
     GLCD_WindowMax();
+	
+	DBGbit(0, 0);
 }
 
 void lcdText(TextLCDMsg*text) {

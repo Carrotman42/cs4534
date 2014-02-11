@@ -11,7 +11,7 @@
 //   algorithm for the lcd depends on it.
 #define SIGNAL_SAMPLES (LCDWIDTH)
 typedef struct {
-	short data[LCDWIDTH];
+	char data[LCDWIDTH];
 } SignalLCDMsg;
 
 #define CHARS 320/16

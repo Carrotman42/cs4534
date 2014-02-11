@@ -7,7 +7,7 @@ void InitDBG();
 
 // Will write a number in binary. Will fail if the number of bits required was
 //    not requested in InitDGB(). Note that this value is hardcoded.
-void DBGval(unsigned value);
+void DBGbit(unsigned bitnum, int on);
 
 
 #endif

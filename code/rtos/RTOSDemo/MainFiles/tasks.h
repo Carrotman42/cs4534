@@ -16,7 +16,7 @@ TASK_PROTOTYPE_NOARG(TestSignalTask, 200, tskIDLE_PRIORITY);
 #endif
 
 #ifdef SENSOR_TASKS
-TIMER_PROTOTYPE_NOARG(PumpSensor, 500/portTICK_RATE_MS);
+TIMER_PROTOTYPE_NOARG(PumpSensor, 200/portTICK_RATE_MS);
 #endif
 
 #endif

@@ -2,9 +2,6 @@
 #ifndef KLCD_H_INC
 #define KLCD_H_INC
 
-void LCDinit();
-
-void StartSignalTest();
 void StartLCD();
 
 

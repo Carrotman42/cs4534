@@ -12,7 +12,7 @@
 #define vtI2CInitSuccess 0
 
 // The maximum length of a message to be sent/received over I2C 
-#define vtI2CMLen 64
+#define vtI2CMLen 128
 
 // Structure that is used to define the operate of an I2C peripheral using the vtI2C routines
 //   It should be initialized by vtI2CInit() and then not changed by anything... ever
