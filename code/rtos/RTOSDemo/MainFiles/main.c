@@ -190,7 +190,7 @@ static vtLCDStruct vtLCDdata;
 
 // all milestone-specific code for milestone 1. Will just be tasks starting and whatnot.
 void StartMilestone1() {
-	StartSignalTest();
+	StartLCD();
 	StartSensorTasks();
 }
 

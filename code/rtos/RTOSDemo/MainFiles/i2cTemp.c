@@ -45,7 +45,7 @@ static portTASK_FUNCTION_PROTO( vi2cTempUpdateTask, pvParameters );
 
 /*-----------------------------------------------------------*/
 // Public API
-void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c)
+void vStarti2cTempTaskp(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c)
 {
 	// Create the queue that will be used to talk to this task
 	if ((params->inQ = xQueueCreate(vtTempQLen,sizeof(vtTempMsg))) == NULL) {
@@ -59,7 +59,7 @@ void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, v
 	}
 }
 
-portBASE_TYPE SendTempTimerMsg(vtTempStruct *tempData,portTickType ticksElapsed,portTickType ticksToBlock)
+portBASE_TYPE SendTempTimerMsga(vtTempStruct *tempData,portTickType ticksElapsed,portTickType ticksToBlock)
 {
 	if (tempData == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
@@ -151,17 +151,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		}
 
 		int msgT = getMsgType(&msgBuffer);
-		{
-			char buf[4];
-			buf[0] = 'T';
-			buf[1] = '0' + msgT;
-			buf[2] = '0' + currentState;
-			buf[3] = 0;
-			LCDwriteLn(0, buf);
-		}
 		
 		if (currentState < 4) {
-			DBGval(currentState);
+			//DBGval(currentState);
 		}
 		// Now, based on the type of the message and the state, we decide on the new state and action to take
 		switch(msgT) {
