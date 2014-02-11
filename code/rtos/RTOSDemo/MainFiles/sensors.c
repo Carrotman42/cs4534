@@ -26,7 +26,8 @@ void StartSensorTasks() {
 	// Temp sensor buffer (for milestone 1)
 	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,100000) != vtI2CInitSuccess);
 
-	START_TIMER(MakePumpSensor(), 0);
+	//START_TIMER(MakePumpSensor(), 0);
+	StartPumpSensor();
 	vStartConductorTask(&conduct, tskIDLE_PRIORITY, &vtI2C0, &vtTemp);
 }
 
@@ -43,10 +44,14 @@ void SendADRequest(vtI2CStruct* dest) {
 
 
 
-TIMER_FUNC_NOARG(PumpSensor) {
-	DBGbit(1, 1);
-	SendADRequest(&vtI2C0);
-	DBGbit(1, 0);
-} ENDTIMER
+TASK_FUNC_NOARG(PumpSensor) {
+	for (;;) {
+		DBGbit(1, 1);
+		SendADRequest(&vtI2C0);
+		DBGbit(1, 0);
+		vTaskDelay(100/portTICK_RATE_MS);
+	}
+} ENDTASK
+
 
 

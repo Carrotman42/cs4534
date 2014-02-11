@@ -167,6 +167,7 @@ portBASE_TYPE vtI2CEnQ(vtI2CStruct *dev,uint8_t msgType,uint8_t slvAddr,uint8_t 
 	return(xQueueSend(dev->inQ,(void *) (&msgBuf),portMAX_DELAY));
 }
 
+#include "kdbg.h"
 // A simple routine to use for retrieving a message from the I2C thread
 portBASE_TYPE vtI2CDeQ(vtI2CStruct *dev,uint8_t maxRxLen,uint8_t *rxBuf,uint8_t *rxLen,uint8_t *msgType,uint8_t *status)
 {
@@ -233,6 +234,7 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		if (xQueueReceive(devPtr->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
 		}
+		DBGbit(1, 1);
 		//Log that we are processing a message
 		vtITMu8(vtITMPortI2CMsg,msgBuffer.msgType);
 
@@ -256,7 +258,8 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		// First, copy over the buffer that was received (if any)
 		for (i=0;i<msgBuffer.rxLen;i++) {
 			msgBuffer.buf[i] = tmpRxBuf[i];
-		}
+		}		 
+		DBGbit(1, 0);
 		// now put a message in the message queue
 		if (xQueueSend(devPtr->outQ,(void*)(&msgBuffer),portMAX_DELAY) != pdTRUE) {
 			// something went wrong 

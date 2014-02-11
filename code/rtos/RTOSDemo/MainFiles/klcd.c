@@ -250,6 +250,14 @@ TASK_FUNC(LCDTask, LCDBuf, bufs) {
 
 	LCDMsg allocd[2];
 	int i;
+	// Use this to clear the screen:
+	{
+		char* d = allocd->signal.data;
+		for (i = 0; i < SIGNAL_SAMPLES; i++) {
+		 	d[i] = 0;
+		}
+		lcdSignal(&allocd->signal);
+	}
 	for (i = 0; i < sizeof allocd / sizeof(LCDMsg); i++) {
 	 	LCDMsg* h = &allocd[i];		
 		SEND(bufs->freed, h);

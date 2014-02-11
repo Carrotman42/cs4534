@@ -19,6 +19,15 @@
 /* The i2cTemp task. */
 static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
 
+
+#include "armcommon.h"
+#include "brain_rover.h"
+#include "klcd.h"
+
+#define LCD_REFRESH_RATE
+#ifdef LCD_REFRESH_RATE					 
+TIMER_PROTOTYPE_NOARG(CopyToLCDTimer, 250/portTICK_RATE_MS);
+#endif	
 /*-----------------------------------------------------------*/
 // Public API
 void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature)
@@ -30,19 +39,37 @@ void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPrio
 	if ((retval = xTaskCreate( vConductorUpdateTask, ( signed char * ) "Conductor", 1000, (void *) params, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
+	
+#ifdef LCD_REFRESH_RATE
+	START_TIMER(MakeCopyToLCDTimer(), 0);
+#endif
 }
 
 // End of Public API
 /*-----------------------------------------------------------*/
 
-#include "armcommon.h"
-#include "brain_rover.h"
-#include "klcd.h"
+
+#define SAVED_SIZE SIGNAL_SAMPLES
+static char saved[SAVED_SIZE] = {0};
+static int savedPos = 0;
+
+void copyToLCD() {
+	static int times = 0;
+	times = (times + 1) % 1;
+	if (times == 0) {
+		// Copy the full saved buffer to the signal buffer
+		SignalLCDMsg* msg = LCDgetSignalBuffer(); 
+		char* dest = &(msg->data[0]);
+		char* end = &(msg->data[SAVED_SIZE]);
+		char* src = &saved[0];
+		while (dest != end) {
+			*dest++ = *src++;
+		}
+		LCDcommitBuffer(msg);
+	}
+}
 
 int handleAD(sensorADData* data, int len) {
-	#define SAVED_SIZE SIGNAL_SAMPLES
-	static char saved[SAVED_SIZE] = {0};
-	static int savedPos = 0;
 	
 	/* COPY/WRAP code
 	{
@@ -89,22 +116,19 @@ int handleAD(sensorADData* data, int len) {
 		}
 	} // */
 	
-	static int times = 0;
-	times = (times + 1) % 1;
-	if (times == 0) {
-		// Copy the full saved buffer to the signal buffer
-		SignalLCDMsg* msg = LCDgetSignalBuffer(); 
-		char* dest = &(msg->data[0]);
-		char* end = &(msg->data[SAVED_SIZE]);
-		char* src = &saved[0];
-		while (dest != end) {
-			*dest++ = *src++;
-		}
-		LCDcommitBuffer(msg);
-	}
+
+#ifndef LCD_REFRESH_RATE
+	copyToLCD();
+#endif
 	return 0;
 	#undef SAVED_SIZE
 }
+
+#ifdef LCD_REFRESH_RATE
+TIMER_FUNC_NOARG(CopyToLCDTimer) {
+	copyToLCD();
+} ENDTIMER
+#endif
 
 RoverMsgRouter Conductor = {
 	handleAD,
