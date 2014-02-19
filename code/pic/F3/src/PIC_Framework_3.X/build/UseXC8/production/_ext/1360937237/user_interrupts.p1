@@ -4626,18 +4626,20 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;brain_rover.h: 40: uint8 payloadLen;
 [; ;brain_rover.h: 44: char payload[];
 [; ;brain_rover.h: 45: } RoverMsg;
-[; ;my_i2c.h: 12: typedef struct __i2c_comm {
-[; ;my_i2c.h: 13: unsigned char buffer[10];
-[; ;my_i2c.h: 14: unsigned char buflen;
-[; ;my_i2c.h: 15: unsigned char event_count;
-[; ;my_i2c.h: 16: unsigned char status;
-[; ;my_i2c.h: 17: unsigned char error_code;
-[; ;my_i2c.h: 18: unsigned char error_count;
-[; ;my_i2c.h: 19: unsigned char outbuffer[100 + 3];
-[; ;my_i2c.h: 20: unsigned char outbuflen;
-[; ;my_i2c.h: 21: unsigned char outbufind;
-[; ;my_i2c.h: 22: unsigned char baud_rate;
-[; ;my_i2c.h: 23: } i2c_comm;
+[; ;my_i2c.h: 26: typedef struct __i2c_comm {
+[; ;my_i2c.h: 27: unsigned char buffer[10];
+[; ;my_i2c.h: 28: unsigned char buflen;
+[; ;my_i2c.h: 29: unsigned char event_count;
+[; ;my_i2c.h: 30: unsigned char status;
+[; ;my_i2c.h: 31: unsigned char error_code;
+[; ;my_i2c.h: 32: unsigned char error_count;
+[; ;my_i2c.h: 33: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 34: unsigned char outbuflen;
+[; ;my_i2c.h: 35: unsigned char outbufind;
+[; ;my_i2c.h: 36: unsigned char slave_addr;
+[; ;my_i2c.h: 37: } i2c_comm;
+[; ;my_i2c.h: 40: void start_i2c_slave_reply(unsigned char,unsigned char *);
+[; ;my_i2c.h: 41: void i2c_configure_slave(unsigned char);
 [; ;my_i2c.h: 58: void init_i2c(i2c_comm *);
 [; ;my_i2c.h: 59: void i2c_int_handler(void);
 [; ;my_i2c.h: 60: void i2c_configure_master(unsigned char);
