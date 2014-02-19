@@ -48,16 +48,6 @@ typedef struct {
 // END FLAGS
 
 
-// HEY DAVE, this is YOURS!
-/*
-void sendADdata(sensorADData*data, int len) {
-	char outBuff[100]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
-	packADData(len, data, outBuff, sizeof(outBuff));
-	
-	startI2Creply(outBuff);
-}*/
-
-
 
 
 

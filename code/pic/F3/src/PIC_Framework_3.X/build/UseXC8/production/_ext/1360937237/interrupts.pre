@@ -5971,7 +5971,46 @@ unsigned char buflen;
 void init_uart_recv(uart_comm *);
 void uart_recv_int_handler(void);
 
-# 11 "../src/my_i2c.h"
+# 8 "../src/../../../../common/communication/../sensor_types.h"
+typedef char uint8;
+typedef short uint16;
+
+
+typedef struct {
+uint8 data;
+} sensorADData;
+
+# 10 "../src/../../../../common/communication/brain_rover.h"
+typedef struct {
+uint8 flags;
+uint8 sensorMask;
+} BrainMsg;
+
+typedef struct {
+int (*adFunc)(sensorADData* data, int len);
+} RoverMsgRouter;
+
+# 24
+int packADData(sensorADData* data, int len, char* out, int maxout);
+int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+BrainMsg* unpackBrainMsg(char *buf);
+
+# 34
+typedef struct {
+uint8 flags;
+uint8 sensorID;
+
+
+
+uint8 payloadLen;
+
+
+
+char payload[];
+} RoverMsg;
+
+# 12 "../src/my_i2c.h"
 typedef struct __i2c_comm {
 unsigned char buffer[10];
 unsigned char buflen;
@@ -5985,7 +6024,7 @@ unsigned char outbufind;
 unsigned char baud_rate;
 } i2c_comm;
 
-# 57
+# 58
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 void i2c_configure_master(unsigned char);

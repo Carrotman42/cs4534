@@ -1,7 +1,7 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"11 ../src/my_i2c.h
-[s S583 `uc -> 10 `i `uc 1 `uc 1 `uc 1 `uc 1 `uc 1 `uc + -> 100 `i -> 3 `i `uc 1 `uc 1 `uc 1 ]
-[n S583 __i2c_comm buffer buflen event_count status error_code error_count outbuffer outbuflen outbufind baud_rate ]
+"12 ../src/my_i2c.h
+[s S587 `uc -> 10 `i `uc 1 `uc 1 `uc 1 `uc 1 `uc 1 `uc + -> 100 `i -> 3 `i `uc 1 `uc 1 `uc 1 ]
+[n S587 __i2c_comm buffer buflen event_count status error_code error_count outbuffer outbuflen outbufind baud_rate ]
 [s S372 :4 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S372 . SSPM CKP SSPEN SSPOV WCOL ]
 [s S373 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
@@ -4619,43 +4619,60 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;messages.h: 72: signed char FromMainLow_recvmsg(unsigned char,unsigned char *,void *);
 [; ;messages.h: 78: signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
 [; ;messages.h: 79: signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
-[; ;my_i2c.h: 11: typedef struct __i2c_comm {
-[; ;my_i2c.h: 12: unsigned char buffer[10];
-[; ;my_i2c.h: 13: unsigned char buflen;
-[; ;my_i2c.h: 14: unsigned char event_count;
-[; ;my_i2c.h: 15: unsigned char status;
-[; ;my_i2c.h: 16: unsigned char error_code;
-[; ;my_i2c.h: 17: unsigned char error_count;
-[; ;my_i2c.h: 18: unsigned char outbuffer[100 + 3];
-[; ;my_i2c.h: 19: unsigned char outbuflen;
-[; ;my_i2c.h: 20: unsigned char outbufind;
-[; ;my_i2c.h: 21: unsigned char baud_rate;
-[; ;my_i2c.h: 22: } i2c_comm;
-[; ;my_i2c.h: 57: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 58: void i2c_int_handler(void);
-[; ;my_i2c.h: 59: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 60: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 61: unsigned char i2c_master_recv(unsigned char);
-[; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
-[; ;debug.h: 10: void setDBG(unsigned char );
-[; ;debug.h: 11: void resetDBG(unsigned char );
-[; ;debug.h: 12: void flipDBG(unsigned char );
-[; ;debug.h: 13: void debugNum(int );
 [; ;sensor_types.h: 8: typedef char uint8;
 [; ;sensor_types.h: 9: typedef short uint16;
 [; ;sensor_types.h: 12: typedef struct {
 [; ;sensor_types.h: 13: uint8 data;
 [; ;sensor_types.h: 14: } sensorADData;
+[; ;brain_rover.h: 10: typedef struct {
+[; ;brain_rover.h: 11: uint8 flags;
+[; ;brain_rover.h: 12: uint8 sensorMask;
+[; ;brain_rover.h: 13: } BrainMsg;
+[; ;brain_rover.h: 15: typedef struct {
+[; ;brain_rover.h: 16: int (*adFunc)(sensorADData* data, int len);
+[; ;brain_rover.h: 17: } RoverMsgRouter;
+[; ;brain_rover.h: 24: int packADData(sensorADData* data, int len, char* out, int maxout);
+[; ;brain_rover.h: 25: int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+[; ;brain_rover.h: 26: void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+[; ;brain_rover.h: 27: BrainMsg* unpackBrainMsg(char *buf);
+[; ;brain_rover.h: 34: typedef struct {
+[; ;brain_rover.h: 35: uint8 flags;
+[; ;brain_rover.h: 36: uint8 sensorID;
+[; ;brain_rover.h: 40: uint8 payloadLen;
+[; ;brain_rover.h: 44: char payload[];
+[; ;brain_rover.h: 45: } RoverMsg;
+[; ;my_i2c.h: 12: typedef struct __i2c_comm {
+[; ;my_i2c.h: 13: unsigned char buffer[10];
+[; ;my_i2c.h: 14: unsigned char buflen;
+[; ;my_i2c.h: 15: unsigned char event_count;
+[; ;my_i2c.h: 16: unsigned char status;
+[; ;my_i2c.h: 17: unsigned char error_code;
+[; ;my_i2c.h: 18: unsigned char error_count;
+[; ;my_i2c.h: 19: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 20: unsigned char outbuflen;
+[; ;my_i2c.h: 21: unsigned char outbufind;
+[; ;my_i2c.h: 22: unsigned char baud_rate;
+[; ;my_i2c.h: 23: } i2c_comm;
+[; ;my_i2c.h: 58: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 59: void i2c_int_handler(void);
+[; ;my_i2c.h: 60: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 61: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 62: unsigned char i2c_master_recv(unsigned char);
+[; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+[; ;debug.h: 10: void setDBG(unsigned char );
+[; ;debug.h: 11: void resetDBG(unsigned char );
+[; ;debug.h: 12: void flipDBG(unsigned char );
+[; ;debug.h: 13: void debugNum(int );
 [; ;testAD.h: 7: void reqADData();
 "19 ../src/my_i2c.c
-[v _ic_ptr `*S583 ~T0 @X0 1 s ]
+[v _ic_ptr `*S587 ~T0 @X0 1 s ]
 [; ;my_i2c.c: 19: static i2c_comm *ic_ptr;
 "23
-[v _init_i2c `(v ~T0 @X0 1 ef1`*S583 ]
+[v _init_i2c `(v ~T0 @X0 1 ef1`*S587 ]
 {
 [; ;my_i2c.c: 23: void init_i2c(i2c_comm *ic) {
 [e :U _init_i2c ]
-[v _ic `*S583 ~T0 @X0 1 r1 ]
+[v _ic `*S587 ~T0 @X0 1 r1 ]
 [f ]
 [; ;my_i2c.c: 24: ic_ptr = ic;
 "24
@@ -4674,7 +4691,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e = . *U _ic_ptr 5 -> -> 0 `i `uc ]
 [; ;my_i2c.c: 29: }
 "29
-[e :UE 585 ]
+[e :UE 588 ]
 }
 "36
 [v _i2c_configure_master `(v ~T0 @X0 1 ef1`uc ]
@@ -4694,7 +4711,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e = . *U _ic_ptr 9 -> - / -> _fosc `l * -> -> 4 `i `l -> 100000 `l -> -> 1 `i `l `uc ]
 [; ;my_i2c.c: 40: }
 "40
-[e :UE 586 ]
+[e :UE 589 ]
 }
 "53
 [v _i2c_master_send `(uc ~T0 @X0 1 ef2`uc`*uc ]
@@ -4707,10 +4724,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.c: 55: return(0);
 "55
 [e ) -> -> 0 `i `uc ]
-[e $UE 587  ]
+[e $UE 590  ]
 [; ;my_i2c.c: 56: }
 "56
-[e :UE 587 ]
+[e :UE 590 ]
 }
 "71
 [v _i2c_master_recv `(uc ~T0 @X0 1 ef1`uc ]
@@ -4722,10 +4739,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.c: 73: return(0);
 "73
 [e ) -> -> 0 `i `uc ]
-[e $UE 588  ]
+[e $UE 591  ]
 [; ;my_i2c.c: 74: }
 "74
-[e :UE 588 ]
+[e :UE 591 ]
 }
 "78
 [v _i2c_int_handler `(v ~T0 @X0 1 ef ]
@@ -4735,5 +4752,5 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;my_i2c.c: 80: }
 "80
-[e :UE 589 ]
+[e :UE 592 ]
 }

@@ -4604,23 +4604,45 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_uart.h: 13: } uart_comm;
 [; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
 [; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_i2c.h: 11: typedef struct __i2c_comm {
-[; ;my_i2c.h: 12: unsigned char buffer[10];
-[; ;my_i2c.h: 13: unsigned char buflen;
-[; ;my_i2c.h: 14: unsigned char event_count;
-[; ;my_i2c.h: 15: unsigned char status;
-[; ;my_i2c.h: 16: unsigned char error_code;
-[; ;my_i2c.h: 17: unsigned char error_count;
-[; ;my_i2c.h: 18: unsigned char outbuffer[100 + 3];
-[; ;my_i2c.h: 19: unsigned char outbuflen;
-[; ;my_i2c.h: 20: unsigned char outbufind;
-[; ;my_i2c.h: 21: unsigned char baud_rate;
-[; ;my_i2c.h: 22: } i2c_comm;
-[; ;my_i2c.h: 57: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 58: void i2c_int_handler(void);
-[; ;my_i2c.h: 59: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 60: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 61: unsigned char i2c_master_recv(unsigned char);
+[; ;sensor_types.h: 8: typedef char uint8;
+[; ;sensor_types.h: 9: typedef short uint16;
+[; ;sensor_types.h: 12: typedef struct {
+[; ;sensor_types.h: 13: uint8 data;
+[; ;sensor_types.h: 14: } sensorADData;
+[; ;brain_rover.h: 10: typedef struct {
+[; ;brain_rover.h: 11: uint8 flags;
+[; ;brain_rover.h: 12: uint8 sensorMask;
+[; ;brain_rover.h: 13: } BrainMsg;
+[; ;brain_rover.h: 15: typedef struct {
+[; ;brain_rover.h: 16: int (*adFunc)(sensorADData* data, int len);
+[; ;brain_rover.h: 17: } RoverMsgRouter;
+[; ;brain_rover.h: 24: int packADData(sensorADData* data, int len, char* out, int maxout);
+[; ;brain_rover.h: 25: int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+[; ;brain_rover.h: 26: void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+[; ;brain_rover.h: 27: BrainMsg* unpackBrainMsg(char *buf);
+[; ;brain_rover.h: 34: typedef struct {
+[; ;brain_rover.h: 35: uint8 flags;
+[; ;brain_rover.h: 36: uint8 sensorID;
+[; ;brain_rover.h: 40: uint8 payloadLen;
+[; ;brain_rover.h: 44: char payload[];
+[; ;brain_rover.h: 45: } RoverMsg;
+[; ;my_i2c.h: 12: typedef struct __i2c_comm {
+[; ;my_i2c.h: 13: unsigned char buffer[10];
+[; ;my_i2c.h: 14: unsigned char buflen;
+[; ;my_i2c.h: 15: unsigned char event_count;
+[; ;my_i2c.h: 16: unsigned char status;
+[; ;my_i2c.h: 17: unsigned char error_code;
+[; ;my_i2c.h: 18: unsigned char error_count;
+[; ;my_i2c.h: 19: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 20: unsigned char outbuflen;
+[; ;my_i2c.h: 21: unsigned char outbufind;
+[; ;my_i2c.h: 22: unsigned char baud_rate;
+[; ;my_i2c.h: 23: } i2c_comm;
+[; ;my_i2c.h: 58: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 59: void i2c_int_handler(void);
+[; ;my_i2c.h: 60: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 61: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 62: unsigned char i2c_master_recv(unsigned char);
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
@@ -4634,7 +4656,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;user_interrupts.c: 24: }
 "24
-[e :UE 585 ]
+[e :UE 589 ]
 }
 "29
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
@@ -4653,5 +4675,5 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
 [; ;user_interrupts.c: 42: }
 "42
-[e :UE 586 ]
+[e :UE 590 ]
 }

@@ -39,7 +39,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S222 . . . ]
 "3673
 [v _PIR1bits `VS222 ~T0 @X0 0 e@3998 ]
-"58 ../src/my_i2c.h
+"59 ../src/my_i2c.h
 [v _i2c_int_handler `(v ~T0 @X0 0 ef ]
 "10 ../src/user_interrupts.h
 [v _timer0_int_handler `(v ~T0 @X0 0 ef ]
@@ -4651,23 +4651,45 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_uart.h: 13: } uart_comm;
 [; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
 [; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_i2c.h: 11: typedef struct __i2c_comm {
-[; ;my_i2c.h: 12: unsigned char buffer[10];
-[; ;my_i2c.h: 13: unsigned char buflen;
-[; ;my_i2c.h: 14: unsigned char event_count;
-[; ;my_i2c.h: 15: unsigned char status;
-[; ;my_i2c.h: 16: unsigned char error_code;
-[; ;my_i2c.h: 17: unsigned char error_count;
-[; ;my_i2c.h: 18: unsigned char outbuffer[100 + 3];
-[; ;my_i2c.h: 19: unsigned char outbuflen;
-[; ;my_i2c.h: 20: unsigned char outbufind;
-[; ;my_i2c.h: 21: unsigned char baud_rate;
-[; ;my_i2c.h: 22: } i2c_comm;
-[; ;my_i2c.h: 57: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 58: void i2c_int_handler(void);
-[; ;my_i2c.h: 59: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 60: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 61: unsigned char i2c_master_recv(unsigned char);
+[; ;sensor_types.h: 8: typedef char uint8;
+[; ;sensor_types.h: 9: typedef short uint16;
+[; ;sensor_types.h: 12: typedef struct {
+[; ;sensor_types.h: 13: uint8 data;
+[; ;sensor_types.h: 14: } sensorADData;
+[; ;brain_rover.h: 10: typedef struct {
+[; ;brain_rover.h: 11: uint8 flags;
+[; ;brain_rover.h: 12: uint8 sensorMask;
+[; ;brain_rover.h: 13: } BrainMsg;
+[; ;brain_rover.h: 15: typedef struct {
+[; ;brain_rover.h: 16: int (*adFunc)(sensorADData* data, int len);
+[; ;brain_rover.h: 17: } RoverMsgRouter;
+[; ;brain_rover.h: 24: int packADData(sensorADData* data, int len, char* out, int maxout);
+[; ;brain_rover.h: 25: int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
+[; ;brain_rover.h: 26: void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
+[; ;brain_rover.h: 27: BrainMsg* unpackBrainMsg(char *buf);
+[; ;brain_rover.h: 34: typedef struct {
+[; ;brain_rover.h: 35: uint8 flags;
+[; ;brain_rover.h: 36: uint8 sensorID;
+[; ;brain_rover.h: 40: uint8 payloadLen;
+[; ;brain_rover.h: 44: char payload[];
+[; ;brain_rover.h: 45: } RoverMsg;
+[; ;my_i2c.h: 12: typedef struct __i2c_comm {
+[; ;my_i2c.h: 13: unsigned char buffer[10];
+[; ;my_i2c.h: 14: unsigned char buflen;
+[; ;my_i2c.h: 15: unsigned char event_count;
+[; ;my_i2c.h: 16: unsigned char status;
+[; ;my_i2c.h: 17: unsigned char error_code;
+[; ;my_i2c.h: 18: unsigned char error_count;
+[; ;my_i2c.h: 19: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 20: unsigned char outbuflen;
+[; ;my_i2c.h: 21: unsigned char outbufind;
+[; ;my_i2c.h: 22: unsigned char baud_rate;
+[; ;my_i2c.h: 23: } i2c_comm;
+[; ;my_i2c.h: 58: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 59: void i2c_int_handler(void);
+[; ;my_i2c.h: 60: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 61: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 62: unsigned char i2c_master_recv(unsigned char);
 [; ;my_adc.h: 8: void init_adc();
 [; ;my_adc.h: 9: void adc_int_handler();
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
@@ -4692,7 +4714,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e = . . _INTCONbits 2 6 -> -> 1 `i `uc ]
 [; ;interrupts.c: 22: }
 "22
-[e :UE 585 ]
+[e :UE 589 ]
 }
 "24
 [v _in_high_int `(i ~T0 @X0 1 ef ]
@@ -4703,10 +4725,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;interrupts.c: 25: return (!INTCONbits.GIEH);
 "25
 [e ) -> ! != -> . . _INTCONbits 2 7 `i -> -> -> 0 `i `Vuc `i `i ]
-[e $UE 586  ]
+[e $UE 590  ]
 [; ;interrupts.c: 26: }
 "26
-[e :UE 586 ]
+[e :UE 590 ]
 }
 "28
 [v _low_int_active `(i ~T0 @X0 1 ef ]
@@ -4717,10 +4739,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;interrupts.c: 29: return (!INTCONbits.GIEL);
 "29
 [e ) -> ! != -> . . _INTCONbits 2 6 `i -> -> -> 0 `i `Vuc `i `i ]
-[e $UE 587  ]
+[e $UE 591  ]
 [; ;interrupts.c: 30: }
 "30
-[e :UE 587 ]
+[e :UE 591 ]
 }
 "32
 [v _in_low_int `(i ~T0 @X0 1 ef ]
@@ -4730,41 +4752,41 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;interrupts.c: 33: if (INTCONbits.GIEL == 1) {
 "33
-[e $ ! == -> . . _INTCONbits 2 6 `i -> 1 `i 589  ]
+[e $ ! == -> . . _INTCONbits 2 6 `i -> 1 `i 593  ]
 {
 [; ;interrupts.c: 34: return (0);
 "34
 [e ) -> 0 `i ]
-[e $UE 588  ]
+[e $UE 592  ]
 "35
 }
 [; ;interrupts.c: 35: } else if (in_high_int()) {
-[e $U 590  ]
-[e :U 589 ]
-[e $ ! != ( _in_high_int ..  -> 0 `i 591  ]
+[e $U 594  ]
+[e :U 593 ]
+[e $ ! != ( _in_high_int ..  -> 0 `i 595  ]
 {
 [; ;interrupts.c: 36: return (0);
 "36
 [e ) -> 0 `i ]
-[e $UE 588  ]
+[e $UE 592  ]
 "37
 }
 [; ;interrupts.c: 37: } else {
-[e $U 592  ]
-[e :U 591 ]
+[e $U 596  ]
+[e :U 595 ]
 {
 [; ;interrupts.c: 38: return (1);
 "38
 [e ) -> 1 `i ]
-[e $UE 588  ]
+[e $UE 592  ]
 "39
 }
-[e :U 592 ]
-[e :U 590 ]
+[e :U 596 ]
+[e :U 594 ]
 [; ;interrupts.c: 39: }
 [; ;interrupts.c: 40: }
 "40
-[e :UE 588 ]
+[e :UE 592 ]
 }
 "42
 [v _in_main `(i ~T0 @X0 1 ef ]
@@ -4774,33 +4796,33 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;interrupts.c: 43: if ((!in_low_int()) && (!in_high_int())) {
 "43
-[e $ ! && ! != ( _in_low_int ..  -> 0 `i ! != ( _in_high_int ..  -> 0 `i 594  ]
+[e $ ! && ! != ( _in_low_int ..  -> 0 `i ! != ( _in_high_int ..  -> 0 `i 598  ]
 {
 [; ;interrupts.c: 44: return (1);
 "44
 [e ) -> 1 `i ]
-[e $UE 593  ]
+[e $UE 597  ]
 "45
 }
 [; ;interrupts.c: 45: } else {
-[e $U 595  ]
-[e :U 594 ]
+[e $U 599  ]
+[e :U 598 ]
 {
 [; ;interrupts.c: 46: return (0);
 "46
 [e ) -> 0 `i ]
-[e $UE 593  ]
+[e $UE 597  ]
 "47
 }
-[e :U 595 ]
+[e :U 599 ]
 [; ;interrupts.c: 47: }
 [; ;interrupts.c: 48: }
 "48
-[e :UE 593 ]
+[e :UE 597 ]
 }
-[v F5114 `(v ~T0 @X0 1 tf ]
+[v F5149 `(v ~T0 @X0 1 tf ]
 "85
-[v _InterruptHandlerHigh `IF5114 ~T0 @X0 1 e ]
+[v _InterruptHandlerHigh `IF5149 ~T0 @X0 1 e ]
 {
 [; ;interrupts.c: 80: interrupt
 [; ;interrupts.c: 85: void InterruptHandlerHigh() {
@@ -4808,7 +4830,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;interrupts.c: 90: if (PIR1bits.SSPIF) {
 "90
-[e $ ! != -> . . _PIR1bits 1 1 `i -> -> -> 0 `i `Vuc `i 597  ]
+[e $ ! != -> . . _PIR1bits 1 1 `i -> -> -> 0 `i `Vuc `i 601  ]
 {
 [; ;interrupts.c: 92: PIR1bits.SSPIF = 0;
 "92
@@ -4818,11 +4840,11 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ( _i2c_int_handler ..  ]
 "95
 }
-[e :U 597 ]
+[e :U 601 ]
 [; ;interrupts.c: 95: }
 [; ;interrupts.c: 98: if (INTCONbits.TMR0IF) {
 "98
-[e $ ! != -> . . _INTCONbits 0 2 `i -> -> -> 0 `i `Vuc `i 598  ]
+[e $ ! != -> . . _INTCONbits 0 2 `i -> -> -> 0 `i `Vuc `i 602  ]
 {
 [; ;interrupts.c: 99: INTCONbits.TMR0IF = 0;
 "99
@@ -4832,18 +4854,18 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e ( _timer0_int_handler ..  ]
 "102
 }
-[e :U 598 ]
+[e :U 602 ]
 [; ;interrupts.c: 102: }
 [; ;interrupts.c: 111: SleepIfOkay();
 "111
 [e ( _SleepIfOkay ..  ]
 [; ;interrupts.c: 112: }
 "112
-[e :UE 596 ]
+[e :UE 600 ]
 }
-[v F5116 `(v ~T0 @X0 1 tf ]
+[v F5151 `(v ~T0 @X0 1 tf ]
 "124
-[v _InterruptHandlerLow `ILF5116 ~T0 @X0 1 e ]
+[v _InterruptHandlerLow `ILF5151 ~T0 @X0 1 e ]
 {
 [; ;interrupts.c: 119: interrupt low_priority
 [; ;interrupts.c: 124: void InterruptHandlerLow() {
@@ -4851,5 +4873,5 @@ Version 3.2 HI-TECH Software Intermediate Code
 [f ]
 [; ;interrupts.c: 144: }
 "144
-[e :UE 599 ]
+[e :UE 603 ]
 }

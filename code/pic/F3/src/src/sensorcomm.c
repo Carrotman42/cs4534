@@ -1,13 +1,12 @@
+#include "sensorcomm.h"
+
 #ifdef SENSOR_PIC
 
-
-#include "sensorcomm.h"
 #include "../../../../common/sensor_types.h"
 #include "../../../../common/common.h"
 #include "testAD.h"
 #include "debug.h"
 #include "my_i2c.h"
-#include "maindefs.h"
 
 
 static BrainMsg BrainMsgRecv;
@@ -33,7 +32,7 @@ void sendRequestedData(){
 
 void sendADdata() {
     //readNum(1);
-	char outBuff[103]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
+	char outBuff[MAX_I2C_SENSOR_DATA_LEN + ROVERMSG_MEMBERS]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
         int bytes_packed = packADData( ADacc.data, ADacc.len, outBuff, sizeof(outBuff));
         if(bytes_packed == 0){
             //error
@@ -41,7 +40,7 @@ void sendADdata() {
         else{
             //char* dat = (char*) ADacc->data;
             //readNum((int)dat[0]);
-            start_i2c_slave_reply(103, outBuff);
+            start_i2c_slave_reply(MAX_I2C_SENSOR_DATA_LEN + ROVERMSG_MEMBERS, outBuff);
         }
 }
 

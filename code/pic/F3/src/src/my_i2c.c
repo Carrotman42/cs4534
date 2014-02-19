@@ -282,10 +282,12 @@ void i2c_int_handler() {
     }
 
     if (msg_ready) {
+
+        #ifdef SENSOR_PIC
         ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         setBrainReqData(ic_ptr->buffer);
         //ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
-
+        #endif
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
         error_buf[0] = ic_ptr->error_count;
@@ -295,19 +297,9 @@ void i2c_int_handler() {
         ic_ptr->error_count = 0;
     }
     if (msg_to_send) {
-        // send to the queue to *ask* for the data to be sent out
-        //ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) ic_ptr->buffer);
-/*#ifdef DEBUG_ON
-        reqADData();
-        ic_ptr->buffer[0] = 0;
-        ic_ptr->buffer[1] = 0;
-        ic_ptr->buffer[2] = 0;
-        ic_ptr->buffer[3] = 0;
-        ic_ptr->buffer[4] = 0;
-        ic_ptr->buflen = 0;
-#endif
-*/
+        #ifdef SENSOR_PIC
         sendRequestedData();
+        #endif
         msg_to_send = 0;
     }
 }

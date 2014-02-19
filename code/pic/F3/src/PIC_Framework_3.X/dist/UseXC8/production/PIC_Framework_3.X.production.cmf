@@ -11,7 +11,7 @@
 # All addresses and the length are given in unqualified hexadecimal
 # in delta units.  Any other numeric values are decimal.
 %PSECTS
-$C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+$C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 end_init CODE 0 A2 A2 4 1
 reset_vec CODE 0 0 0 4 1
 config CONFIG 0 7FF8 7FF8 6 1
@@ -183,47 +183,47 @@ $dist/UseXC8/production\PIC_Framework_3.X.production.obj
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":274 41C text7 CODE
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":280 426 text7 CODE
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":285 42E text7 CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3737 42E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3739 42E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3742 42E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3811 42E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3812 432 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3813 434 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3814 434 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3815 436 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3816 438 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3819 43A cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3820 43E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3821 440 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3822 440 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3823 442 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3824 444 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3827 446 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3828 44A cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3829 44C cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3830 44C cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3831 44E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3832 450 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3837 452 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3838 454 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3839 456 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3840 458 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3841 45A cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3842 45C cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3843 45E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3844 462 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3845 466 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3846 466 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3847 468 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3848 46C cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3849 46E cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3850 470 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3856 472 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3857 472 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3858 472 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3859 474 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3860 476 cinit CODE
-"C:\Users\Kindel\AppData\Local\Temp\s6go.":3861 478 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4023 42E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4025 42E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4028 42E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4097 42E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4098 432 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4099 434 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4100 434 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4101 436 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4102 438 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4105 43A cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4106 43E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4107 440 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4108 440 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4109 442 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4110 444 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4113 446 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4114 44A cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4115 44C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4116 44C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4117 44E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4118 450 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4123 452 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4124 454 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4125 456 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4126 458 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4127 45A cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4128 45C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4129 45E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4130 462 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4131 466 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4132 466 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4133 468 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4134 46C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4135 46E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4136 470 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4142 472 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4143 472 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4144 472 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4145 474 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4146 476 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5ig.":4147 478 cinit CODE
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":15 47C text2 CODE
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":18 47C text2 CODE
 "C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":19 48C text2 CODE
@@ -360,10 +360,10 @@ _LATB F8A 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __end_of_ToMainHigh_recvmsg 716 0 CODE 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of_ToMainHigh_recvmsg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _main 280 0 CODE 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-___sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+___sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 _timer0_int_handler 7BE 0 CODE 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 init_i2c@ic 24 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
-start A2 0 CODE 0 init C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+start A2 0 CODE 0 init C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 _MQ_Main_Willing_to_block 43 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _FromMainHigh_MQ 189 0 BANK1 1 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __end_of_timer0_int_handler 7C0 0 CODE 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -461,11 +461,11 @@ __Hdata 0 0 ABS 0 data dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Ldata 0 0 ABS 0 data dist/UseXC8/production\PIC_Framework_3.X.production.obj
 recv_msg@qmsg 3A 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __end_of_block_on_To_msgqueues 42E 0 CODE 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-stackhi 3FF 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+stackhi 3FF 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 _check_msg 716 0 CODE 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Htemp 0 0 COMRAM 1 temp dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Ltemp 0 0 COMRAM 1 temp dist/UseXC8/production\PIC_Framework_3.X.production.obj
-stacklo 1F5 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+stacklo 1F5 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __Hrbit 0 0 COMRAM 1 rbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Lrbit 0 0 COMRAM 1 rbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Hinit A2 0 CODE 0 init dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -614,8 +614,8 @@ __Lcinit 0 0 ABS 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
 ___aldiv A6 0 CODE 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __pcinit 42E 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
 main@length 187 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-__ramtop 400 0 RAM 0 ramtop C:\Users\Kindel\AppData\Local\Temp\s6go.obj
-__mediumconst 0 0 MEDIUMCONST 0 mediumconst C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+__ramtop 400 0 RAM 0 ramtop C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
+__mediumconst 0 0 MEDIUMCONST 0 mediumconst C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 ?_in_low_int 26 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of_init_queues 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of_main 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -667,7 +667,7 @@ __Ltext23 0 0 ABS 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.o
 __ptext13 6C2 0 CODE 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _ADCON0bits FC2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Htext14 0 0 ABS 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-___extmem_base 20000 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+___extmem_base 20000 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __Ltext14 0 0 ABS 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __ptext23 668 0 CODE 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Htext24 0 0 ABS 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -680,7 +680,7 @@ __Htext25 0 0 ABS 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.o
 __Ltext25 0 0 ABS 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __ptext15 1AE 0 CODE 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _FromMainLow_MQ 1BF 0 BANK1 1 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-___inthi_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+___inthi_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __Htext16 0 0 ABS 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Ltext16 0 0 ABS 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __ptext25 73A 0 CODE 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -695,7 +695,7 @@ __ptext17 75E 0 CODE 0 text17 dist/UseXC8/production\PIC_Framework_3.X.productio
 ToMainHigh_recvmsg@msgtype 3C 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of_i2c_configure_master 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __CFG_WDTEN$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
-___intlo_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+___intlo_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 _OSCCONbits FD3 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _INTCONbits FF2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Hend_init A6 0 CODE 0 end_init dist/UseXC8/production\PIC_Framework_3.X.production.obj
@@ -713,24 +713,24 @@ __Ljflash_buffer 7800 0 CODE 0 jflash_buffer dist/UseXC8/production\PIC_Framewor
 __end_of_init_queues 5B0 0 CODE 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 recv_msg@msgtype 31 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __CFG_CP0$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
-__smallconst 0 0 SMALLCONST 0 smallconst C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+__smallconst 0 0 SMALLCONST 0 smallconst C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __Hreset_vec 4 0 CODE 0 reset_vec dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Lreset_vec 0 0 CODE 0 reset_vec dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _in_low_int 63A 0 CODE 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of_enable_interrupts 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 memcpy@s1 26 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
-__accesstop 80 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+__accesstop 80 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __end_of_recv_msg 280 0 CODE 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __size_of___aldiv 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Hintcode_body 0 0 ABS 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __Lintcode_body 0 0 ABS 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __pintcode_body 350 0 CODE 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
 _enable_interrupts 7AA 0 CODE 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
-intlevel0 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+intlevel0 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __size_of_block_on_To_msgqueues 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
-intlevel1 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s6go.obj
-intlevel2 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s6go.obj
-intlevel3 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s6go.obj
+intlevel1 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
+intlevel2 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
+intlevel3 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5ig.obj
 __size_ofi2_in_high_int 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __HdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
 __LdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
