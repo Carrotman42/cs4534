@@ -165,59 +165,56 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;brain_rover.c: 49: len -= sizeof(RoverMsg);
 "49
 [e =- _len -> -> # `S4 `ui `i ]
-[; ;brain_rover.c: 51: if (len != msg->payloadLen) return 3;
-"51
-[e $ ! != _len -> . *U _msg 2 `i 14  ]
-[e ) -> 3 `i ]
-[e $UE 13  ]
-[e :U 14 ]
-[; ;brain_rover.c: 53: if (msg->flags & 1) {
+[; ;brain_rover.c: 53: len = msg->payloadLen;
 "53
-[e $ ! != & -> . *U _msg 0 `i -> 1 `i -> 0 `i 15  ]
+[e = _len -> . *U _msg 2 `i ]
+[; ;brain_rover.c: 59: if (msg->flags & 1) {
+"59
+[e $ ! != & -> . *U _msg 0 `i -> 1 `i -> 0 `i 14  ]
 {
-[; ;brain_rover.c: 54: switch (msg->sensorID) {
-"54
-[e $U 17  ]
+[; ;brain_rover.c: 60: switch (msg->sensorID) {
+"60
+[e $U 16  ]
 {
-[; ;brain_rover.c: 55: case 0:
-"55
-[e :U 18 ]
-[; ;brain_rover.c: 56: return handler->adFunc((sensorADData*)(msg->payload), len/sizeof(sensorADData));
-"56
+[; ;brain_rover.c: 61: case 0:
+"61
+[e :U 17 ]
+[; ;brain_rover.c: 62: return handler->adFunc((sensorADData*)(msg->payload), len/sizeof(sensorADData));
+"62
 [e ) ( *U . *U _handler 0 (2 , -> &U . *U _msg 3 `*S1 -> / -> _len `ui -> # `S1 `ui `i ]
 [e $UE 13  ]
-[; ;brain_rover.c: 57: default:
-"57
-[e :U 19 ]
-[; ;brain_rover.c: 59: return 2;
-"59
-[e ) -> 2 `i ]
+[; ;brain_rover.c: 63: default:
+"63
+[e :U 18 ]
+[; ;brain_rover.c: 65: return -2;
+"65
+[e ) -U -> 2 `i ]
 [e $UE 13  ]
-"60
+"66
 }
-[; ;brain_rover.c: 60: }
-[e $U 16  ]
-"54
-[e :U 17 ]
-[e [\ . *U _msg 1 , $ -> -> 0 `i `uc 18
- 19 ]
+[; ;brain_rover.c: 66: }
+[e $U 15  ]
 "60
 [e :U 16 ]
-"61
-}
-[; ;brain_rover.c: 61: } else {
-[e $U 20  ]
+[e [\ . *U _msg 1 , $ -> -> 0 `i `uc 17
+ 18 ]
+"66
 [e :U 15 ]
-{
-[; ;brain_rover.c: 63: return 1;
-"63
-[e ) -> 1 `i ]
-[e $UE 13  ]
-"64
+"67
 }
-[e :U 20 ]
-[; ;brain_rover.c: 64: }
-[; ;brain_rover.c: 65: }
-"65
+[; ;brain_rover.c: 67: } else {
+[e $U 19  ]
+[e :U 14 ]
+{
+[; ;brain_rover.c: 69: return -1;
+"69
+[e ) -U -> 1 `i ]
+[e $UE 13  ]
+"70
+}
+[e :U 19 ]
+[; ;brain_rover.c: 70: }
+[; ;brain_rover.c: 71: }
+"71
 [e :UE 13 ]
 }

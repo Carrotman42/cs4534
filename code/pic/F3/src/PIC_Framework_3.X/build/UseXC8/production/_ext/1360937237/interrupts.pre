@@ -5971,7 +5971,7 @@ unsigned char buflen;
 void init_uart_recv(uart_comm *);
 void uart_recv_int_handler(void);
 
-# 7 "../src/my_i2c.h"
+# 11 "../src/my_i2c.h"
 typedef struct __i2c_comm {
 unsigned char buffer[10];
 unsigned char buflen;
@@ -5979,17 +5979,15 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[103];
+unsigned char outbuffer[100 + 3];
 unsigned char outbuflen;
 unsigned char outbufind;
-unsigned char slave_addr;
+unsigned char baud_rate;
 } i2c_comm;
 
-# 32
+# 57
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
-void start_i2c_slave_reply(unsigned char,unsigned char *);
-void i2c_configure_slave(unsigned char);
 void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
@@ -6074,11 +6072,6 @@ interrupt low_priority
 # 124
 void InterruptHandlerLow() {
 
-if (PIR1bits.ADIF) {
-PIR1bits.ADIF = 0;
-adc_int_handler();
-}
-
-# 147
+# 144
 }
 

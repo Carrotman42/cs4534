@@ -1,31 +1,5 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"13 ../src/debug.h
-[v _debugNum `(v ~T0 @X0 0 ef1`i ]
-[s S322 :1 `uc 1 :1 `uc 1 ]
-[n S322 . . GO_NOT_DONE ]
-[s S323 :1 `uc 1 :1 `uc 1 :4 `uc 1 ]
-[n S323 . ADON GO_nDONE CHS ]
-[s S324 :1 `uc 1 :1 `uc 1 ]
-[n S324 . . GO_NOT_DONE ]
-[s S325 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S325 . . DONE CHS0 CHS1 CHS2 CHS3 . ADCAL ]
-[s S326 :1 `uc 1 :1 `uc 1 ]
-[n S326 . . GO_DONE ]
-[s S327 :1 `uc 1 :1 `uc 1 ]
-[n S327 . . GO ]
-[s S328 :1 `uc 1 :1 `uc 1 ]
-[n S328 . . NOT_DONE ]
-[s S329 :1 `uc 1 :1 `uc 1 ]
-[n S329 . . nDONE ]
-[s S330 :1 `uc 1 :1 `uc 1 ]
-[n S330 . . GODONE ]
-[u S321 `S322 1 `S323 1 `S324 1 `S325 1 `S326 1 `S327 1 `S328 1 `S329 1 `S330 1 ]
-[n S321 . . . . . . . . . . ]
-"5786 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
-[v _ADCON0bits `VS321 ~T0 @X0 0 e@4034 ]
-"121 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
-[v _WriteTimer0 `(v ~T0 @X0 0 ef1`ui ]
-"238
+"238 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
 [v _ReadTimer1 `(ui ~T0 @X0 0 ef ]
 "239
 [v _WriteTimer1 `(v ~T0 @X0 0 ef1`ui ]
@@ -4630,25 +4604,23 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_uart.h: 13: } uart_comm;
 [; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
 [; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_i2c.h: 7: typedef struct __i2c_comm {
-[; ;my_i2c.h: 8: unsigned char buffer[10];
-[; ;my_i2c.h: 9: unsigned char buflen;
-[; ;my_i2c.h: 10: unsigned char event_count;
-[; ;my_i2c.h: 11: unsigned char status;
-[; ;my_i2c.h: 12: unsigned char error_code;
-[; ;my_i2c.h: 13: unsigned char error_count;
-[; ;my_i2c.h: 14: unsigned char outbuffer[103];
-[; ;my_i2c.h: 15: unsigned char outbuflen;
-[; ;my_i2c.h: 16: unsigned char outbufind;
-[; ;my_i2c.h: 17: unsigned char slave_addr;
-[; ;my_i2c.h: 18: } i2c_comm;
-[; ;my_i2c.h: 32: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 33: void i2c_int_handler(void);
-[; ;my_i2c.h: 34: void start_i2c_slave_reply(unsigned char,unsigned char *);
-[; ;my_i2c.h: 35: void i2c_configure_slave(unsigned char);
-[; ;my_i2c.h: 36: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 37: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 38: unsigned char i2c_master_recv(unsigned char);
+[; ;my_i2c.h: 11: typedef struct __i2c_comm {
+[; ;my_i2c.h: 12: unsigned char buffer[10];
+[; ;my_i2c.h: 13: unsigned char buflen;
+[; ;my_i2c.h: 14: unsigned char event_count;
+[; ;my_i2c.h: 15: unsigned char status;
+[; ;my_i2c.h: 16: unsigned char error_code;
+[; ;my_i2c.h: 17: unsigned char error_count;
+[; ;my_i2c.h: 18: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 19: unsigned char outbuflen;
+[; ;my_i2c.h: 20: unsigned char outbufind;
+[; ;my_i2c.h: 21: unsigned char baud_rate;
+[; ;my_i2c.h: 22: } i2c_comm;
+[; ;my_i2c.h: 57: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 58: void i2c_int_handler(void);
+[; ;my_i2c.h: 59: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 60: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 61: unsigned char i2c_master_recv(unsigned char);
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
@@ -4660,35 +4632,26 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 17: void timer0_int_handler() {
 [e :U _timer0_int_handler ]
 [f ]
-[; ;user_interrupts.c: 18: debugNum(1);
-"18
-[e ( _debugNum (1 -> 1 `i ]
-[; ;user_interrupts.c: 21: ADCON0bits.GO = 1;
-"21
-[e = . . _ADCON0bits 5 1 -> -> 1 `i `uc ]
-[; ;user_interrupts.c: 31: WriteTimer0(0xFFFF-375);
-"31
-[e ( _WriteTimer0 (1 - -> 65535 `ui -> -> 375 `i `ui ]
-[; ;user_interrupts.c: 46: }
-"46
+[; ;user_interrupts.c: 24: }
+"24
 [e :UE 585 ]
 }
-"51
+"29
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;user_interrupts.c: 51: void timer1_int_handler() {
+[; ;user_interrupts.c: 29: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-"52
+"30
 [v _result `ui ~T0 @X0 1 a ]
-[; ;user_interrupts.c: 52: unsigned int result;
-[; ;user_interrupts.c: 59: result = ReadTimer1();
-"59
+[; ;user_interrupts.c: 30: unsigned int result;
+[; ;user_interrupts.c: 37: result = ReadTimer1();
+"37
 [e = _result ( _ReadTimer1 ..  ]
-[; ;user_interrupts.c: 63: WriteTimer1(0);
-"63
+[; ;user_interrupts.c: 41: WriteTimer1(0);
+"41
 [e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
-[; ;user_interrupts.c: 64: }
-"64
+[; ;user_interrupts.c: 42: }
+"42
 [e :UE 586 ]
 }

@@ -6029,7 +6029,7 @@ unsigned char buflen;
 void init_uart_recv(uart_comm *);
 void uart_recv_int_handler(void);
 
-# 7 "../src/my_i2c.h"
+# 11 "../src/my_i2c.h"
 typedef struct __i2c_comm {
 unsigned char buffer[10];
 unsigned char buflen;
@@ -6037,17 +6037,15 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[103];
+unsigned char outbuffer[100 + 3];
 unsigned char outbuflen;
 unsigned char outbufind;
-unsigned char slave_addr;
+unsigned char baud_rate;
 } i2c_comm;
 
-# 32
+# 57
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
-void start_i2c_slave_reply(unsigned char,unsigned char *);
-void i2c_configure_slave(unsigned char);
 void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
@@ -6068,65 +6066,8 @@ void resetDBG(unsigned char );
 void flipDBG(unsigned char );
 void debugNum(int );
 
-# 8 "../src/../../../../common/communication/../sensor_types.h"
-typedef char uint8;
-typedef short uint16;
 
-
-typedef struct {
-uint8 data;
-} sensorADData;
-
-# 10 "../src/../../../../common/communication/brain_rover.h"
-typedef struct {
-uint8 flags;
-uint8 sensorMask;
-} BrainMsg;
-
-typedef struct {
-int (*adFunc)(sensorADData* data, int len);
-} RoverMsgRouter;
-
-# 24
-int packADData(sensorADData* data, int len, char* out, int maxout);
-int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
-void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
-BrainMsg* unpackBrainMsg(char *buf);
-
-# 34
-typedef struct {
-uint8 flags;
-uint8 sensorID;
-
-
-
-uint8 payloadLen;
-
-
-
-char payload[];
-} RoverMsg;
-
-# 10 "../src/sensorcomm.h"
-typedef struct{
-uint8 len;
-sensorADData data[100];
-} sensorADaccumulator;
-
-void setBrainReqData(char* msg);
-void sendRequestedData();
-void sendADdata();
-void addDataPoints(int sensorid, void* data, int len);
-void addADDataPoints(sensorADData* data, int len);
-void resetADacc();
-void resetAccumulators();
-
-# 8 "../src/my_adc.h"
-void init_adc();
-void adc_int_handler();
-
-
-# 27 "../src/main.c"
+# 30 "../src/main.c"
 #pragma config WDTEN = OFF
 #pragma config STVREN = OFF
 
@@ -6151,7 +6092,7 @@ void adc_int_handler();
 
 #pragma config CCP2MX = DEFAULT
 
-# 188
+# 191
 void main(void) {
 
 signed char length;
@@ -6163,22 +6104,11 @@ unsigned char msgbuffer[10 + 1];
 unsigned char to_send_buffer[10+1];
 int data_points_count = 0;
 
-
-
-timer0_thread_struct t0thread_data;
-
-# 209
+# 212
 OSCCON = 0x82;
 OSCTUNEbits.PLLEN = 0;
 
-# 227
-resetAccumulators();
-
-init_adc();
-
-
-
-
+# 234
 init_i2c(&ic);
 
 # 240
@@ -6195,25 +6125,24 @@ OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110001);
 # 278
 IPR1bits.SSPIP = 1;
 
-IPR1bits.ADIP = 0;
+# 294
+i2c_configure_master(12000000);
 
-# 290
-i2c_configure_slave(0x9E);
 
-# 305
+
 PIE1bits.SSPIE = 1;
 
-# 323
+# 316
 enable_interrupts();
 
-# 343
+# 324
 while (1) {
 
 
 
 block_on_To_msgqueues();
 
-# 354
+# 335
 length = ToMainHigh_recvmsg(10, &msgtype, (void *) msgbuffer);
 if (length < 0) {
 
@@ -6238,46 +6167,12 @@ break;
 case 42:
 {
 
-# 384
-switch (last_reg_recvd) {
-
-# 405
-case 0xaa:
-{
-if(data_points_count == 0){
-msgbuffer[0] = 0xff;
-length = 1;
-}
-else{
-for(int j = 0; j < data_points_count; j++){
-msgbuffer[j] = to_send_buffer[j];
-}
-length = data_points_count;
-data_points_count = 0;
-}
-break;
-};
-case 0xab:
-{
-to_send_buffer[0] = 0x04;
-to_send_buffer[1] = 0x0d;
-data_points_count = 2;
-for(int j = 0; j < data_points_count; j++){
-msgbuffer[j] = to_send_buffer[j];
-}
-length = data_points_count;
-data_points_count = 0;
-break;
-};
-};
-msgbuffer[0] = 0xaa;
-length = 1;
-start_i2c_slave_reply(length, msgbuffer);
 break;
 };
 case 50:
 {
-addDataPoints(0, msgbuffer, length);
+
+# 366
 break;
 };
 
@@ -6300,13 +6195,12 @@ if (length != -4) {
 switch (msgtype) {
 case 50:
 {
-addDataPoints(0, msgbuffer, length);
 
-# 469
+# 391
 break;
 };
 
-# 482
+# 404
 default:
 {
 

@@ -123,20 +123,17 @@ interrupt low_priority
 #endif
 void InterruptHandlerLow() {
 
+    #ifdef SENSOR_PIC
     if (PIR1bits.ADIF) {
         PIR1bits.ADIF = 0;
         adc_int_handler();
     }
+    #endif //SENSOR_PIC
 
     /*// check to see if we have an interrupt on timer 1
     if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
-    }
-
-    if (PIR1bits.ADIF) {
-        PIR1bits.ADIF = 0;
-        adc_int_handler();
     }
 
     // check to see if we have an interrupt on USART RX

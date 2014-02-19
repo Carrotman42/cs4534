@@ -1,4 +1,4 @@
-#include "../../../../common/common.h"
+#ifdef SENSOR_PIC
 
 
 #include "sensorcomm.h"
@@ -55,17 +55,12 @@ void addDataPoints(int sensorid, void* data, int len){
 }
 
 void addADDataPoints(sensorADData* data, int len){
-    //readNum(len);
     if(ADacc.len + len < (int) sizeof(ADacc.data)){
         int i = 0;
         for(i; i < len; i++){
             ADacc.data[ADacc.len++] = data[i]; //set the accumulator at position len to the data at i, then increment the accumulator length
         }
     }
-
-    //char* dat = (char*) ADacc->data;
-    //readNum((int)dat[0]);
-    //readNum(ADacc->len);
     
 }
 
@@ -80,3 +75,5 @@ void resetADacc(){
 void resetAccumulators(){
     resetADacc();
 }
+
+#endif //SENSOR_PIC

@@ -5945,7 +5945,7 @@ signed char FromMainLow_recvmsg(unsigned char,unsigned char *,void *);
 signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
 signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
 
-# 7 "../src/my_i2c.h"
+# 11 "../src/my_i2c.h"
 typedef struct __i2c_comm {
 unsigned char buffer[10];
 unsigned char buflen;
@@ -5953,73 +5953,18 @@ unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
 unsigned char error_count;
-unsigned char outbuffer[103];
+unsigned char outbuffer[100 + 3];
 unsigned char outbuflen;
 unsigned char outbufind;
-unsigned char slave_addr;
+unsigned char baud_rate;
 } i2c_comm;
 
-# 32
+# 57
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
-void start_i2c_slave_reply(unsigned char,unsigned char *);
-void i2c_configure_slave(unsigned char);
 void i2c_configure_master(unsigned char);
 unsigned char i2c_master_send(unsigned char,unsigned char *);
 unsigned char i2c_master_recv(unsigned char);
-
-# 8 "../src/../../../../common/communication/../sensor_types.h"
-typedef char uint8;
-typedef short uint16;
-
-
-typedef struct {
-uint8 data;
-} sensorADData;
-
-# 10 "../src/../../../../common/communication/brain_rover.h"
-typedef struct {
-uint8 flags;
-uint8 sensorMask;
-} BrainMsg;
-
-typedef struct {
-int (*adFunc)(sensorADData* data, int len);
-} RoverMsgRouter;
-
-# 24
-int packADData(sensorADData* data, int len, char* out, int maxout);
-int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
-void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
-BrainMsg* unpackBrainMsg(char *buf);
-
-# 34
-typedef struct {
-uint8 flags;
-uint8 sensorID;
-
-
-
-uint8 payloadLen;
-
-
-
-char payload[];
-} RoverMsg;
-
-# 10 "../src/sensorcomm.h"
-typedef struct{
-uint8 len;
-sensorADData data[100];
-} sensorADaccumulator;
-
-void setBrainReqData(char* msg);
-void sendRequestedData();
-void sendADdata();
-void addDataPoints(int sensorid, void* data, int len);
-void addADDataPoints(sensorADData* data, int len);
-void resetADacc();
-void resetAccumulators();
 
 # 8 "../src/debug.h"
 enum {DBG1, DBG2, DBG3, DBG4, DBG5};
@@ -6029,247 +5974,20 @@ void resetDBG(unsigned char );
 void flipDBG(unsigned char );
 void debugNum(int );
 
+# 8 "../src/../../../../common/sensor_types.h"
+typedef char uint8;
+typedef short uint16;
+
+
+typedef struct {
+uint8 data;
+} sensorADData;
+
 # 7 "../src/testAD.h"
 void reqADData();
 
-# 16 "../src/my_i2c.c"
+# 19 "../src/my_i2c.c"
 static i2c_comm *ic_ptr;
-
-
-
-
-void i2c_configure_master(unsigned char slave_addr) {
-
-}
-
-# 37
-unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
-
-return(0);
-}
-
-# 55
-unsigned char i2c_master_recv(unsigned char length) {
-
-return(0);
-}
-
-void start_i2c_slave_reply(unsigned char length, unsigned char *msg) {
-
-for (ic_ptr->outbuflen = 0; ic_ptr->outbuflen < length; ic_ptr->outbuflen++) {
-ic_ptr->outbuffer[ic_ptr->outbuflen] = msg[ic_ptr->outbuflen];
-}
-ic_ptr->outbuflen = length;
-ic_ptr->outbufind = 1;
-
-
-SSPBUF = ic_ptr->outbuffer[0];
-
-
-SSPCON1bits.CKP = 1;
-
-}
-
-
-
-void handle_start(unsigned char data_read) {
-ic_ptr->event_count = 1;
-ic_ptr->buflen = 0;
-
-if (data_read) {
-if (SSPSTATbits.D_A == 1) {
-
-
-ic_ptr->status = 0x5;
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x5;
-} else {
-if (SSPSTATbits.R_W == 1) {
-ic_ptr->status = 0x8;
-} else {
-ic_ptr->status = 0x7;
-}
-}
-} else {
-ic_ptr->status = 0x6;
-}
-}
-
-# 107
-void i2c_int_handler() {
-
-unsigned char i2c_data;
-unsigned char data_read = 0;
-unsigned char data_written = 0;
-unsigned char msg_ready = 0;
-unsigned char msg_to_send = 0;
-unsigned char overrun_error = 0;
-unsigned char error_buf[3];
-
-
-if (SSPCON1bits.SSPOV == 1) {
-SSPCON1bits.SSPOV = 0;
-
-
-
-ic_ptr->status = 0x5;
-overrun_error = 1;
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x4;
-}
-
-if (SSPSTATbits.BF == 1) {
-i2c_data = SSPBUF;
-data_read = 1;
-}
-
-if (!overrun_error) {
-switch (ic_ptr->status) {
-case 0x5:
-{
-
-if (SSPSTATbits.S == 1) {
-handle_start(data_read);
-
-if (ic_ptr->status == 0x8) {
-data_read = 0;
-msg_to_send = 1;
-}
-}
-break;
-}
-case 0x6:
-{
-
-if (SSPSTATbits.P == 1) {
-
-
-ic_ptr->event_count++;
-if (data_read) {
-if (SSPSTATbits.D_A == 0) {
-msg_ready = 1;
-} else {
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x6;
-}
-}
-ic_ptr->status = 0x5;
-} else if (data_read) {
-ic_ptr->event_count++;
-if (SSPSTATbits.D_A == 0) {
-if (SSPSTATbits.R_W == 0) {
-ic_ptr->status = 0x7;
-} else {
-ic_ptr->status = 0x8;
-msg_to_send = 1;
-
-data_read = 0;
-}
-} else {
-ic_ptr->error_count++;
-ic_ptr->status = 0x5;
-ic_ptr->error_code = 0x6;
-}
-}
-break;
-}
-case 0x8:
-{
-if (ic_ptr->outbufind < ic_ptr->outbuflen) {
-
-
-SSPBUF = ic_ptr->outbuffer[ic_ptr->outbufind];
-ic_ptr->outbufind++;
-data_written = 1;
-} else {
-
-ic_ptr->status = 0x5;
-}
-break;
-}
-case 0x7:
-{
-
-if (SSPSTATbits.P == 1) {
-
-ic_ptr->event_count++;
-if (data_read) {
-if (SSPSTATbits.D_A == 1) {
-ic_ptr->buffer[ic_ptr->buflen] = i2c_data;
-ic_ptr->buflen++;
-msg_ready = 1;
-} else {
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x6;
-ic_ptr->status = 0x5;
-}
-} else {
-msg_ready = 1;
-}
-ic_ptr->status = 0x5;
-} else if (data_read) {
-ic_ptr->event_count++;
-if (SSPSTATbits.D_A == 1) {
-ic_ptr->buffer[ic_ptr->buflen] = i2c_data;
-ic_ptr->buflen++;
-} else {
-if (SSPSTATbits.R_W == 1) {
-ic_ptr->status = 0x8;
-msg_ready = 1;
-msg_to_send = 1;
-
-data_read = 0;
-} else {
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x6;
-ic_ptr->status = 0x5;
-}
-}
-}
-break;
-}
-}
-}
-
-
-if (data_read || data_written) {
-
-
-
-
-if (SSPCON1bits.CKP == 0) {
-SSPCON1bits.CKP = 1;
-}
-}
-
-
-if ((ic_ptr->buflen > 10 - 2) && (!msg_ready)) {
-ic_ptr->status = 0x5;
-ic_ptr->error_count++;
-ic_ptr->error_code = 0x7;
-}
-
-if (msg_ready) {
-ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
-setBrainReqData(ic_ptr->buffer);
-
-
-ic_ptr->buflen = 0;
-} else if (ic_ptr->error_count >= 1) {
-error_buf[0] = ic_ptr->error_count;
-error_buf[1] = ic_ptr->error_code;
-error_buf[2] = ic_ptr->event_count;
-ToMainHigh_sendmsg(sizeof (unsigned char) *3, 41, (void *) error_buf);
-ic_ptr->error_count = 0;
-}
-if (msg_to_send) {
-
-# 286
-sendRequestedData();
-msg_to_send = 0;
-}
-}
-
 
 
 
@@ -6281,32 +5999,28 @@ ic_ptr->status = 0x5;
 ic_ptr->error_count = 0;
 }
 
+# 36
+void i2c_configure_master(unsigned char fosc) {
+SSPCON1bits.SSPM = 0x8;
+SSPCON1bits.SSPEN = 0x1;
+ic_ptr->baud_rate = (fosc / (4*100000))-1;
+}
+
+# 53
+unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
+
+return(0);
+}
+
+# 71
+unsigned char i2c_master_recv(unsigned char length) {
+
+return(0);
+}
 
 
 
-void i2c_configure_slave(unsigned char addr) {
-
-# 317
-TRISCbits.TRISC3 = 1;
-TRISCbits.TRISC4 = 1;
-
-
-
-
-SSPADD = addr;
-
-SSPSTAT = 0x0;
-SSPCON1 = 0x0;
-SSPCON2 = 0x0;
-SSPCON1 |= 0x0E;
-SSPSTAT |= 0b10000000;
-
-
-TRISCbits.TRISC3 = 1;
-TRISCbits.TRISC4 = 1;
-
-# 354
-SSPCON2bits.SEN = 1;
-SSPCON1 |= 0b00100000;
+void i2c_int_handler(){
 
 }
+

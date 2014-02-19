@@ -39,14 +39,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S222 . . . ]
 "3673
 [v _PIR1bits `VS222 ~T0 @X0 0 e@3998 ]
-"33 ../src/my_i2c.h
+"58 ../src/my_i2c.h
 [v _i2c_int_handler `(v ~T0 @X0 0 ef ]
 "10 ../src/user_interrupts.h
 [v _timer0_int_handler `(v ~T0 @X0 0 ef ]
 "47 ../src/messages.h
 [v _SleepIfOkay `(v ~T0 @X0 0 ef ]
-"9 ../src/my_adc.h
-[v _adc_int_handler `(v ~T0 @X0 0 ef ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
 "46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
@@ -4653,25 +4651,23 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_uart.h: 13: } uart_comm;
 [; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
 [; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_i2c.h: 7: typedef struct __i2c_comm {
-[; ;my_i2c.h: 8: unsigned char buffer[10];
-[; ;my_i2c.h: 9: unsigned char buflen;
-[; ;my_i2c.h: 10: unsigned char event_count;
-[; ;my_i2c.h: 11: unsigned char status;
-[; ;my_i2c.h: 12: unsigned char error_code;
-[; ;my_i2c.h: 13: unsigned char error_count;
-[; ;my_i2c.h: 14: unsigned char outbuffer[103];
-[; ;my_i2c.h: 15: unsigned char outbuflen;
-[; ;my_i2c.h: 16: unsigned char outbufind;
-[; ;my_i2c.h: 17: unsigned char slave_addr;
-[; ;my_i2c.h: 18: } i2c_comm;
-[; ;my_i2c.h: 32: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 33: void i2c_int_handler(void);
-[; ;my_i2c.h: 34: void start_i2c_slave_reply(unsigned char,unsigned char *);
-[; ;my_i2c.h: 35: void i2c_configure_slave(unsigned char);
-[; ;my_i2c.h: 36: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 37: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 38: unsigned char i2c_master_recv(unsigned char);
+[; ;my_i2c.h: 11: typedef struct __i2c_comm {
+[; ;my_i2c.h: 12: unsigned char buffer[10];
+[; ;my_i2c.h: 13: unsigned char buflen;
+[; ;my_i2c.h: 14: unsigned char event_count;
+[; ;my_i2c.h: 15: unsigned char status;
+[; ;my_i2c.h: 16: unsigned char error_code;
+[; ;my_i2c.h: 17: unsigned char error_count;
+[; ;my_i2c.h: 18: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 19: unsigned char outbuflen;
+[; ;my_i2c.h: 20: unsigned char outbufind;
+[; ;my_i2c.h: 21: unsigned char baud_rate;
+[; ;my_i2c.h: 22: } i2c_comm;
+[; ;my_i2c.h: 57: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 58: void i2c_int_handler(void);
+[; ;my_i2c.h: 59: void i2c_configure_master(unsigned char);
+[; ;my_i2c.h: 60: unsigned char i2c_master_send(unsigned char,unsigned char *);
+[; ;my_i2c.h: 61: unsigned char i2c_master_recv(unsigned char);
 [; ;my_adc.h: 8: void init_adc();
 [; ;my_adc.h: 9: void adc_int_handler();
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
@@ -4802,9 +4798,9 @@ Version 3.2 HI-TECH Software Intermediate Code
 "48
 [e :UE 593 ]
 }
-[v F5119 `(v ~T0 @X0 1 tf ]
+[v F5114 `(v ~T0 @X0 1 tf ]
 "85
-[v _InterruptHandlerHigh `IF5119 ~T0 @X0 1 e ]
+[v _InterruptHandlerHigh `IF5114 ~T0 @X0 1 e ]
 {
 [; ;interrupts.c: 80: interrupt
 [; ;interrupts.c: 85: void InterruptHandlerHigh() {
@@ -4845,29 +4841,15 @@ Version 3.2 HI-TECH Software Intermediate Code
 "112
 [e :UE 596 ]
 }
-[v F5121 `(v ~T0 @X0 1 tf ]
+[v F5116 `(v ~T0 @X0 1 tf ]
 "124
-[v _InterruptHandlerLow `ILF5121 ~T0 @X0 1 e ]
+[v _InterruptHandlerLow `ILF5116 ~T0 @X0 1 e ]
 {
 [; ;interrupts.c: 119: interrupt low_priority
 [; ;interrupts.c: 124: void InterruptHandlerLow() {
 [e :U _InterruptHandlerLow ]
 [f ]
-[; ;interrupts.c: 126: if (PIR1bits.ADIF) {
-"126
-[e $ ! != -> . . _PIR1bits 0 6 `i -> -> -> 0 `i `Vuc `i 600  ]
-{
-[; ;interrupts.c: 127: PIR1bits.ADIF = 0;
-"127
-[e = . . _PIR1bits 0 6 -> -> 0 `i `uc ]
-[; ;interrupts.c: 128: adc_int_handler();
-"128
-[e ( _adc_int_handler ..  ]
-"129
-}
-[e :U 600 ]
-[; ;interrupts.c: 129: }
-[; ;interrupts.c: 147: }
-"147
+[; ;interrupts.c: 144: }
+"144
 [e :UE 599 ]
 }

@@ -18,25 +18,19 @@ DBG5 4
 "38
 [v _packADData packADData `(i  1 e 2 0 ]
 "91 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src\PIC_Framework_3.X
-[s S1564 . 2 `uc 1 flags 1 0 `uc 1 sensorMask 1 1 ]
+[s S965 . 2 `uc 1 flags 1 0 `uc 1 sensorMask 1 1 ]
 "42 C:\Users\Kindel\Documents\GitHub\cs4534\code/common/communication/brain_rover.c
-[v _unpackBrainMsg unpackBrainMsg `(*.39S1564  1 e 2 0 ]
+[v _unpackBrainMsg unpackBrainMsg `(*.39S965  1 e 2 0 ]
 "47
 [v _unpackRoverMsg unpackRoverMsg `(i  1 e 2 0 ]
 "4 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c
 [v _setDBG setDBG `(v  1 e 0 0 ]
-[v i2_setDBG setDBG `(v  1 e 0 0 ]
-[v i2_setDBG setDBG `(v  1 e 0 0 ]
 "26
 [v _resetDBG resetDBG `(v  1 e 0 0 ]
-[v i2_resetDBG resetDBG `(v  1 e 0 0 ]
-[v i2_resetDBG resetDBG `(v  1 e 0 0 ]
 "47
 [v _flipDBG flipDBG `(v  1 e 0 0 ]
 "69
 [v _debugNum debugNum `(v  1 e 0 0 ]
-[v i2_debugNum debugNum `(v  1 e 0 0 ]
-[v i2_debugNum debugNum `(v  1 e 0 0 ]
 "16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c
 [v _enable_interrupts enable_interrupts `(v  1 e 0 0 ]
 "24
@@ -55,14 +49,12 @@ DBG5 4
 [v _InterruptHandlerHigh InterruptHandlerHigh `II(v  1 e 0 0 ]
 "124
 [v _InterruptHandlerLow InterruptHandlerLow `IIL(v  1 e 0 0 ]
-"188 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c
+"191 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c
 [v _main main `(v  1 e 0 0 ]
 "15 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _init_queue init_queue `(v  1 e 0 0 ]
 "25
 [v _send_msg send_msg `(c  1 e 1 0 ]
-[v i2_send_msg send_msg `(c  1 e 1 0 ]
-[v i2_send_msg send_msg `(c  1 e 1 0 ]
 "64
 [v _recv_msg recv_msg `(c  1 e 1 0 ]
 "104
@@ -71,8 +63,6 @@ DBG5 4
 [v _ToMainLow_recvmsg ToMainLow_recvmsg `(c  1 e 1 0 ]
 "127
 [v _ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
-[v i2_ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
-[v i2_ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
 "136
 [v _ToMainHigh_recvmsg ToMainHigh_recvmsg `(c  1 e 1 0 ]
 "151
@@ -101,44 +91,20 @@ DBG5 4
 [v _init_adc init_adc `(v  1 e 0 0 ]
 "43
 [v _adc_int_handler adc_int_handler `(v  1 e 0 0 ]
-"21 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _i2c_configure_master i2c_configure_master `(v  1 e 0 0 ]
-"37
-[v _i2c_master_send i2c_master_send `(uc  1 e 1 0 ]
-"55
-[v _i2c_master_recv i2c_master_recv `(uc  1 e 1 0 ]
-"60
-[v _start_i2c_slave_reply start_i2c_slave_reply `(v  1 e 0 0 ]
-[v i2_start_i2c_slave_reply start_i2c_slave_reply `(v  1 e 0 0 ]
-[v i2_start_i2c_slave_reply start_i2c_slave_reply `(v  1 e 0 0 ]
-"78
-[v _handle_start handle_start `(v  1 e 0 0 ]
-"107
-[v _i2c_int_handler i2c_int_handler `(v  1 e 0 0 ]
-"294
+"23 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
 [v _init_i2c init_i2c `(v  1 e 0 0 ]
-"305
-[v _i2c_configure_slave i2c_configure_slave `(v  1 e 0 0 ]
+"36
+[v _i2c_configure_master i2c_configure_master `(v  1 e 0 0 ]
+"53
+[v _i2c_master_send i2c_master_send `(uc  1 e 1 0 ]
+"71
+[v _i2c_master_recv i2c_master_recv `(uc  1 e 1 0 ]
+"78
+[v _i2c_int_handler i2c_int_handler `(v  1 e 0 0 ]
 "11 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_uart.c
 [v _uart_recv_int_handler uart_recv_int_handler `(v  1 e 0 0 ]
 "49
 [v _init_uart_recv init_uart_recv `(v  1 e 0 0 ]
-"16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _setBrainReqData setBrainReqData `(v  1 e 0 0 ]
-"25
-[v _sendRequestedData sendRequestedData `(v  1 e 0 0 ]
-"34
-[v _sendADdata sendADdata `(v  1 e 0 0 ]
-"48
-[v _addDataPoints addDataPoints `(v  1 e 0 0 ]
-"57
-[v _addADDataPoints addADDataPoints `(v  1 e 0 0 ]
-"72
-[v _resetADacc resetADacc `(v  1 e 0 0 ]
-[v i2_resetADacc resetADacc `(v  1 e 0 0 ]
-[v i2_resetADacc resetADacc `(v  1 e 0 0 ]
-"80
-[v _resetAccumulators resetAccumulators `(v  1 e 0 0 ]
 "17 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/testAD.c
 [v _reqADData reqADData `(v  1 e 0 0 ]
 "9 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/timer0_thread.c
@@ -151,7 +117,7 @@ DBG5 4
 [v _uart_lthread uart_lthread `(i  1 e 2 0 ]
 "17 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c
 [v _timer0_int_handler timer0_int_handler `(v  1 e 0 0 ]
-"51
+"29
 [v _timer1_int_handler timer1_int_handler `(v  1 e 0 0 ]
 "4 C:\Program Files\Microchip\xc8\v1.30\sources\common\abdiv.c
 [v ___abdiv __abdiv `(c  1 e 1 0 ]
@@ -255,10 +221,6 @@ DBG5 4
 [v ___lwtoft __lwtoft `(f  1 e 3 0 ]
 "11 C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c
 [v _memcpy memcpy `(*.39v  1 e 2 0 ]
-[v i1_memcpy memcpy `(*.39v  1 e 2 0 ]
-[v i1_memcpy memcpy `(*.39v  1 e 2 0 ]
-[v i2_memcpy memcpy `(*.39v  1 e 2 0 ]
-[v i2_memcpy memcpy `(*.39v  1 e 2 0 ]
 "2 C:\Program Files\Microchip\xc8\v1.30\sources\common\tmul.c
 [v ___tmul __tmul `(um  1 e 3 0 ]
 "4 C:\Program Files\Microchip\xc8\v1.30\sources\common\wmul.c
@@ -289,43 +251,34 @@ DBG5 4
 [v _ReadADC ReadADC `(i  1 e 2 0 ]
 "18 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c
 [v _OpenTimer0 OpenTimer0 `(v  1 e 0 0 ]
-"16 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c
-[v _WriteTimer0 WriteTimer0 `(v  1 e 0 0 ]
 "15 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1read.c
 [v _ReadTimer1 ReadTimer1 `(ui  1 e 2 0 ]
 "14 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c
 [v _WriteTimer1 WriteTimer1 `(v  1 e 0 0 ]
 "15 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uread.c
 [v _ReadUSART ReadUSART `(uc  1 e 1 0 ]
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
+[s S406 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
 "102 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v _ToMainLow_MQ ToMainLow_MQ `S458  1 s 54 ToMainLow_MQ ]
+[s S411 __msg_queue 54 `[4]S406 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
+[v _ToMainLow_MQ ToMainLow_MQ `S411  1 s 54 ToMainLow_MQ ]
 "125
-[v _ToMainHigh_MQ ToMainHigh_MQ `S458  1 s 54 ToMainHigh_MQ ]
+[v _ToMainHigh_MQ ToMainHigh_MQ `S411  1 s 54 ToMainHigh_MQ ]
 "149
-[v _FromMainLow_MQ FromMainLow_MQ `S458  1 s 54 FromMainLow_MQ ]
+[v _FromMainLow_MQ FromMainLow_MQ `S411  1 s 54 FromMainLow_MQ ]
 "173
-[v _FromMainHigh_MQ FromMainHigh_MQ `S458  1 s 54 FromMainHigh_MQ ]
+[v _FromMainHigh_MQ FromMainHigh_MQ `S411  1 s 54 FromMainHigh_MQ ]
 "193
 [v _MQ_Main_Willing_to_block MQ_Main_Willing_to_block `uc  1 s 1 MQ_Main_Willing_to_block ]
 "12 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
 [v _ADCBuffer ADCBuffer `[5]uc  1 s 5 ADCBuffer ]
 "13
 [v _count count `uc  1 s 1 count ]
-[s S265 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 slave_addr 1 120 ]
-"16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _ic_ptr ic_ptr `*.39S265  1 s 2 ic_ptr ]
-[s S1192 __uart_comm 5 `[4]uc 1 buffer 4 0 `uc 1 buflen 1 4 ]
+[s S253 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 baud_rate 1 120 ]
+"19 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
+[v _ic_ptr ic_ptr `*.39S253  1 s 2 ic_ptr ]
+[s S676 __uart_comm 5 `[4]uc 1 buffer 4 0 `uc 1 buflen 1 4 ]
 "9 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_uart.c
-[v _uc_ptr uc_ptr `*.39S1192  1 s 2 uc_ptr ]
-[s S1564 . 2 `uc 1 flags 1 0 `uc 1 sensorMask 1 1 ]
-"13 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _BrainMsgRecv BrainMsgRecv `S1564  1 s 2 BrainMsgRecv ]
-[s S1572 . 1 `uc 1 data 1 0 ]
-"14
-[s S1622 . 101 `uc 1 len 1 0 `[100]S1572 1 data 100 1 ]
-[v _ADacc ADacc `S1622  1 s 101 ADacc ]
+[v _uc_ptr uc_ptr `*.39S676  1 s 2 uc_ptr ]
 "7 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/testAD.c
 [v _timesreq timesreq `uc  1 e 1 0 ]
 "8
@@ -340,7 +293,7 @@ DBG5 4
 [v _sample5 sample5 `uc  1 e 1 0 ]
 "2065 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _LATB LATB `VEuc  1 e 1 @3978 ]
-[s S1467 . 1 `uc 1 LATB0 1 0 :1:0 
+[s S868 . 1 `uc 1 LATB0 1 0 :1:0 
 `uc 1 LATB1 1 0 :1:1 
 `uc 1 LATB2 1 0 :1:2 
 `uc 1 LATB3 1 0 :1:3 
@@ -350,32 +303,32 @@ DBG5 4
 `uc 1 LATB7 1 0 :1:7 
 ]
 "2113
-[s S1476 . 1 `uc 1 LB0 1 0 :1:0 
+[s S877 . 1 `uc 1 LB0 1 0 :1:0 
 ]
-[s S1478 . 1 `uc 1 . 1 0 :1:0 
+[s S879 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 LB1 1 0 :1:1 
 ]
-[s S1481 . 1 `uc 1 . 1 0 :2:0 
+[s S882 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 LB2 1 0 :1:2 
 ]
-[s S1484 . 1 `uc 1 . 1 0 :3:0 
+[s S885 . 1 `uc 1 . 1 0 :3:0 
 `uc 1 LB3 1 0 :1:3 
 ]
-[s S1487 . 1 `uc 1 . 1 0 :4:0 
+[s S888 . 1 `uc 1 . 1 0 :4:0 
 `uc 1 LB4 1 0 :1:4 
 ]
-[s S1490 . 1 `uc 1 . 1 0 :5:0 
+[s S891 . 1 `uc 1 . 1 0 :5:0 
 `uc 1 LB5 1 0 :1:5 
 ]
-[s S1493 . 1 `uc 1 . 1 0 :6:0 
+[s S894 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 LB6 1 0 :1:6 
 ]
-[s S1496 . 1 `uc 1 . 1 0 :7:0 
+[s S897 . 1 `uc 1 . 1 0 :7:0 
 `uc 1 LB7 1 0 :1:7 
 ]
-[u S1499 . 1 `S1467 1 . 1 0 `S1476 1 . 1 0 `S1478 1 . 1 0 `S1481 1 . 1 0 `S1484 1 . 1 0 `S1487 1 . 1 0 `S1490 1 . 1 0 `S1493 1 . 1 0 `S1496 1 . 1 0 ]
-[v _LATBbits LATBbits `VES1499  1 e 1 @3978 ]
-[s S1689 . 1 `uc 1 TRISA0 1 0 :1:0 
+[u S900 . 1 `S868 1 . 1 0 `S877 1 . 1 0 `S879 1 . 1 0 `S882 1 . 1 0 `S885 1 . 1 0 `S888 1 . 1 0 `S891 1 . 1 0 `S894 1 . 1 0 `S897 1 . 1 0 ]
+[v _LATBbits LATBbits `VES900  1 e 1 @3978 ]
+[s S1038 . 1 `uc 1 TRISA0 1 0 :1:0 
 `uc 1 TRISA1 1 0 :1:1 
 `uc 1 TRISA2 1 0 :1:2 
 `uc 1 TRISA3 1 0 :1:3 
@@ -383,44 +336,23 @@ DBG5 4
 `uc 1 TRISA5 1 0 :1:5 
 ]
 "2597
-[s S1696 . 1 `uc 1 RA0 1 0 :1:0 
+[s S1045 . 1 `uc 1 RA0 1 0 :1:0 
 `uc 1 RA1 1 0 :1:1 
 `uc 1 RA2 1 0 :1:2 
 `uc 1 RA3 1 0 :1:3 
 `uc 1 . 1 0 :1:4 
 `uc 1 RA5 1 0 :1:5 
 ]
-[u S1703 . 1 `S1689 1 . 1 0 `S1696 1 . 1 0 ]
-[v _TRISAbits TRISAbits `VES1703  1 e 1 @3986 ]
+[u S1052 . 1 `S1038 1 . 1 0 `S1045 1 . 1 0 ]
+[v _TRISAbits TRISAbits `VES1052  1 e 1 @3986 ]
 "2722
 [v _TRISB TRISB `VEuc  1 e 1 @3987 ]
-[s S935 . 1 `uc 1 TRISC0 1 0 :1:0 
-`uc 1 TRISC1 1 0 :1:1 
-`uc 1 TRISC2 1 0 :1:2 
-`uc 1 TRISC3 1 0 :1:3 
-`uc 1 TRISC4 1 0 :1:4 
-`uc 1 TRISC5 1 0 :1:5 
-`uc 1 TRISC6 1 0 :1:6 
-`uc 1 TRISC7 1 0 :1:7 
-]
-"2975
-[s S944 . 1 `uc 1 RC0 1 0 :1:0 
-`uc 1 RC1 1 0 :1:1 
-`uc 1 RC2 1 0 :1:2 
-`uc 1 RC3 1 0 :1:3 
-`uc 1 RC4 1 0 :1:4 
-`uc 1 RC5 1 0 :1:5 
-`uc 1 RC6 1 0 :1:6 
-`uc 1 RC7 1 0 :1:7 
-]
-[u S953 . 1 `S935 1 . 1 0 `S944 1 . 1 0 ]
-[v _TRISCbits TRISCbits `VES953  1 e 1 @3988 ]
-[s S279 . 1 `uc 1 . 1 0 :6:0 
+[s S265 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 PLLEN 1 0 :1:6 
 ]
 "3559
-[u S282 . 1 `S279 1 . 1 0 ]
-[v _OSCTUNEbits OSCTUNEbits `VES282  1 e 1 @3995 ]
+[u S268 . 1 `S265 1 . 1 0 ]
+[v _OSCTUNEbits OSCTUNEbits `VES268  1 e 1 @3995 ]
 [s S173 . 1 `uc 1 TMR1IF 1 0 :1:0 
 `uc 1 TMR2IF 1 0 :1:1 
 `uc 1 CCP1IF 1 0 :1:2 
@@ -442,7 +374,7 @@ DBG5 4
 [v _PIR1bits PIR1bits `VES187  1 e 1 @3998 ]
 "3755
 [v _IPR1bits IPR1bits `VES187  1 e 1 @3999 ]
-[s S1235 . 1 `uc 1 RX9D 1 0 :1:0 
+[s S719 . 1 `uc 1 RX9D 1 0 :1:0 
 `uc 1 OERR 1 0 :1:1 
 `uc 1 FERR 1 0 :1:2 
 `uc 1 ADDEN 1 0 :1:3 
@@ -452,22 +384,22 @@ DBG5 4
 `uc 1 SPEN 1 0 :1:7 
 ]
 "4135
-[s S1244 . 1 `uc 1 RCD8 1 0 :1:0 
+[s S728 . 1 `uc 1 RCD8 1 0 :1:0 
 `uc 1 . 1 0 :2:1 
 `uc 1 ADEN 1 0 :1:3 
 `uc 1 . 1 0 :2:4 
 `uc 1 RC9 1 0 :1:6 
 ]
-[s S1250 . 1 `uc 1 . 1 0 :6:0 
+[s S734 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 NOT_RC8 1 0 :1:6 
 ]
-[s S1253 . 1 `uc 1 . 1 0 :6:0 
+[s S737 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 nRC8 1 0 :1:6 
 ]
-[s S1256 . 1 `uc 1 . 1 0 :6:0 
+[s S740 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 RC8_9 1 0 :1:6 
 ]
-[s S1259 . 1 `uc 1 RX9D1 1 0 :1:0 
+[s S743 . 1 `uc 1 RX9D1 1 0 :1:0 
 `uc 1 OERR1 1 0 :1:1 
 `uc 1 FERR1 1 0 :1:2 
 `uc 1 ADDEN1 1 0 :1:3 
@@ -476,11 +408,11 @@ DBG5 4
 `uc 1 RX91 1 0 :1:6 
 `uc 1 SPEN1 1 0 :1:7 
 ]
-[s S1268 . 1 `uc 1 . 1 0 :5:0 
+[s S752 . 1 `uc 1 . 1 0 :5:0 
 `uc 1 SRENA 1 0 :1:5 
 ]
-[u S1271 . 1 `S1235 1 . 1 0 `S1244 1 . 1 0 `S1250 1 . 1 0 `S1253 1 . 1 0 `S1256 1 . 1 0 `S1259 1 . 1 0 `S1268 1 . 1 0 ]
-[v _RCSTAbits RCSTAbits `VES1271  1 e 1 @4011 ]
+[u S755 . 1 `S719 1 . 1 0 `S728 1 . 1 0 `S734 1 . 1 0 `S737 1 . 1 0 `S740 1 . 1 0 `S743 1 . 1 0 `S752 1 . 1 0 ]
+[v _RCSTAbits RCSTAbits `VES755  1 e 1 @4011 ]
 "4715
 [v _RCREG RCREG `VEuc  1 e 1 @4014 ]
 "5576
@@ -489,15 +421,15 @@ DBG5 4
 [v _ADCON1 ADCON1 `VEuc  1 e 1 @4033 ]
 "5736
 [v _ADCON0 ADCON0 `VEuc  1 e 1 @4034 ]
-[s S1369 . 1 `uc 1 . 1 0 :1:0 
+[s S1274 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 GO_NOT_DONE 1 0 :1:1 
 ]
 "5786
-[s S1372 . 1 `uc 1 ADON 1 0 :1:0 
+[s S1277 . 1 `uc 1 ADON 1 0 :1:0 
 `uc 1 GO_nDONE 1 0 :1:1 
 `uc 1 CHS 1 0 :4:2 
 ]
-[s S1379 . 1 `uc 1 . 1 0 :1:0 
+[s S1284 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 DONE 1 0 :1:1 
 `uc 1 CHS0 1 0 :1:2 
 `uc 1 CHS1 1 0 :1:3 
@@ -506,235 +438,64 @@ DBG5 4
 `uc 1 . 1 0 :1:6 
 `uc 1 ADCAL 1 0 :1:7 
 ]
-[s S1388 . 1 `uc 1 . 1 0 :1:0 
+[s S1293 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 GO_DONE 1 0 :1:1 
 ]
-[s S1391 . 1 `uc 1 . 1 0 :1:0 
+[s S1296 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 GO 1 0 :1:1 
 ]
-[s S1394 . 1 `uc 1 . 1 0 :1:0 
+[s S1299 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 NOT_DONE 1 0 :1:1 
 ]
-[s S1397 . 1 `uc 1 . 1 0 :1:0 
+[s S1302 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 nDONE 1 0 :1:1 
 ]
-[s S1400 . 1 `uc 1 . 1 0 :1:0 
+[s S1305 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 GODONE 1 0 :1:1 
 ]
-[u S1403 . 1 `S1369 1 . 1 0 `S1372 1 . 1 0 `S1369 1 . 1 0 `S1379 1 . 1 0 `S1388 1 . 1 0 `S1391 1 . 1 0 `S1394 1 . 1 0 `S1397 1 . 1 0 `S1400 1 . 1 0 ]
-[v _ADCON0bits ADCON0bits `VES1403  1 e 1 @4034 ]
+[u S1308 . 1 `S1274 1 . 1 0 `S1277 1 . 1 0 `S1274 1 . 1 0 `S1284 1 . 1 0 `S1293 1 . 1 0 `S1296 1 . 1 0 `S1299 1 . 1 0 `S1302 1 . 1 0 `S1305 1 . 1 0 ]
+[v _ADCON0bits ADCON0bits `VES1308  1 e 1 @4034 ]
 "5871
 [v _ADRESL ADRESL `VEuc  1 e 1 @4035 ]
 "5877
 [v _ADRESH ADRESH `VEuc  1 e 1 @4036 ]
-"5883
-[v _SSPCON2 SSPCON2 `VEuc  1 e 1 @4037 ]
-[s S979 . 1 `uc 1 SEN 1 0 :1:0 
-`uc 1 RSEN 1 0 :1:1 
-`uc 1 PEN 1 0 :1:2 
-`uc 1 RCEN 1 0 :1:3 
-`uc 1 ACKEN 1 0 :1:4 
-`uc 1 ACKDT 1 0 :1:5 
-`uc 1 ACKSTAT 1 0 :1:6 
-`uc 1 GCEN 1 0 :1:7 
-]
-"5976
-[s S988 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 ACKDT1 1 0 :1:5 
-]
-[s S991 . 1 `uc 1 . 1 0 :4:0 
-`uc 1 ACKEN1 1 0 :1:4 
-]
-[s S994 . 1 `uc 1 . 1 0 :6:0 
-`uc 1 ACKSTAT1 1 0 :1:6 
-]
-[s S997 . 1 `uc 1 . 1 0 :1:0 
-`uc 1 ADMSK1 1 0 :1:1 
-]
-[s S1000 . 1 `uc 1 . 1 0 :1:0 
-`uc 1 ADMSK11 1 0 :1:1 
-]
-[s S1003 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 ADMSK2 1 0 :1:2 
-]
-[s S1006 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 ADMSK21 1 0 :1:2 
-]
-[s S1009 . 1 `uc 1 . 1 0 :3:0 
-`uc 1 ADMSK3 1 0 :1:3 
-]
-[s S1012 . 1 `uc 1 . 1 0 :3:0 
-`uc 1 ADMSK31 1 0 :1:3 
-]
-[s S1015 . 1 `uc 1 . 1 0 :4:0 
-`uc 1 ADMSK4 1 0 :1:4 
-]
-[s S1018 . 1 `uc 1 . 1 0 :4:0 
-`uc 1 ADMSK41 1 0 :1:4 
-]
-[s S1021 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 ADMSK5 1 0 :1:5 
-]
-[s S1024 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 ADMSK51 1 0 :1:5 
-]
-[s S1027 . 1 `uc 1 . 1 0 :7:0 
-`uc 1 GCEN1 1 0 :1:7 
-]
-[s S1030 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 PEN1 1 0 :1:2 
-]
-[s S1033 . 1 `uc 1 . 1 0 :3:0 
-`uc 1 RCEN1 1 0 :1:3 
-]
-[s S1036 . 1 `uc 1 . 1 0 :1:0 
-`uc 1 RSEN1 1 0 :1:1 
-]
-[s S1039 . 1 `uc 1 SEN1 1 0 :1:0 
-]
-[u S1041 . 1 `S979 1 . 1 0 `S988 1 . 1 0 `S991 1 . 1 0 `S994 1 . 1 0 `S997 1 . 1 0 `S1000 1 . 1 0 `S1003 1 . 1 0 `S1006 1 . 1 0 `S1009 1 . 1 0 `S1012 1 . 1 0 `S1015 1 . 1 0 `S1018 1 . 1 0 `S1021 1 . 1 0 `S1024 1 . 1 0 `S1027 1 . 1 0 `S1030 1 . 1 0 `S1033 1 . 1 0 `S1036 1 . 1 0 `S1039 1 . 1 0 ]
-[v _SSPCON2bits SSPCON2bits `VES1041  1 e 1 @4037 ]
-"6326
-[v _SSPCON1 SSPCON1 `VEuc  1 e 1 @4038 ]
-[s S618 . 1 `uc 1 SSPM 1 0 :4:0 
+[s S570 . 1 `uc 1 SSPM 1 0 :4:0 
 `uc 1 CKP 1 0 :1:4 
 `uc 1 SSPEN 1 0 :1:5 
 `uc 1 SSPOV 1 0 :1:6 
 `uc 1 WCOL 1 0 :1:7 
 ]
 "6382
-[s S624 . 1 `uc 1 SSPM0 1 0 :1:0 
+[s S576 . 1 `uc 1 SSPM0 1 0 :1:0 
 `uc 1 SSPM1 1 0 :1:1 
 `uc 1 SSPM2 1 0 :1:2 
 `uc 1 SSPM3 1 0 :1:3 
 ]
-[s S629 . 1 `uc 1 . 1 0 :4:0 
+[s S581 . 1 `uc 1 . 1 0 :4:0 
 `uc 1 CKP1 1 0 :1:4 
 ]
-[s S632 . 1 `uc 1 . 1 0 :5:0 
+[s S584 . 1 `uc 1 . 1 0 :5:0 
 `uc 1 SSPEN1 1 0 :1:5 
 ]
-[s S635 . 1 `uc 1 SSPM01 1 0 :1:0 
+[s S587 . 1 `uc 1 SSPM01 1 0 :1:0 
 ]
-[s S637 . 1 `uc 1 . 1 0 :1:0 
+[s S589 . 1 `uc 1 . 1 0 :1:0 
 `uc 1 SSPM11 1 0 :1:1 
 ]
-[s S640 . 1 `uc 1 . 1 0 :2:0 
+[s S592 . 1 `uc 1 . 1 0 :2:0 
 `uc 1 SSPM21 1 0 :1:2 
 ]
-[s S643 . 1 `uc 1 . 1 0 :3:0 
+[s S595 . 1 `uc 1 . 1 0 :3:0 
 `uc 1 SSPM31 1 0 :1:3 
 ]
-[s S646 . 1 `uc 1 . 1 0 :6:0 
+[s S598 . 1 `uc 1 . 1 0 :6:0 
 `uc 1 SSPOV1 1 0 :1:6 
 ]
-[s S649 . 1 `uc 1 . 1 0 :7:0 
+[s S601 . 1 `uc 1 . 1 0 :7:0 
 `uc 1 WCOL1 1 0 :1:7 
 ]
-[u S652 . 1 `S618 1 . 1 0 `S624 1 . 1 0 `S629 1 . 1 0 `S632 1 . 1 0 `S635 1 . 1 0 `S637 1 . 1 0 `S640 1 . 1 0 `S643 1 . 1 0 `S646 1 . 1 0 `S649 1 . 1 0 ]
-[v _SSPCON1bits SSPCON1bits `VES652  1 e 1 @4038 ]
-"6605
-[v _SSPSTAT SSPSTAT `VEuc  1 e 1 @4039 ]
-[s S698 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 R_NOT_W 1 0 :1:2 
-]
-"6743
-[s S701 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 D_NOT_A 1 0 :1:5 
-]
-[s S704 . 1 `uc 1 BF 1 0 :1:0 
-`uc 1 UA 1 0 :1:1 
-`uc 1 R_nW 1 0 :1:2 
-`uc 1 S 1 0 :1:3 
-`uc 1 P 1 0 :1:4 
-`uc 1 D_nA 1 0 :1:5 
-`uc 1 CKE 1 0 :1:6 
-`uc 1 SMP 1 0 :1:7 
-]
-[s S719 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 R_W 1 0 :1:2 
-`uc 1 . 1 0 :2:3 
-`uc 1 D_A 1 0 :1:5 
-]
-[s S724 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 I2C_READ 1 0 :1:2 
-`uc 1 I2C_START 1 0 :1:3 
-`uc 1 I2C_STOP 1 0 :1:4 
-`uc 1 I2C_DAT 1 0 :1:5 
-]
-[s S730 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 nW 1 0 :1:2 
-`uc 1 . 1 0 :2:3 
-`uc 1 nA 1 0 :1:5 
-]
-[s S735 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 NOT_WRITE 1 0 :1:2 
-]
-[s S738 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 NOT_ADDRESS 1 0 :1:5 
-]
-[s S741 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 nWRITE 1 0 :1:2 
-`uc 1 . 1 0 :2:3 
-`uc 1 nADDRESS 1 0 :1:5 
-]
-[s S746 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 READ_WRITE 1 0 :1:2 
-`uc 1 . 1 0 :2:3 
-`uc 1 DATA_ADDRESS 1 0 :1:5 
-]
-[s S751 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 R 1 0 :1:2 
-`uc 1 . 1 0 :2:3 
-`uc 1 D 1 0 :1:5 
-]
-[s S756 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 DA 1 0 :1:5 
-]
-[s S759 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 RW 1 0 :1:2 
-]
-[s S762 . 1 `uc 1 . 1 0 :3:0 
-`uc 1 START 1 0 :1:3 
-]
-[s S765 . 1 `uc 1 . 1 0 :4:0 
-`uc 1 STOP 1 0 :1:4 
-]
-[s S768 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 NOT_W 1 0 :1:2 
-]
-[s S771 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 NOT_A 1 0 :1:5 
-]
-[s S774 . 1 `uc 1 BF1 1 0 :1:0 
-]
-[s S776 . 1 `uc 1 . 1 0 :6:0 
-`uc 1 CKE1 1 0 :1:6 
-]
-[s S779 . 1 `uc 1 . 1 0 :5:0 
-`uc 1 DA1 1 0 :1:5 
-]
-[s S782 . 1 `uc 1 . 1 0 :2:0 
-`uc 1 RW1 1 0 :1:2 
-]
-[s S785 . 1 `uc 1 . 1 0 :7:0 
-`uc 1 SMP1 1 0 :1:7 
-]
-[s S788 . 1 `uc 1 . 1 0 :3:0 
-`uc 1 START1 1 0 :1:3 
-]
-[s S791 . 1 `uc 1 . 1 0 :4:0 
-`uc 1 STOP1 1 0 :1:4 
-]
-[s S794 . 1 `uc 1 . 1 0 :1:0 
-`uc 1 UA1 1 0 :1:1 
-]
-[u S797 . 1 `S698 1 . 1 0 `S701 1 . 1 0 `S704 1 . 1 0 `S698 1 . 1 0 `S701 1 . 1 0 `S719 1 . 1 0 `S724 1 . 1 0 `S730 1 . 1 0 `S735 1 . 1 0 `S738 1 . 1 0 `S741 1 . 1 0 `S746 1 . 1 0 `S751 1 . 1 0 `S756 1 . 1 0 `S759 1 . 1 0 `S762 1 . 1 0 `S765 1 . 1 0 `S768 1 . 1 0 `S771 1 . 1 0 `S774 1 . 1 0 `S776 1 . 1 0 `S779 1 . 1 0 `S782 1 . 1 0 `S785 1 . 1 0 `S788 1 . 1 0 `S791 1 . 1 0 `S794 1 . 1 0 ]
-[v _SSPSTATbits SSPSTATbits `VES797  1 e 1 @4039 ]
-"7278
-[v _SSPADD SSPADD `VEuc  1 e 1 @4040 ]
-"7583
-[v _SSPBUF SSPBUF `VEuc  1 e 1 @4041 ]
+[u S604 . 1 `S570 1 . 1 0 `S576 1 . 1 0 `S581 1 . 1 0 `S584 1 . 1 0 `S587 1 . 1 0 `S589 1 . 1 0 `S592 1 . 1 0 `S595 1 . 1 0 `S598 1 . 1 0 `S601 1 . 1 0 ]
+[v _SSPCON1bits SSPCON1bits `VES604  1 e 1 @4038 ]
 "7925
 [v _TMR1L TMR1L `VEuc  1 e 1 @4046 ]
 "7931
@@ -772,21 +533,21 @@ DBG5 4
 [v _RCONbits RCONbits `VES49  1 e 1 @4048 ]
 "8090
 [v _OSCCON OSCCON `VEuc  1 e 1 @4051 ]
-[s S469 . 1 `uc 1 SCS 1 0 :2:0 
+[s S422 . 1 `uc 1 SCS 1 0 :2:0 
 `uc 1 . 1 0 :1:2 
 `uc 1 OSTS 1 0 :1:3 
 `uc 1 . 1 0 :3:4 
 `uc 1 IDLEN 1 0 :1:7 
 ]
 "8108
-[s S475 . 1 `uc 1 SCS0 1 0 :1:0 
+[s S428 . 1 `uc 1 SCS0 1 0 :1:0 
 `uc 1 SCS1 1 0 :1:1 
 ]
-[u S478 . 1 `S469 1 . 1 0 `S475 1 . 1 0 ]
-[v _OSCCONbits OSCCONbits `VES478  1 e 1 @4051 ]
+[u S431 . 1 `S422 1 . 1 0 `S428 1 . 1 0 ]
+[v _OSCCONbits OSCCONbits `VES431  1 e 1 @4051 ]
 "8137
 [v _T0CON T0CON `VEuc  1 e 1 @4053 ]
-[s S2030 . 1 `uc 1 T0PS 1 0 :3:0 
+[s S1413 . 1 `uc 1 T0PS 1 0 :3:0 
 `uc 1 PSA 1 0 :1:3 
 `uc 1 T0SE 1 0 :1:4 
 `uc 1 T0CS 1 0 :1:5 
@@ -794,12 +555,12 @@ DBG5 4
 `uc 1 TMR0ON 1 0 :1:7 
 ]
 "8157
-[s S2037 . 1 `uc 1 T0PS0 1 0 :1:0 
+[s S1420 . 1 `uc 1 T0PS0 1 0 :1:0 
 `uc 1 T0PS1 1 0 :1:1 
 `uc 1 T0PS2 1 0 :1:2 
 ]
-[u S2041 . 1 `S2030 1 . 1 0 `S2037 1 . 1 0 ]
-[v _T0CONbits T0CONbits `VES2041  1 e 1 @4053 ]
+[u S1424 . 1 `S1413 1 . 1 0 `S1420 1 . 1 0 ]
+[v _T0CONbits T0CONbits `VES1424  1 e 1 @4053 ]
 "8212
 [v _TMR0L TMR0L `VEuc  1 e 1 @4054 ]
 "8218
@@ -847,60 +608,32 @@ DBG5 4
 ]
 [u S126 . 1 `S86 1 . 1 0 `S95 1 . 1 0 `S104 1 . 1 0 `S113 1 . 1 0 `S122 1 . 1 0 ]
 [v _INTCONbits INTCONbits `VES126  1 e 1 @4082 ]
-[s S1218 . 1 `uc 1 RX_NINE 1 0 :1:0 
+[s S702 . 1 `uc 1 RX_NINE 1 0 :1:0 
 `uc 1 TX_NINE 1 0 :1:1 
 `uc 1 FRAME_ERROR 1 0 :1:2 
 `uc 1 OVERRUN_ERROR 1 0 :1:3 
 `uc 1 fill 1 0 :4:4 
 ]
 "5 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\udefs.c
-[u S1224 USART 1 `uc 1 val 1 0 `S1218 1 . 1 0 ]
-[v _USART_Status USART_Status `S1224  1 e 1 0 ]
-"188 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c
+[u S708 USART 1 `uc 1 val 1 0 `S702 1 . 1 0 ]
+[v _USART_Status USART_Status `S708  1 e 1 0 ]
+"191 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c
 [v _main main `(v  1 e 0 0 ]
 {
-"412
-[v main@j j `i  1 a 2 23 ]
-"425
-[v main@j_452 j `i  1 a 2 25 ]
-[s S265 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 slave_addr 1 120 ]
-"194
-[v main@ic ic `S265  1 a 121 31 ]
-"195
-[v main@msgbuffer msgbuffer `[11]uc  1 a 11 11 ]
-"196
-[v main@to_send_buffer to_send_buffer `[11]uc  1 a 11 0 ]
+[s S253 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 baud_rate 1 120 ]
 "197
-[v main@data_points_count data_points_count `i  1 a 2 28 ]
-"190
-[v main@length length `c  1 a 1 30 ]
-"191
-[v main@msgtype msgtype `uc  1 a 1 27 ]
-"192
-[v main@last_reg_recvd last_reg_recvd `uc  1 a 1 22 ]
-"491
-} 0
-"60 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _start_i2c_slave_reply start_i2c_slave_reply `(v  1 e 0 0 ]
-{
-[v start_i2c_slave_reply@length length `uc  1 a 1 wreg ]
-[v start_i2c_slave_reply@length length `uc  1 a 1 wreg ]
-[v start_i2c_slave_reply@msg msg `*.39uc  1 p 2 14 ]
-"62
-[v start_i2c_slave_reply@length length `uc  1 a 1 18 ]
-"74
-} 0
-"80 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _resetAccumulators resetAccumulators `(v  1 e 0 0 ]
-{
-"82
-} 0
-"72
-[v _resetADacc resetADacc `(v  1 e 0 0 ]
-{
-"73
-[v resetADacc@i i `i  1 a 2 17 ]
-"78
+[v main@ic ic `S253  1 a 121 14 ]
+"198
+[v main@msgbuffer msgbuffer `[11]uc  1 a 11 0 ]
+"200
+[v main@data_points_count data_points_count `i  1 a 2 11 ]
+"194
+[v main@msgtype msgtype `uc  1 a 1 136 ]
+"193
+[v main@length length `c  1 a 1 135 ]
+"195
+[v main@last_reg_recvd last_reg_recvd `uc  1 a 1 13 ]
+"413
 } 0
 "195 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _init_queues init_queues `(v  1 e 0 0 ]
@@ -911,46 +644,40 @@ DBG5 4
 [v _init_queue init_queue `(v  1 e 0 0 ]
 {
 "16
-[v init_queue@i i `uc  1 a 1 17 ]
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
+[v init_queue@i i `uc  1 a 1 38 ]
+[s S406 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
 "15
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v init_queue@qptr qptr `*.39S458  1 p 2 14 ]
+[s S411 __msg_queue 54 `[4]S406 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
+[v init_queue@qptr qptr `*.39S411  1 p 2 35 ]
 "23
 } 0
-"294 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
+"23 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
 [v _init_i2c init_i2c `(v  1 e 0 0 ]
 {
-[s S265 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 slave_addr 1 120 ]
-[v init_i2c@ic ic `*.39S265  1 p 2 14 ]
-"300
+[s S253 __i2c_comm 121 `[10]uc 1 buffer 10 0 `uc 1 buflen 1 10 `uc 1 event_count 1 11 `uc 1 status 1 12 `uc 1 error_code 1 13 `uc 1 error_count 1 14 `[103]uc 1 outbuffer 103 15 `uc 1 outbuflen 1 118 `uc 1 outbufind 1 119 `uc 1 baud_rate 1 120 ]
+[v init_i2c@ic ic `*.39S253  1 p 2 35 ]
+"29
 } 0
-"20 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
-[v _init_adc init_adc `(v  1 e 0 0 ]
+"36
+[v _i2c_configure_master i2c_configure_master `(v  1 e 0 0 ]
 {
-"41
+[v i2c_configure_master@fosc fosc `uc  1 a 1 wreg ]
+[v i2c_configure_master@fosc fosc `uc  1 a 1 wreg ]
+[v i2c_configure_master@fosc fosc `uc  1 a 1 54 ]
+"40
 } 0
-"68 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcopen.c
-[v _OpenADC OpenADC `(v  1 e 0 0 ]
+"8 C:\Program Files\Microchip\xc8\v1.30\sources\common\aldiv.c
+[v ___aldiv __aldiv `(l  1 e 4 0 ]
 {
-[v OpenADC@config config `uc  1 a 1 wreg ]
-[v OpenADC@config config `uc  1 a 1 wreg ]
-"69
-[v OpenADC@config2 config2 `uc  1 p 1 14 ]
-"70
-[v OpenADC@portconfig portconfig `uc  1 p 1 15 ]
-"72
-[v OpenADC@config config `uc  1 a 1 18 ]
-"89
-} 0
-"305 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _i2c_configure_slave i2c_configure_slave `(v  1 e 0 0 ]
-{
-[v i2c_configure_slave@addr addr `uc  1 a 1 wreg ]
-[v i2c_configure_slave@addr addr `uc  1 a 1 wreg ]
-"317
-[v i2c_configure_slave@addr addr `uc  1 a 1 14 ]
-"357
+"11
+[v ___aldiv@quotient quotient `l  1 a 4 46 ]
+"12
+[v ___aldiv@sign sign `uc  1 a 1 45 ]
+[v ___aldiv@counter counter `uc  1 a 1 44 ]
+"8
+[v ___aldiv@dividend dividend `l  1 p 4 35 ]
+[v ___aldiv@divisor divisor `l  1 p 4 39 ]
+"42
 } 0
 "16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c
 [v _enable_interrupts enable_interrupts `(v  1 e 0 0 ]
@@ -980,9 +707,9 @@ DBG5 4
 "223 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _check_msg check_msg `(uc  1 e 1 0 ]
 {
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v check_msg@qptr qptr `*.39S458  1 p 2 14 ]
+[s S406 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
+[s S411 __msg_queue 54 `[4]S406 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
+[v check_msg@qptr qptr `*.39S411  1 p 2 35 ]
 "225
 } 0
 "8 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c
@@ -990,37 +717,18 @@ DBG5 4
 {
 [v Delay1KTCYx@unit unit `uc  1 a 1 wreg ]
 [v Delay1KTCYx@unit unit `uc  1 a 1 wreg ]
-[v Delay1KTCYx@unit unit `uc  1 a 1 14 ]
+[v Delay1KTCYx@unit unit `uc  1 a 1 35 ]
 "13
-} 0
-"48 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _addDataPoints addDataPoints `(v  1 e 0 0 ]
-{
-[v addDataPoints@sensorid sensorid `i  1 p 2 22 ]
-[v addDataPoints@data data `*.39v  1 p 2 24 ]
-[v addDataPoints@len len `i  1 p 2 26 ]
-"55
-} 0
-"57
-[v _addADDataPoints addADDataPoints `(v  1 e 0 0 ]
-{
-"60
-[v addADDataPoints@i i `i  1 a 2 20 ]
-[s S1572 . 1 `uc 1 data 1 0 ]
-"57
-[v addADDataPoints@data data `*.39S1572  1 p 2 14 ]
-[v addADDataPoints@len len `i  1 p 2 16 ]
-"70
 } 0
 "113 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _ToMainLow_recvmsg ToMainLow_recvmsg `(c  1 e 1 0 ]
 {
 [v ToMainLow_recvmsg@maxlength maxlength `uc  1 a 1 wreg ]
 [v ToMainLow_recvmsg@maxlength maxlength `uc  1 a 1 wreg ]
-[v ToMainLow_recvmsg@msgtype msgtype `*.39uc  1 p 2 38 ]
-[v ToMainLow_recvmsg@data data `*.39v  1 p 2 40 ]
+[v ToMainLow_recvmsg@msgtype msgtype `*.39uc  1 p 2 59 ]
+[v ToMainLow_recvmsg@data data `*.39v  1 p 2 61 ]
 "119
-[v ToMainLow_recvmsg@maxlength maxlength `uc  1 a 1 42 ]
+[v ToMainLow_recvmsg@maxlength maxlength `uc  1 a 1 63 ]
 "120
 } 0
 "136
@@ -1028,41 +736,41 @@ DBG5 4
 {
 [v ToMainHigh_recvmsg@maxlength maxlength `uc  1 a 1 wreg ]
 [v ToMainHigh_recvmsg@maxlength maxlength `uc  1 a 1 wreg ]
-[v ToMainHigh_recvmsg@msgtype msgtype `*.39uc  1 p 2 38 ]
-[v ToMainHigh_recvmsg@data data `*.39v  1 p 2 40 ]
+[v ToMainHigh_recvmsg@msgtype msgtype `*.39uc  1 p 2 59 ]
+[v ToMainHigh_recvmsg@data data `*.39v  1 p 2 61 ]
 "142
-[v ToMainHigh_recvmsg@maxlength maxlength `uc  1 a 1 42 ]
+[v ToMainHigh_recvmsg@maxlength maxlength `uc  1 a 1 63 ]
 "143
 } 0
 "64
 [v _recv_msg recv_msg `(c  1 e 1 0 ]
 {
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
+[s S406 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
 "69
-[v recv_msg@qmsg qmsg `*.39S453  1 a 2 36 ]
+[v recv_msg@qmsg qmsg `*.39S406  1 a 2 57 ]
 "70
-[v recv_msg@tlength tlength `ui  1 a 2 34 ]
+[v recv_msg@tlength tlength `ui  1 a 2 55 ]
 "65
-[v recv_msg@slot slot `uc  1 a 1 33 ]
+[v recv_msg@slot slot `uc  1 a 1 54 ]
 "64
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v recv_msg@qptr qptr `*.39S458  1 p 2 24 ]
-[v recv_msg@maxlength maxlength `uc  1 p 1 26 ]
-[v recv_msg@msgtype msgtype `*.39uc  1 p 2 27 ]
-[v recv_msg@data data `*.39v  1 p 2 29 ]
+[s S411 __msg_queue 54 `[4]S406 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
+[v recv_msg@qptr qptr `*.39S411  1 p 2 45 ]
+[v recv_msg@maxlength maxlength `uc  1 p 1 47 ]
+[v recv_msg@msgtype msgtype `*.39uc  1 p 2 48 ]
+[v recv_msg@data data `*.39v  1 p 2 50 ]
 "97
 } 0
 "11 C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c
 [v _memcpy memcpy `(*.39v  1 e 2 0 ]
 {
 "20
-[v memcpy@s s `*.39Cuc  1 a 2 22 ]
+[v memcpy@s s `*.39Cuc  1 a 2 43 ]
 "18
-[v memcpy@d d `*.39uc  1 a 2 20 ]
+[v memcpy@d d `*.39uc  1 a 2 41 ]
 "11
-[v memcpy@d1 d1 `*.39v  1 p 2 14 ]
-[v memcpy@s1 s1 `*.39Cv  1 p 2 16 ]
-[v memcpy@n n `ui  1 p 2 18 ]
+[v memcpy@d1 d1 `*.39v  1 p 2 35 ]
+[v memcpy@s1 s1 `*.39Cv  1 p 2 37 ]
+[v memcpy@n n `ui  1 p 2 39 ]
 "32
 } 0
 "18 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c
@@ -1071,96 +779,15 @@ DBG5 4
 [v OpenTimer0@config config `uc  1 a 1 wreg ]
 [v OpenTimer0@config config `uc  1 a 1 wreg ]
 "20
-[v OpenTimer0@config config `uc  1 a 1 14 ]
+[v OpenTimer0@config config `uc  1 a 1 35 ]
 "31
 } 0
 "124 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c
 [v _InterruptHandlerLow InterruptHandlerLow `IIL(v  1 e 0 0 ]
 {
-"147
+"144
 } 0
-"43 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
-[v _adc_int_handler adc_int_handler `(v  1 e 0 0 ]
-{
-"44
-[v adc_int_handler@data data `ui  1 a 2 27 ]
-"57
-} 0
-"69 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c
-[v _debugNum debugNum `(v  1 e 0 0 ]
-{
-[v debugNum@num num `i  1 p 2 1 ]
-"91
-} 0
-"4
-[v _setDBG setDBG `(v  1 e 0 0 ]
-{
-[v setDBG@b b `uc  1 a 1 wreg ]
-[v setDBG@b b `uc  1 a 1 wreg ]
-[v setDBG@b b `uc  1 a 1 0 ]
-"24
-} 0
-"26
-[v _resetDBG resetDBG `(v  1 e 0 0 ]
-{
-[v resetDBG@b b `uc  1 a 1 wreg ]
-[v resetDBG@b b `uc  1 a 1 wreg ]
-[v resetDBG@b b `uc  1 a 1 0 ]
-"46
-} 0
-"15 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_adc.c
-[v _addBuffer addBuffer `(v  1 s 0 addBuffer ]
-{
-[v addBuffer@data data `uc  1 a 1 wreg ]
-[v addBuffer@data data `uc  1 a 1 wreg ]
-[v addBuffer@data data `uc  1 a 1 0 ]
-"18
-} 0
-"127 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
-[v _ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
-{
-[v ToMainHigh_sendmsg@length length `uc  1 a 1 wreg ]
-[v ToMainHigh_sendmsg@length length `uc  1 a 1 wreg ]
-[v ToMainHigh_sendmsg@msgtype msgtype `uc  1 p 1 22 ]
-[v ToMainHigh_sendmsg@data data `*.39v  1 p 2 23 ]
-"133
-[v ToMainHigh_sendmsg@length length `uc  1 a 1 25 ]
-"134
-} 0
-"25
-[v _send_msg send_msg `(c  1 e 1 0 ]
-{
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
-"28
-[v send_msg@qmsg qmsg `*.39S453  1 a 2 20 ]
-"29
-[v send_msg@tlength tlength `ui  1 a 2 17 ]
-"26
-[v send_msg@slot slot `uc  1 a 1 19 ]
-"25
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v send_msg@qptr qptr `*.39S458  1 p 2 10 ]
-[v send_msg@length length `uc  1 p 1 12 ]
-[v send_msg@msgtype msgtype `uc  1 p 1 13 ]
-[v send_msg@data data `*.39v  1 p 2 14 ]
-"62
-} 0
-"11 C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c
-[v i1_memcpy memcpy `(*.39v  1 e 2 0 ]
-{
-[v i1memcpy@s memcpy `*.39Cuc  1 a 2 8 ]
-[v i1memcpy@d memcpy `*.39uc  1 a 2 6 ]
-[v i1memcpy@d1 d1 `*.39v  1 p 2 0 ]
-[v i1memcpy@s1 s1 `*.39Cv  1 p 2 2 ]
-[v i1memcpy@n n `ui  1 p 2 4 ]
-"32
-} 0
-"24 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\ADC\adcread.c
-[v _ReadADC ReadADC `(i  1 e 2 0 ]
-{
-"27
-} 0
-"85 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c
+"85
 [v _InterruptHandlerHigh InterruptHandlerHigh `II(v  1 e 0 0 ]
 {
 "112
@@ -1168,175 +795,12 @@ DBG5 4
 "17 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c
 [v _timer0_int_handler timer0_int_handler `(v  1 e 0 0 ]
 {
-"46
-} 0
-"69 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c
-[v i2_debugNum debugNum `(v  1 e 0 0 ]
-{
-[v i2debugNum@num num `i  1 p 2 47 ]
-"91
-} 0
-"4
-[v i2_setDBG setDBG `(v  1 e 0 0 ]
-{
-[v i2setDBG@b b `uc  1 a 1 wreg ]
-[v i2setDBG@b b `uc  1 a 1 wreg ]
-[v i2setDBG@b b `uc  1 a 1 46 ]
 "24
-} 0
-"26
-[v i2_resetDBG resetDBG `(v  1 e 0 0 ]
-{
-[v i2resetDBG@b b `uc  1 a 1 wreg ]
-[v i2resetDBG@b b `uc  1 a 1 wreg ]
-[v i2resetDBG@b b `uc  1 a 1 46 ]
-"46
-} 0
-"16 C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c
-[v _WriteTimer0 WriteTimer0 `(v  1 e 0 0 ]
-{
-[u S2064 Timers 2 `ui 1 lt 2 0 `[2]uc 1 bt 2 0 ]
-"18
-[v WriteTimer0@timer timer `S2064  1 a 2 48 ]
-"16
-[v WriteTimer0@timer0 timer0 `ui  1 p 2 46 ]
-"24
-} 0
-"107 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _i2c_int_handler i2c_int_handler `(v  1 e 0 0 ]
-{
-"115
-[v i2c_int_handler@error_buf error_buf `[3]uc  1 a 3 114 ]
-"110
-[v i2c_int_handler@data_read data_read `uc  1 a 1 122 ]
-"112
-[v i2c_int_handler@msg_ready msg_ready `uc  1 a 1 121 ]
-"113
-[v i2c_int_handler@msg_to_send msg_to_send `uc  1 a 1 120 ]
-"109
-[v i2c_int_handler@i2c_data i2c_data `uc  1 a 1 119 ]
-"114
-[v i2c_int_handler@overrun_error overrun_error `uc  1 a 1 118 ]
-"111
-[v i2c_int_handler@data_written data_written `uc  1 a 1 117 ]
-"289
-} 0
-"127 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
-[v i2_ToMainHigh_sendmsg ToMainHigh_sendmsg `(c  1 e 1 0 ]
-{
-[v i2ToMainHigh_sendmsg@length length `uc  1 a 1 wreg ]
-[v i2ToMainHigh_sendmsg@length length `uc  1 a 1 wreg ]
-[v i2ToMainHigh_sendmsg@msgtype msgtype `uc  1 p 1 5 ]
-[v i2ToMainHigh_sendmsg@data data `*.39v  1 p 2 6 ]
-"133
-[v i2ToMainHigh_sendmsg@length length `uc  1 a 1 8 ]
-"134
-} 0
-"25
-[v i2_send_msg send_msg `(c  1 e 1 0 ]
-{
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
-[v i2send_msg@qmsg send_msg `*.39S453  1 a 2 3 ]
-[v i2send_msg@tlength send_msg `ui  1 a 2 0 ]
-[v i2send_msg@slot send_msg `uc  1 a 1 2 ]
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v i2send_msg@qptr qptr `*.39S458  1 p 2 56 ]
-[v i2send_msg@length length `uc  1 p 1 58 ]
-[v i2send_msg@msgtype msgtype `uc  1 p 1 59 ]
-[v i2send_msg@data data `*.39v  1 p 2 60 ]
-"62
-} 0
-"11 C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c
-[v i2_memcpy memcpy `(*.39v  1 e 2 0 ]
-{
-[v i2memcpy@s memcpy `*.39Cuc  1 a 2 54 ]
-[v i2memcpy@d memcpy `*.39uc  1 a 2 52 ]
-[v i2memcpy@d1 d1 `*.39v  1 p 2 46 ]
-[v i2memcpy@s1 s1 `*.39Cv  1 p 2 48 ]
-[v i2memcpy@n n `ui  1 p 2 50 ]
-"32
-} 0
-"16 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _setBrainReqData setBrainReqData `(v  1 e 0 0 ]
-{
-[s S1564 . 2 `uc 1 flags 1 0 `uc 1 sensorMask 1 1 ]
-"18
-[v setBrainReqData@tempBrain tempBrain `*.39S1564  1 a 2 50 ]
-"16
-[v setBrainReqData@buf buf `*.39uc  1 p 2 48 ]
-"23
-} 0
-"91 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src\PIC_Framework_3.X
-[s S1564 . 2 `uc 1 flags 1 0 `uc 1 sensorMask 1 1 ]
-"42 C:\Users\Kindel\Documents\GitHub\cs4534\code/common/communication/brain_rover.c
-[v _unpackBrainMsg unpackBrainMsg `(*.39S1564  1 e 2 0 ]
-{
-[v unpackBrainMsg@buf buf `*.39uc  1 p 2 46 ]
-"44
-} 0
-"25 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/sensorcomm.c
-[v _sendRequestedData sendRequestedData `(v  1 e 0 0 ]
-{
-"32
-} 0
-"72
-[v i2_resetADacc resetADacc `(v  1 e 0 0 ]
-{
-[v i2resetADacc@i resetADacc `i  1 a 2 49 ]
-"78
-} 0
-"34
-[v _sendADdata sendADdata `(v  1 e 0 0 ]
-{
-"36
-[v sendADdata@outBuff outBuff `[103]uc  1 a 103 8 ]
-"37
-[v sendADdata@bytes_packed bytes_packed `i  1 a 2 111 ]
-"46
-} 0
-"60 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v i2_start_i2c_slave_reply start_i2c_slave_reply `(v  1 e 0 0 ]
-{
-[v i2start_i2c_slave_reply@length length `uc  1 a 1 wreg ]
-[v i2start_i2c_slave_reply@length length `uc  1 a 1 wreg ]
-[v i2start_i2c_slave_reply@msg msg `*.39uc  1 p 2 46 ]
-"62
-[v i2start_i2c_slave_reply@length length `uc  1 a 1 50 ]
-"74
-} 0
-"38 C:\Users\Kindel\Documents\GitHub\cs4534\code/common/communication/brain_rover.c
-[v _packADData packADData `(i  1 e 2 0 ]
-{
-[s S1572 . 1 `uc 1 data 1 0 ]
-[v packADData@data data `*.39S1572  1 p 2 0 ]
-[v packADData@len len `i  1 p 2 2 ]
-[v packADData@out out `*.39uc  1 p 2 4 ]
-[v packADData@maxout maxout `i  1 p 2 6 ]
-"40
-} 0
-"17
-[v _packReturnData packReturnData `(i  1 s 2 packReturnData ]
-{
-"26
-[v packReturnData@dest dest `*.39uc  1 a 2 61 ]
-"27
-[v packReturnData@end end `*.39uc  1 a 2 59 ]
-"17
-[v packReturnData@data data `*.39uc  1 p 2 46 ]
-[v packReturnData@payloadLen payloadLen `i  1 p 2 48 ]
-[s S1567 . 3 `uc 1 flags 1 0 `uc 1 sensorID 1 1 `uc 1 payloadLen 1 2 `[0]uc 1 payload 0 3 ]
-[v packReturnData@msg msg `*.39S1567  1 p 2 50 ]
-[v packReturnData@maxout maxout `i  1 p 2 52 ]
-[v packReturnData@sensorID sensorID `i  1 p 2 54 ]
-"32
 } 0
 "78 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c
-[v _handle_start handle_start `(v  1 e 0 0 ]
+[v _i2c_int_handler i2c_int_handler `(v  1 e 0 0 ]
 {
-[v handle_start@data_read data_read `uc  1 a 1 wreg ]
-[v handle_start@data_read data_read `uc  1 a 1 wreg ]
-[v handle_start@data_read data_read `uc  1 a 1 46 ]
-"99
+"80
 } 0
 "229 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v _SleepIfOkay SleepIfOkay `(v  1 e 0 0 ]
@@ -1356,9 +820,9 @@ DBG5 4
 "223 C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c
 [v i2_check_msg check_msg `(uc  1 e 1 0 ]
 {
-[s S453 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
-[s S458 __msg_queue 54 `[4]S453 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
-[v i2check_msg@qptr qptr `*.39S458  1 p 2 46 ]
+[s S406 __msg 13 `uc 1 full 1 0 `uc 1 length 1 1 `uc 1 msgtype 1 2 `[10]uc 1 data 10 3 ]
+[s S411 __msg_queue 54 `[4]S406 1 queue 52 0 `uc 1 cur_write_ind 1 52 `uc 1 cur_read_ind 1 53 ]
+[v i2check_msg@qptr qptr `*.39S411  1 p 2 17 ]
 "225
 } 0
 "203

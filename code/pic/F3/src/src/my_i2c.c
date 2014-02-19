@@ -5,21 +5,38 @@
 #include <plib/i2c.h>
 #endif
 #include "my_i2c.h"
-#include "sensorcomm.h"
 #include "debug.h"
 
 #ifdef DEBUG_ON
 #include "testAD.h"
 #endif
 
+#ifdef SENSOR_PIC
+#include "sensorcomm.h"
+#endif
+
 
 static i2c_comm *ic_ptr;
 
+// set up the data structures for this i2c code
+// should be called once before any i2c routines are called
+void init_i2c(i2c_comm *ic) {
+    ic_ptr = ic;
+    ic_ptr->buflen = 0;
+    ic_ptr->event_count = 0;
+    ic_ptr->status = I2C_IDLE;
+    ic_ptr->error_count = 0;
+}
+
+
+#ifdef I2C_MASTER
 // Configure for I2C Master mode -- the variable "slave_addr" should be stored in
 //   i2c_comm (as pointed to by ic_ptr) for later use.
-
-void i2c_configure_master(unsigned char slave_addr) {
-    // Your code goes here
+//SSPADD=(FOSC / (4 * BAUD)) - 1;
+void i2c_configure_master(unsigned char fosc) {
+    SSPCON1bits.SSPM = 0x8; // Master with Baud rate as set below
+    SSPCON1bits.SSPEN = 0x1; //Enable SDA/SCL
+    ic_ptr->baud_rate = (fosc / (4*100000))-1;
 }
 
 // Sending in I2C Master mode [slave write]
@@ -33,7 +50,6 @@ void i2c_configure_master(unsigned char slave_addr) {
 //   will have a length of 0.
 // The subroutine must copy the msg to be sent from the "msg" parameter below into
 //   the structure to which ic_ptr points [there is already a suitable buffer there].
-
 unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
     // Your code goes here
     return(0);
@@ -57,6 +73,14 @@ unsigned char i2c_master_recv(unsigned char length) {
     return(0);
 }
 
+
+
+void i2c_int_handler(){
+    //nothing for now
+}
+
+
+#else
 void start_i2c_slave_reply(unsigned char length, unsigned char *msg) {
 
     for (ic_ptr->outbuflen = 0; ic_ptr->outbuflen < length; ic_ptr->outbuflen++) {
@@ -288,17 +312,6 @@ void i2c_int_handler() {
     }
 }
 
-// set up the data structures for this i2c code
-// should be called once before any i2c routines are called
-
-void init_i2c(i2c_comm *ic) {
-    ic_ptr = ic;
-    ic_ptr->buflen = 0;
-    ic_ptr->event_count = 0;
-    ic_ptr->status = I2C_IDLE;
-    ic_ptr->error_count = 0;
-}
-
 // setup the PIC to operate as a slave
 // the address must include the R/W bit
 
@@ -355,3 +368,4 @@ void i2c_configure_slave(unsigned char addr) {
     SSPCON1 |= SSPENB;
     // end of i2c configure
 }
+#endif //I2C_MASTER

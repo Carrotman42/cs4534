@@ -17,8 +17,11 @@
 //#include "timer1_thread.h"
 #include "timer0_thread.h"
 #include "debug.h"
-#include "sensorcomm.h"
+
+#ifdef SENSOR_PIC
 #include "my_adc.h"
+#include "sensorcomm.h"
+#endif
 
 
 //Setup configuration registers
@@ -198,7 +201,7 @@ void main(void) {
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread
-    timer0_thread_struct t0thread_data; // info for timer0_lthread
+    //timer0_thread_struct t0thread_data; // info for timer0_lthread
 
 #ifdef __USE18F2680
     OSCCON = 0xFC; // see datasheet
@@ -224,9 +227,6 @@ void main(void) {
 #endif
 #endif
 
-    resetAccumulators();
-
-    init_adc();
     // initialize my uart recv handling code
     //init_uart_recv(&uc);
 
@@ -277,28 +277,21 @@ void main(void) {
     // I2C interrupt
     IPR1bits.SSPIP = 1;
     
+
+
+    
+#ifdef SENSOR_PIC
+    resetAccumulators();
+    init_adc();
+
     IPR1bits.ADIP = 0;
-
-
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-#if 1
-    // Note that the temperature sensor Address bits (A0, A1, A2) are also the
-    // least significant bits of LATB -- take care when changing them
-    // They *are* changed in the timer interrupt handlers if those timers are
-    //   enabled.  They are just there to make the lights blink and can be
-    //   disabled.
     i2c_configure_slave(0x9E);
-#else
-    // If I want to test the temperature sensor from the ARM, I just make
-    // sure this PIC does not have the same address and configure the
-    // temperature sensor address bits and then just stay in an infinite loop
+#elif defined MOTOR_PIC
     i2c_configure_slave(0x9A);
-#ifdef __USE18F2680
-    LATBbits.LATB1 = 1;
-    LATBbits.LATB0 = 1;
-    LATBbits.LATB2 = 1;
-#endif
-    for (;;);
+#elif defined MASTER_PIC
+    //sending clock frequency
+    i2c_configure_master(12000000); //12MHz clock
 #endif
 
     // must specifically enable the I2C interrupts
@@ -321,18 +314,6 @@ void main(void) {
     // Peripheral interrupts can have their priority set to high or low
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
-
-    /* Junk to force an I2C interrupt in the simulator (if you wanted to)
-    PIR1bits.SSPIF = 1;
-    _asm
-    goto 0x08
-    _endasm;
-     */
-
-    // printf() is available, but is not advisable.  It goes to the UART pin
-    // on the PIC and then you must hook something up to that to view it.
-    // It is also slow and is blocking, so it will perturb your code's operation
-    // Here is how it looks: printf("Hello\r\n");
 
 
     // loop forever
@@ -374,70 +355,14 @@ void main(void) {
                 };
                 case MSGT_I2C_RQST:
                 {
-                    // Generally, this is *NOT* how I recommend you handle an I2C slave request
-                    // I recommend that you handle it completely inside the i2c interrupt handler
-                    // by reading the data from a queue (i.e., you would not send a message, as is done
-                    // now, from the i2c interrupt handler to main to ask for data).
-                    //
-                    // The last byte received is the "register" that is trying to be read
-                    // The response is dependent on the register.
-                    switch (last_reg_recvd) {
-                        /*
-                        case 0xaa:
-                        {
-                            length = 2;
-                            msgbuffer[0] = 0x55;
-                            msgbuffer[1] = 0xAA;
-                            break;
-                        }
-                        case 0xa8:
-                        {
-                            length = 1;
-                            msgbuffer[0] = 0x3A;
-                            break;
-                        }
-                        case 0xa9:
-                        {
-                            length = 1;
-                            msgbuffer[0] = 0xA3;
-                            break;
-                        }*/
-                        case 0xaa:
-                        {
-                            if(data_points_count == 0){
-                                msgbuffer[0] = 0xff; //This tells the ARM that nothing is in the buffer
-                                length = 1;
-                            }
-                            else{
-                                for(int j = 0; j < data_points_count; j++){
-                                    msgbuffer[j] = to_send_buffer[j];
-                                }
-                                length = data_points_count;
-                                data_points_count = 0; //reset data point counters after use.
-                            }
-                            break;
-                        };
-                        case 0xab:
-                        {
-                            to_send_buffer[0] = 0x04;
-                            to_send_buffer[1] = 0x0d;
-                            data_points_count = 2;
-                            for(int j = 0; j < data_points_count; j++){
-                                msgbuffer[j] = to_send_buffer[j];
-                            }
-                            length = data_points_count;
-                            data_points_count = 0; //reset data point counters after use.
-                            break;
-                        };
-                    };
-                    msgbuffer[0] = 0xaa;
-                    length = 1;
-                    start_i2c_slave_reply(length, msgbuffer);
+                    //nothing anymore
                     break;
                 };
                 case MSGT_AD:
                 {
+                    #ifdef SENSOR_PIC
                     addDataPoints(sensorADid, msgbuffer, length);
+                    #endif
                     break;
                 };
 
@@ -460,12 +385,9 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_AD:
                 {
+                    #ifdef SENSOR_PIC
                     addDataPoints(sensorADid, msgbuffer, length);
-                    /*
-                    if(data_points_count <= MSGLEN+1){       //if a new sample comes in, just ignore them.
-                        to_send_buffer[data_points_count];
-                        data_points_count++;
-                    }*/
+                    #endif
                     break;
                 };
                 /*case MSGT_TIMER1:

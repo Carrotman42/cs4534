@@ -87,18 +87,21 @@ int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 RoverMsg* msg = (RoverMsg*)in;
 len -= sizeof(RoverMsg);
 
-if (len != msg->payloadLen) return 3;
 
+
+len = msg->payloadLen;
+
+# 59
 if (msg->flags & 1) {
 switch (msg->sensorID) {
 case 0:
 return handler->adFunc((sensorADData*)(msg->payload), len/sizeof(sensorADData));
 default:
 
-return 2;
+return -2;
 }
 } else {
 
-return 1;
+return -1;
 }
 }

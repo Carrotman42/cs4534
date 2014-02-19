@@ -1,4 +1,4 @@
-
+#ifdef SENSOR_PIC
 
 #ifndef SENSORCOMM_H
 #define	SENSORCOMM_H
@@ -21,3 +21,5 @@ void resetADacc();
 void resetAccumulators();
 
 #endif	/* SENSORCOMM_H */
+
+#endif //SENSOR_PIC
