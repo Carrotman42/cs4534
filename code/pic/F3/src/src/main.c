@@ -234,7 +234,7 @@ void main(void) {
     init_i2c(&ic);
 
     // init the timer1 lthread
-    //init_timer1_lthread(&t1thread_data);
+//    init_timer1_lthread(&t1thread_data);
 
     // initialize message queues before enabling any interrupts
     init_queues();
@@ -264,14 +264,14 @@ void main(void) {
 #ifdef __USE18F46J50
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
-    //OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #endif
 #endif
 
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     // Timer1 interrupt
-    //IPR1bits.TMR1IP = 0;
+    IPR1bits.TMR1IP = 0;
     // USART RX interrupt
     //IPR1bits.RCIP = 0;
     // I2C interrupt
@@ -307,8 +307,12 @@ void main(void) {
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
         USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #else
-//    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-//        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
+        USART_CONT_RX & USART_BRGH_HIGH, 155);
+    BAUDCONbits.BRG16 = 1;
+    TXSTAbits.TXEN = 1;
+    RCSTAbits.SPEN = 1;
+    RCSTAbits.CREN = 1;
 #endif
 #endif
 

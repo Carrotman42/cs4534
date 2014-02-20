@@ -166,21 +166,6 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>37</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>12414</Address>
-          <ByteObject>0</ByteObject>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>C:\cygwin\home\ECE4534\cs4534\code\rtos\RTOSDemo\MainFiles\sensors.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
           <LineNumber>153</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>10332</Address>
@@ -343,8 +328,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>351</TopLine>
-      <CurrentLine>354</CurrentLine>
+      <TopLine>196</TopLine>
+      <CurrentLine>199</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -355,10 +340,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>13</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>17</CurrentLine>
+      <TopLine>154</TopLine>
+      <CurrentLine>154</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/i2cTemp.c</PathWithFileName>
       <FilenameWithoutPath>i2cTemp.c</FilenameWithoutPath>
@@ -371,8 +356,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>101</TopLine>
+      <CurrentLine>109</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../vtCode/vtUtilities.c</PathWithFileName>
       <FilenameWithoutPath>vtUtilities.c</FilenameWithoutPath>
@@ -397,10 +382,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>18</ColumnNumber>
+      <ColumnNumber>42</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>174</TopLine>
-      <CurrentLine>187</CurrentLine>
+      <TopLine>55</TopLine>
+      <CurrentLine>55</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/conductor.c</PathWithFileName>
       <FilenameWithoutPath>conductor.c</FilenameWithoutPath>
@@ -413,8 +398,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>94</TopLine>
-      <CurrentLine>104</CurrentLine>
+      <TopLine>172</TopLine>
+      <CurrentLine>178</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/klcd.c</PathWithFileName>
       <FilenameWithoutPath>klcd.c</FilenameWithoutPath>
@@ -425,10 +410,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>57</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>33</TopLine>
-      <CurrentLine>39</CurrentLine>
+      <TopLine>8</TopLine>
+      <CurrentLine>8</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/sensors.c</PathWithFileName>
       <FilenameWithoutPath>sensors.c</FilenameWithoutPath>
@@ -439,10 +424,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>33</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>11</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/kdbg.c</PathWithFileName>
       <FilenameWithoutPath>kdbg.c</FilenameWithoutPath>
@@ -983,7 +968,7 @@
 
   <Group>
     <GroupName>I2C</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <File>
@@ -992,10 +977,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>13</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>242</TopLine>
+      <CurrentLine>242</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../vtCode/vtI2C/vtI2C.c</PathWithFileName>
       <FilenameWithoutPath>vtI2C.c</FilenameWithoutPath>
@@ -1020,67 +1005,14 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>12</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>56</TopLine>
-      <CurrentLine>67</CurrentLine>
+      <TopLine>2</TopLine>
+      <CurrentLine>13</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../../common/communication/brain_rover.c</PathWithFileName>
       <FilenameWithoutPath>brain_rover.c</FilenameWithoutPath>
     </File>
   </Group>
-
-  <MDIGroups>
-    <Orientation>1</Orientation>
-    <ActiveMDIGroup>0</ActiveMDIGroup>
-    <MDIGroup>
-      <Size>100</Size>
-      <ActiveTab>6</ActiveTab>
-      <Documents>
-        <Doc>
-          <Name>.\MainFiles/conductor.c</Name>
-          <ColumnNumber>18</ColumnNumber>
-          <TopLine>174</TopLine>
-          <CurrentLine>187</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>../../common/communication/brain_rover.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>2</TopLine>
-          <CurrentLine>13</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\MainFiles/main.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>196</TopLine>
-          <CurrentLine>199</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>../FreeRTOS/Source/tasks.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>1981</TopLine>
-          <CurrentLine>1984</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>../vtCode/vtUtilities.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>101</TopLine>
-          <CurrentLine>109</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\MainFiles/sensors.c</Name>
-          <ColumnNumber>0</ColumnNumber>
-          <TopLine>39</TopLine>
-          <CurrentLine>39</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>../vtCode/vtI2C/vtI2C.c</Name>
-          <ColumnNumber>29</ColumnNumber>
-          <TopLine>151</TopLine>
-          <CurrentLine>157</CurrentLine>
-        </Doc>
-      </Documents>
-    </MDIGroup>
-  </MDIGroups>
 
 </ProjectOpt>

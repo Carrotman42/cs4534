@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 _ToMainHigh_recvmsg: CODE, 3368 0 46
 _setDBG: CODE, 2604 0 94
 _timer0_int_handler: CODE, 3612 0 20
@@ -37,3 +38,45 @@ _init_i2c: CODE, 3190 0 74
 i2_check_msg: CODE, 3546 0 40
 _i2c_int_handler: CODE, 3460 0 46
 Total: 5532
+=======
+_OpenUSART: CODE, 2366 0 146
+_ToMainHigh_sendmsg: CODE, 4102 0 38
+_ToMainHigh_recvmsg: CODE, 3654 0 66
+_setDBG: CODE, 3784 0 60
+_timer0_int_handler: CODE, 4330 0 2
+i2_in_high_int: CODE, 4298 0 12
+_Delay1KTCYx: CODE, 4208 0 22
+_enable_interrupts: CODE, 4310 0 8
+_block_on_To_msgqueues: CODE, 2642 0 126
+_main: CODE, 1718 0 278
+_check_msg: CODE, 3960 0 54
+_in_low_int: CODE, 3450 0 70
+_handle_start: CODE, 1996 0 200
+_timer1_int_handler: CODE, 4176 0 32
+_WriteTimer1: CODE, 4268 0 18
+_memcpy: CODE, 3106 0 94
+__initialization: CODE, 3200 0 80
+_in_main: CODE, 3520 0 68
+_ToMainLow_recvmsg: CODE, 3588 0 66
+i2_in_low_int: CODE, 4014 0 46
+_debugNum: CODE, 3290 0 82
+_in_high_int: CODE, 4250 0 18
+_WriteUSART: CODE, 4230 0 20
+_uart_send: CODE, 4286 0 12
+_InterruptHandlerLow: CODE, 24 0 148
+_OpenTimer0: CODE, 4060 0 42
+_OpenTimer1: CODE, 3904 0 56
+_enter_sleep_mode: CODE, 4318 0 6
+_send_msg: CODE, 2196 0 170
+_init_queue: CODE, 2768 0 122
+_InterruptHandlerHigh: CODE, 8 0 2634
+_init_queues: CODE, 2890 0 110
+_recv_msg: CODE, 1408 0 310
+_resetDBG: CODE, 3844 0 60
+_SleepIfOkay: CODE, 3372 0 78
+_init_i2c: CODE, 3000 0 106
+i2_memcpy: CODE, 3720 0 64
+i2_check_msg: CODE, 4140 0 36
+_i2c_int_handler: CODE, 176 0 1232
+Total: 6792
+>>>>>>> 5f00084c4622bbb06b6acf10d71f96fb2eab59cf

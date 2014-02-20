@@ -190,9 +190,11 @@ portBASE_TYPE vtI2CDeQ(vtI2CStruct *dev,uint8_t maxRxLen,uint8_t *rxBuf,uint8_t 
 // End of public API Functions
 /* ************************************************ */
 
+void kevinsMasterHandler(LPC_I2C_TypeDef *devAddr);
+
 // i2c interrupt handler
 static __INLINE void vtI2CIsr(LPC_I2C_TypeDef *devAddr,xSemaphoreHandle *binSemaphore) {
-	I2C_MasterHandler(devAddr);
+	kevinsMasterHandler(devAddr);
 	if (I2C_MasterTransferComplete(devAddr)) {
 		static signed portBASE_TYPE xHigherPriorityTaskWoken;
 		xHigherPriorityTaskWoken = pdFALSE;

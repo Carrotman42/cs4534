@@ -17,5 +17,3 @@ int vqSend(q*byte_queue, unsigned len, unsigned char *data);
 //    was empty.
 inline unsigned char vqPop(q*byte_queue, char *ok);
 
-
-#endif

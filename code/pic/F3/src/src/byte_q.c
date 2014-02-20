@@ -44,7 +44,3 @@ inline unsigned char vqPop(q*byte_queue, char *ok) {
 }
 
 
-
-
-
-
