@@ -1,0 +1,146 @@
+Version 3.2 HI-TECH Software Intermediate Code
+[s S1 `uc 1 `uc 1 `uc << -> 1 `i -> 7 `i ]
+[n S1 . write read data ]
+[; ;byte_q.h: 7: typedef struct {
+[; ;byte_q.h: 8: unsigned char write;
+[; ;byte_q.h: 9: unsigned char read;
+[; ;byte_q.h: 10: unsigned char data[(1 << 7)];
+[; ;byte_q.h: 11: } byte_queue;
+[; ;byte_q.h: 13: void vqInit(byte_queue *q);
+[; ;byte_q.h: 14: int vqSend(byte_queue *q, unsigned len, unsigned char *data);
+[; ;byte_q.h: 18: inline unsigned char vqPop(byte_queue*q, char *ok);
+"4 ../src/byte_q.c
+[v _vqInit `(v ~T0 @X0 1 ef1`*S1 ]
+{
+[; ;byte_q.c: 4: void vqInit(byte_queue *q) {
+[e :U _vqInit ]
+[v _q `*S1 ~T0 @X0 1 r1 ]
+[f ]
+[; ;byte_q.c: 5: q->write = q->read = 0;
+"5
+[e = . *U _q 0 = . *U _q 1 -> -> 0 `i `uc ]
+[; ;byte_q.c: 6: }
+"6
+[e :UE 2 ]
+}
+"12
+[v _vqSend `(i ~T0 @X0 1 ef3`*S1`ui`*uc ]
+{
+[; ;byte_q.c: 12: int vqSend(byte_queue *q, unsigned len, unsigned char *data) {
+[e :U _vqSend ]
+[v _q `*S1 ~T0 @X0 1 r1 ]
+[v _len `ui ~T0 @X0 1 r2 ]
+[v _data `*uc ~T0 @X0 1 r3 ]
+[f ]
+"14
+[v _w `uc ~T0 @X0 1 a ]
+[; ;byte_q.c: 14: unsigned char w = q->write, r = q->read;
+[e = _w . *U _q 0 ]
+[v _r `uc ~T0 @X0 1 a ]
+[e = _r . *U _q 1 ]
+"15
+[v _cap `uc ~T0 @X0 1 a ]
+[; ;byte_q.c: 15: unsigned char cap;
+[; ;byte_q.c: 17: if (r > w) {
+"17
+[e $ ! > -> _r `i -> _w `i 4  ]
+{
+[; ;byte_q.c: 18: cap = r - w;
+"18
+[e = _cap -> - -> _r `i -> _w `i `uc ]
+"19
+}
+[; ;byte_q.c: 19: } else {
+[e $U 5  ]
+[e :U 4 ]
+{
+[; ;byte_q.c: 20: cap = (1 << 7) - (w - r);
+"20
+[e = _cap -> - << -> 1 `i -> 7 `i - -> _w `i -> _r `i `uc ]
+"21
+}
+[e :U 5 ]
+[; ;byte_q.c: 21: }
+[; ;byte_q.c: 22: if (cap <= len) return 1;
+"22
+[e $ ! <= -> _cap `ui _len 6  ]
+[e ) -> 1 `i ]
+[e $UE 3  ]
+[e :U 6 ]
+"24
+[v _dest `*uc ~T0 @X0 1 a ]
+[; ;byte_q.c: 24: unsigned char* dest = &q->data[0];
+[e = _dest &U *U + &U . *U _q 2 * -> -> -> 0 `i `ui `ux -> -> # *U &U . *U _q 2 `ui `ux ]
+"25
+[v _last `uc ~T0 @X0 1 a ]
+[; ;byte_q.c: 25: unsigned char last = (w + len) & ((1 << 7) - 1);
+[e = _last -> & + -> _w `ui _len -> - << -> 1 `i -> 7 `i -> 1 `i `ui `uc ]
+[; ;byte_q.c: 26: while (w != last) {
+"26
+[e $U 7  ]
+[e :U 8 ]
+{
+[; ;byte_q.c: 27: dest[w] = *data++;
+"27
+[e = *U + _dest * -> _w `ux -> -> # *U _dest `ui `ux *U ++ _data * -> -> 1 `i `x -> -> # *U _data `i `x ]
+[; ;byte_q.c: 28: w = (w + 1) & ((1 << 7) - 1);
+"28
+[e = _w -> & + -> _w `i -> 1 `i - << -> 1 `i -> 7 `i -> 1 `i `uc ]
+"29
+}
+[e :U 7 ]
+"26
+[e $ != -> _w `i -> _last `i 8  ]
+[e :U 9 ]
+[; ;byte_q.c: 29: }
+[; ;byte_q.c: 31: q->write = w;
+"31
+[e = . *U _q 0 _w ]
+[; ;byte_q.c: 32: return 0;
+"32
+[e ) -> 0 `i ]
+[e $UE 3  ]
+[; ;byte_q.c: 33: }
+"33
+[e :UE 3 ]
+}
+[v F15 `(uc ~T0 @X0 1 tf2`*S1`*uc ]
+"35
+[v _vqPop `TF15 ~T0 @X0 1 e ]
+{
+[; ;byte_q.c: 35: inline unsigned char vqPop(byte_queue *q, char *ok) {
+[e :U _vqPop ]
+[v _q `*S1 ~T0 @X0 1 r1 ]
+[v _ok `*uc ~T0 @X0 1 r2 ]
+[f ]
+"37
+[v _r `uc ~T0 @X0 1 A ]
+[; ;byte_q.c: 37: register unsigned char r = q->read;
+[e = _r . *U _q 1 ]
+[; ;byte_q.c: 38: if (*ok = (q->write != r)) {
+"38
+[e $ ! != -> = *U _ok -> -> != -> . *U _q 0 `i -> _r `i `i `uc `i -> -> -> 0 `i `uc `i 11  ]
+{
+"39
+[v _ret `uc ~T0 @X0 1 a ]
+[; ;byte_q.c: 39: unsigned char ret = q->data[r];
+[e = _ret *U + &U . *U _q 2 * -> _r `ux -> -> # *U &U . *U _q 2 `ui `ux ]
+[; ;byte_q.c: 40: q->read = (r + 1) & ((1 << 7) - 1);
+"40
+[e = . *U _q 1 -> & + -> _r `i -> 1 `i - << -> 1 `i -> 7 `i -> 1 `i `uc ]
+[; ;byte_q.c: 41: return ret;
+"41
+[e ) _ret ]
+[e $UE 10  ]
+"42
+}
+[e :U 11 ]
+[; ;byte_q.c: 42: }
+[; ;byte_q.c: 43: return 0;
+"43
+[e ) -> -> 0 `i `uc ]
+[e $UE 10  ]
+[; ;byte_q.c: 44: }
+"44
+[e :UE 10 ]
+}

@@ -1,0 +1,1217 @@
+%CMF
+# %PSECTS Section
+# For each object file, details of its psects are enumerated here.
+# The begining of the section is indicated by %PSECTS.  The first
+# line indicates the name of the first object file, e.g.
+#    $foo.obj
+# Each line that follows describes a psect in that object file, until
+# the next object file.  The lines that describe a psect have the
+# format:
+#    <psect name> <class name> <space> <link address> <load addresses> <length> <delta>
+# All addresses and the length are given in unqualified hexadecimal
+# in delta units.  Any other numeric values are decimal.
+%PSECTS
+$C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+end_init CODE 0 BA BA 4 1
+reset_vec CODE 0 0 0 4 1
+config CONFIG 0 7FF8 7FF8 6 1
+$dist/UseXC8/production\PIC_Framework_3.X.production.obj
+intcodelo CODE 0 18 18 A2 1
+intcode CODE 0 8 8 C 1
+text42 CODE 0 1000 1000 6 1
+text41 CODE 0 F0C F0C 28 1
+text40 CODE 0 FDC FDC 10 1
+text39 CODE 0 AD2 AD2 62 1
+text38 CODE 0 70E 70E A8 1
+text37 CODE 0 982 982 82 1
+text36 CODE 0 4F2 4F2 CC 1
+text35 CODE 0 F82 F82 14 1
+text34 CODE 0 426 426 CC 1
+text33 CODE 0 DC0 DC0 3A 1
+text32 CODE 0 666 666 A8 1
+text31 CODE 0 EB6 EB6 2E 1
+text30 CODE 0 FBA FBA 12 1
+text29 CODE 0 5BE 5BE A8 1
+text28 CODE 0 F6E F6E 14 1
+intcode_body CODE 0 850 850 9A 1
+text26 CODE 0 FA8 FA8 12 1
+text25 CODE 0 B92 B92 5E 1
+text24 CODE 0 B34 B34 5E 1
+text23 CODE 0 8EA 8EA 98 1
+text22 CODE 0 DFA DFA 32 1
+text21 CODE 0 FEC FEC C 1
+text20 CODE 0 F34 F34 20 1
+text18 CODE 0 E88 E88 2E 1
+text17 CODE 0 D78 D78 48 1
+text16 CODE 0 330 330 F6 1
+text15 CODE 0 BF0 BF0 54 1
+text14 CODE 0 232 232 FE 1
+text13 CODE 0 E5A E5A 2E 1
+text12 CODE 0 E2C E2C 2E 1
+text11 CODE 0 F54 F54 1A 1
+text10 CODE 0 EE4 EE4 28 1
+text9 CODE 0 FCC FCC 10 1
+text8 CODE 0 A70 A70 62 1
+text7 CODE 0 C44 C44 52 1
+text6 CODE 0 7B6 7B6 9A 1
+text5 CODE 0 FF8 FF8 8 1
+text4 CODE 0 F96 F96 12 1
+text3 CODE 0 D2E D2E 4A 1
+text2 CODE 0 A04 A04 6C 1
+text1 CODE 0 CE4 CE4 4A 1
+text0 CODE 0 BE BE 174 1
+cstackCOMRAM COMRAM 1 1 1 44 1
+cstackBANK1 BANK1 1 100 100 8B 1
+bssBANK1 BANK1 1 18B 18B 6C 1
+bssBANK0 BANK0 1 80 80 6C 1
+dataCOMRAM COMRAM 1 50 50 5 1
+bssCOMRAM COMRAM 1 45 45 B 1
+cinit CODE 0 C96 C96 4E 1
+nvCOMRAM COMRAM 1 55 55 2 1
+idataCOMRAM CODE 0 1006 1006 5 1
+# %UNUSED Section
+# This section enumerates the unused ranges of each CLASS. Each entry
+# is described on a single line as follows:
+#    <class name> <range> <delta>
+# Addresses given in the range are in hexadecimal and units of delta.
+%UNUSED
+BANK0 000EC-000FF 1
+BANK1 001F7-001FF 1
+BANK2 00200-002FF 1
+BANK3 00300-003FF 1
+BIGRAM 00057-0007F 1
+BIGRAM 000EC-000FF 1
+BIGRAM 001F7-003FF 1
+CODE 00004-00007 1
+CODE 00014-00017 1
+CODE 0100B-07FF7 1
+COMRAM 00057-0007F 1
+CONST 00004-00007 1
+CONST 00014-00017 1
+CONST 0100B-07FF7 1
+MEDIUMCONST 0100B-07FF7 1
+RAM 000EC-000FF 1
+RAM 001F7-003FF 1
+SFR 00F80-00FFF 1
+SMALLCONST 0100B-07FF7 1
+STACK 001F7-003FF 1
+# %LINETAB Section
+# This section enumerates the file/line to address mappings.
+# The beginning of the section is indicated by %LINETAB.
+# The first line indicates the name of the first object file, e.g.
+#   $foo.obj
+# Each line that follows describes a single mapping until the next
+# object file.  Mappings have the following format:
+#    <file name>:<line number> <address> <psect name> <class name>
+# The address is absolute and given given in unqualified hex 
+# in delta units of the psect. All mappings within an object file
+# are in ascending order of addresses.
+# All other numeric values are in decimal.
+%LINETAB
+$dist/UseXC8/production\PIC_Framework_3.X.production.obj
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":85 8 intcode CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":22 8 intcode CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":124 18 intcodelo CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":31 18 intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":133 5C intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":134 6A intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":135 6C intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":136 74 intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":143 74 intcodelo CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":191 BE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":200 BE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":212 CC text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":213 D0 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":234 D2 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":240 E2 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":244 E6 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":245 EA text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":258 EE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":267 F4 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":274 FA text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":278 FC text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":281 FE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":297 100 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":311 104 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":312 112 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":313 114 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":314 116 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":315 118 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":321 11A text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":329 122 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":333 122 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":340 126 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":341 14A text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":343 160 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":345 164 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":346 164 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":347 168 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":348 16C text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":351 16C text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":353 170 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":354 170 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":358 170 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":359 174 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":361 178 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":364 178 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":366 17C text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":371 17C text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":374 180 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":377 180 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":379 184 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":347 188 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":379 1BA text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":380 1BE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":383 1BE text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":384 1E2 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":386 1F8 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":388 1FC text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":389 1FC text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":390 200 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":391 204 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":396 204 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":409 208 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":412 208 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":414 20C text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":390 210 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":414 222 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":415 226 text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":329 22A text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":416 22A text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/main.c":418 22E text0 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":64 232 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":73 232 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":74 242 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":75 252 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":77 26A text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":78 288 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":79 292 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":81 292 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":82 2A8 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":88 2D0 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":90 2F2 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":92 30A text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":93 316 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":94 320 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":95 324 text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":96 32E text14 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":97 32E text14 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":73 330 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":75 334 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":76 338 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":78 33C text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":79 34A text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":81 350 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":83 35E text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":84 360 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":85 366 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":87 366 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":88 374 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":90 37A text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":91 388 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":92 38E text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":93 38E text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":95 394 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":96 3A2 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":98 3A4 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":100 3A6 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":101 3B4 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":103 3BA text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":104 3C8 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":105 3CE text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":106 3CE text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":108 3D0 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":110 3D2 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":111 3E0 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":112 3E6 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":113 3E6 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":115 3E8 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":116 3EC text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":118 3FA text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":119 3FC text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":137 3FE text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":138 402 text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":139 41E text16 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uopen.c":143 424 text16 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":176 426 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":177 426 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":178 42A text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":179 42A text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":181 42E text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":182 432 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":183 432 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":184 440 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":185 444 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":186 448 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":187 448 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":188 458 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":189 45E text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":190 45E text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":191 462 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":192 462 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":193 478 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":194 480 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":195 480 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":196 484 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":197 484 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":198 494 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":199 496 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":200 49A text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":201 49A text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":202 4AA text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":203 4AE text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":204 4AE text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":205 4B2 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":177 4B6 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":205 4F0 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":206 4F0 text34 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":152 4F2 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":153 4F2 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":154 500 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":155 502 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":156 504 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":157 50E text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":158 50E text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":159 512 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":160 536 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":161 554 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":162 566 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":164 566 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":165 594 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":166 596 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":167 598 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":168 5A2 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":170 5A2 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":171 5A4 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":172 5A6 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":173 5B6 text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":174 5BC text36 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":88 5BE text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":89 5C2 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":90 5E4 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":91 5E8 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":92 5E8 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":93 5F8 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":94 5FE text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":95 60E text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":96 61E text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":97 62E text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":98 63E text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":99 64E text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":100 650 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":102 664 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":103 664 text29 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":128 666 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":129 666 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":130 66A text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":131 66A text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":132 66E text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":133 672 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":134 672 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":136 698 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":137 69C text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":138 6A0 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":139 6A0 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":140 6B6 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":141 6C2 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":142 6C2 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":143 6C6 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":144 6C6 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":145 6D6 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":146 6DA text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":147 6DA text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":148 6DE text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":129 6E2 text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":148 70C text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":149 70C text32 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":229 70E text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":231 70E text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":232 720 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":233 724 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":236 724 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":237 73E text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":238 742 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":241 742 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":242 75C text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":243 760 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":248 760 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":249 784 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":250 788 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":251 788 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":252 7AC text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":253 7B0 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":254 7B0 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":255 7B4 text38 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":259 7B6 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":260 7B6 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":261 7D0 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":262 7D4 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":264 7D4 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":265 7E0 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":266 7E0 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":267 800 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":271 80C text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":272 810 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":273 810 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":274 830 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":278 83C text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":279 840 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":280 840 text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":265 84A text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":284 84A text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":285 84E text6 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":85 850 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":90 880 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":92 88E intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":94 890 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":95 898 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":98 898 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":99 8A6 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":101 8A8 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":102 8AC intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":111 8AC intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":112 8B0 intcode_body CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":69 8EA text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":70 8EA text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":71 8F8 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":72 8FE text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":73 908 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":74 908 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":75 916 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":76 91C text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":77 926 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":78 926 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":79 934 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":80 93A text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":81 944 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":82 944 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":83 952 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":84 958 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":85 962 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":86 962 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":87 970 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":88 976 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":89 980 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":91 980 text23 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":106 982 text37 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":107 982 text37 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":108 9B2 text37 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":109 9EC text37 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":110 A02 text37 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":15 A04 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":18 A04 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":19 A14 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":20 A24 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":21 A44 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":20 A58 text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":23 A6E text2 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":32 A70 text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":33 A70 text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":34 A7E text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":35 A8E text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":36 AA8 text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":37 AB8 text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":38 ABC text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":39 ACC text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":40 AD0 text8 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":32 AD2 text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":33 AD2 text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":34 AE0 text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":35 AF0 text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":36 B0A text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":37 B1A text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":38 B1E text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":39 B2E text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":40 B32 text39 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":4 B34 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":5 B38 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":6 B3C text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":7 B3C text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":8 B3E text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":9 B42 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":10 B42 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":11 B44 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":12 B48 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":13 B48 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":14 B4A text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":15 B4E text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":16 B4E text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":17 B50 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":18 B54 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":19 B54 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":20 B56 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":21 B5A text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":22 B5A text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":23 B5E text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":5 B62 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":23 B90 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":24 B90 text24 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":26 B92 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":27 B96 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":28 B9A text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":29 B9A text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":30 B9C text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":31 BA0 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":32 BA0 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":33 BA2 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":34 BA6 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":35 BA6 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":36 BA8 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":37 BAC text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":38 BAC text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":39 BAE text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":40 BB2 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":41 BB2 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":42 BB4 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":43 BB8 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":44 BB8 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":45 BBC text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":27 BC0 text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":45 BEE text25 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/debug.c":46 BEE text25 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":11 BF0 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":24 BF0 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":25 BF8 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":26 C00 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":27 C04 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":26 C24 text15 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\common\memcpy.c":32 C42 text15 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":42 C44 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":43 C44 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":44 C70 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":45 C80 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":46 C84 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":47 C94 text7 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":48 C94 text7 CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4069 C96 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4071 C96 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4074 C96 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4143 C96 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4144 C9A cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4145 C9C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4146 C9C cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4147 C9E cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4148 CA0 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4151 CA2 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4152 CA6 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4153 CA8 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4154 CA8 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4155 CAA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4156 CAC cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4159 CAE cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4160 CB2 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4161 CB4 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4162 CB4 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4163 CB6 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4164 CB8 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4169 CBA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4170 CBC cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4171 CBE cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4172 CC0 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4173 CC2 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4174 CC4 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4175 CC6 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4176 CCA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4177 CCE cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4178 CCE cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4179 CD0 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4180 CD4 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4181 CD6 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4182 CD8 cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4188 CDA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4189 CDA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4190 CDA cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4191 CDC cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4192 CDE cinit CODE
+"C:\Users\Kindel\AppData\Local\Temp\s5g4.":4193 CE0 cinit CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":195 CE4 text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":196 CE4 text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":197 CEC text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":198 CFC text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":199 D0C text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":200 D1C text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":201 D2C text1 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":23 D2E text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":24 D2E text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":25 D36 text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":26 D46 text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":27 D56 text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":28 D66 text3 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":29 D76 text3 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":16 D78 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":18 D7C text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":21 D82 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":22 D90 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":23 D96 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":24 D96 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":26 D9C text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":27 DA0 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":28 DA4 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":30 DA6 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":31 DB4 text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":32 DBA text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":33 DBA text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":35 DBC text17 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1open.c":36 DBE text17 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":116 DC0 text33 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":117 DC0 text33 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":118 DE8 text33 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":119 DF2 text33 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":120 DF2 text33 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":121 DF8 text33 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":13 DFA text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":15 DFE text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":17 E0C text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":18 E0E text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":19 E1C text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":20 E26 text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":22 E26 text22 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\USART\uwrite.c":23 E2A text22 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":113 E2C text12 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":119 E30 text12 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":120 E58 text12 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":136 E5A text13 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":142 E5E text13 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":143 E86 text13 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":18 E88 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":20 E8C text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":21 E92 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":22 E96 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":23 E9A text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":25 E9C text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":26 EAA text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":27 EB0 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":28 EB0 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":30 EB2 text18 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0open.c":31 EB4 text18 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":209 EB6 text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":210 EB6 text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":211 ED2 text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":212 EDA text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":213 EDA text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":214 EE2 text31 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":223 EE4 text10 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":224 EE4 text10 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":225 F0A text10 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":223 F0C text41 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":224 F0C text41 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":225 F32 text41 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":40 F34 text20 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":46 F34 text20 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":47 F40 text20 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":52 F46 text20 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":53 F52 text20 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c":8 F54 text11 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c":10 F58 text11 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c":11 F58 text11 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c":12 F62 text11 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\d1ktcyx.c":13 F6C text11 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":17 F6E text28 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":21 F6E text28 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":23 F7A text28 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/user_interrupts.c":35 F80 text28 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":123 F82 text35 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":124 F82 text35 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":125 F92 text35 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":126 F94 text35 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":36 F96 text4 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":37 F96 text4 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":38 F9E text4 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":39 FA0 text4 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":40 FA2 text4 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_i2c.c":41 FA6 text4 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":14 FA8 text26 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":18 FA8 text26 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":20 FB0 text26 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":21 FB4 text26 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t1write.c":22 FB8 text26 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c":16 FBA text30 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c":20 FBA text30 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c":22 FC2 text30 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c":23 FC6 text30 CODE
+"C:\Program Files\Microchip\xc8\v1.30\sources\pic18\plib\Timers\t0write.c":24 FCA text30 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":24 FCC text9 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":25 FCC text9 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":26 FDA text9 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":24 FDC text40 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":25 FDC text40 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":26 FEA text40 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_uart.c":54 FEC text21 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_uart.c":55 FF0 text21 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/my_uart.c":56 FF6 text21 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":16 FF8 text5 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":19 FF8 text5 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":20 FFA text5 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":21 FFC text5 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/interrupts.c":22 FFE text5 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":203 1000 text42 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":205 1000 text42 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":214 1002 text42 CODE
+"C:\Users\Kindel\Documents\GitHub\cs4534\code\pic\F3\src/src/messages.c":219 1004 text42 CODE
+# %SYMTAB Section
+# An enumeration of all symbols in the program.
+# The beginning of the section is indicated by %SYMTAB.
+# Each line describes a single symbol as follows:
+#    <label> <value> [-]<load-adj> <class> <space> <psect> <file-name>
+# The value and load-adj are both in unqualified hexadecimal.
+# All other numeric values are in decimal.  The load-adj is the
+# quantity one needs to add to the symbol value in order to obtain the load
+# address of the symbol.  This value may be signed. If the symbol
+# was defined in a psect then <psect> will be "-". File-name
+# is the name of the object file in which the symbol was defined.
+%SYMTAB
+__CFG_XINST$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ToMainHigh_MQ 80 0 BANK0 1 bssBANK0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_OpenUSART 426 0 CODE 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__S0 7FFE 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__S1 1F7 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__S2 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintentry 0 0 ABS 0 intentry dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintentry 0 0 ABS 0 intentry dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainLow_recvmsg@maxlength 44 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_init_i2c 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_LATB F8A 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_ToMainHigh_recvmsg E88 0 CODE 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_ToMainHigh_recvmsg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_main BE 0 CODE 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+___sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+_timer0_int_handler F6E 0 CODE 0 text28 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+init_i2c@ic 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_timer1_int_handler F34 0 CODE 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+start BA 0 CODE 0 init C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+_MQ_Main_Willing_to_block 47 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_setDBG B92 0 CODE 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_FromMainHigh_MQ 18B 0 BANK1 1 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_timer0_int_handler F82 0 CODE 0 text28 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TMR0H FD7 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TMR1H FCF 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+WriteUSART@data 1 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TMR0L FD6 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TMR1L FCE 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+?_in_high_int 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_RCREG FAE 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_RCSTA FAB 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TRISB F93 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TXREG FAD 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SPBRG FAF 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hirdata 0 0 CODE 0 irdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TXSTA FAC 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lirdata 0 0 CODE 0 irdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HRAM 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LRAM 1 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_T0CON FD5 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_T1CON FCD 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+OpenTimer0@config 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_WDTPS$32768 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hconfig 7FFE 0 CONFIG 0 config dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lconfig 7FF8 0 CONFIG 0 config dist/UseXC8/production\PIC_Framework_3.X.production.obj
+OpenTimer1@config 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+WriteTimer0@timer 18 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbigram 0 0 ABS 0 bigram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+WriteTimer0@timer0 16 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbigram 0 0 ABS 0 bigram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hrparam 0 0 ABS 0 rparam dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lrparam 0 0 ABS 0 rparam dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2_check_msg F0C 0 CODE 0 text41 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_enter_sleep_mode 1000 0 CODE 0 text42 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hram 0 0 ABS 0 ram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lram 0 0 ABS 0 ram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_WriteUSART 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hcomram 0 0 ABS 0 comram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lcomram 0 0 ABS 0 comram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+?_in_main 2C 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hsfr 0 0 ABS 0 sfr dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lsfr 0 0 ABS 0 sfr dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbss 0 0 RAM 1 bss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_recv_msg 232 0 CODE 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbss 0 0 RAM 1 bss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_debugNum 8EA 0 CODE 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hnvrram 0 0 COMRAM 1 nvrram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lnvrram 0 0 COMRAM 1 nvrram dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_count 49 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+WriteTimer1@timer 3 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_timer1_int_handler 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+WriteTimer1@timer1 1 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_enter_sleep_mode 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADCON0 FC2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADCON1 FC1 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADCON2 FC0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_ofi2_in_high_int FEC 0 CODE 0 text40 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_setDBG 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_PIE1bits F9D 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+init_queue@i 2B 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_timesreq 4A 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_PIR1bits F9E 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_IPR1bits F9F 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_LATBbits F8A 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintsave_regs 0 0 BIGRAM 1 intsave_regs dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SSPADD FC8 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintsave_regs 0 0 BIGRAM 1 intsave_regs dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_RCONbits FD0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbigbss 0 0 BIGRAM 1 bigbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbigbss 0 0 BIGRAM 1 bigbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintret 0 0 ABS 0 intret dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2_in_high_int FDC 0 CODE 0 text40 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintret 0 0 ABS 0 intret dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hramtop 400 0 RAM 0 ramtop dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lramtop 400 0 RAM 0 ramtop dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hstruct 0 0 COMRAM 1 struct dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lstruct 0 0 COMRAM 1 struct dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbigdata 0 0 BIGRAM 1 bigdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbigdata 0 0 BIGRAM 1 bigdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hmediumconst 0 0 MEDIUMCONST 0 mediumconst dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lmediumconst 0 0 MEDIUMCONST 0 mediumconst dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SPBRGH FB0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hfarbss 0 0 FARRAM 0 farbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_setDBG B34 0 CODE 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lfarbss 0 0 FARRAM 0 farbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2_in_low_int AD2 0 CODE 0 text39 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintcode 14 0 CODE 0 intcode dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SSPBUF FC9 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintcode 8 0 CODE 0 intcode dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hfardata 0 0 FARRAM 0 fardata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADRESH FC4 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lfardata 0 0 FARRAM 0 fardata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pintcode 8 0 CODE 0 intcode dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OSCCON FD3 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Habs1 0 0 ABS 0 abs1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Labs1 0 0 ABS 0 abs1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADRESL FC3 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_check_if_send_stop 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@msgbuffer 100 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2c_master_recv@buf_addr 17 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HnvFARRAM 0 0 FARRAM 0 nvFARRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LnvFARRAM 0 0 FARRAM 0 nvFARRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@slot 3B 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HnvCOMRAM 0 0 ABS 0 nvCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LnvCOMRAM 0 0 ABS 0 nvCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pnvCOMRAM 55 0 COMRAM 1 nvCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_uart_send FEC 0 CODE 0 text21 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_i2c_rx_handler 4F2 0 CODE 0 text34 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_i2c_master_recv 5BE 0 CODE 0 text29 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@msgtype 10F 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_in_high_int 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_block_on_To_msgqueues 7B6 0 CODE 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_Delay1KTCYx F6E 0 CODE 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_receive_data 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_enable_interrupts 1000 0 CODE 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@ic 110 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hdata 0 0 ABS 0 data dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ldata 0 0 ABS 0 data dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@qmsg 3E 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_block_on_To_msgqueues 850 0 CODE 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+stackhi 3FF 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__size_of_debugNum 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_check_msg EE4 0 CODE 0 text10 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htemp 0 0 COMRAM 1 temp dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltemp 0 0 COMRAM 1 temp dist/UseXC8/production\PIC_Framework_3.X.production.obj
+stacklo 1F7 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__Hrbit 0 0 COMRAM 1 rbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lrbit 0 0 COMRAM 1 rbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hinit BA 0 CODE 0 init dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Linit BA 0 CODE 0 init dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintcodelo BA 0 CODE 0 intcodelo dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintcodelo 18 0 CODE 0 intcodelo dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hrbss 0 0 COMRAM 1 rbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_main 232 0 CODE 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lrbss 0 0 COMRAM 1 rbss dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pintcodelo 18 0 CODE 0 intcodelo dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ic_ptr 55 0 COMRAM 1 nvCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_uc_ptr 45 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+debugNum@num 2 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_check_msg F0C 0 CODE 0 text10 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext 0 0 ABS 0 text dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADCBuffer 4B 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext 0 0 ABS 0 text dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_memcpy BF0 0 CODE 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_Delay1KTCYx 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+end_of_initialization CDA 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+init_queue@qptr 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+OpenUSART@spbrg 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@qptr 32 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_in_low_int AD2 0 CODE 0 text8 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_check_if_send_stop DFA 0 CODE 0 text33 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OpenTimer0 E88 0 CODE 0 text18 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_i2c_int_handler 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TRISAbits F92 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_RCSTAbits FAB 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TRISCbits F94 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_TXSTAbits FAC 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_T0CONbits FD5 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_T1CONbits FCD 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_load_i2c_data A04 0 CODE 0 text37 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SleepIfOkay 70E 0 CODE 0 text38 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OpenTimer1 D78 0 CODE 0 text17 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_i2c_int_handler EB6 0 CODE 0 text31 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+?i2_in_high_int 16 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_uart_send 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hibigdata 0 0 CODE 0 ibigdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Libigdata 0 0 CODE 0 ibigdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+?i2_in_low_int 18 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_send_stop F82 0 CODE 0 text35 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_InterruptHandlerLow 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hifardata 0 0 CODE 0 ifardata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_check_if_send_stop DC0 0 CODE 0 text33 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lifardata 0 0 CODE 0 ifardata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@data 37 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbank0 0 0 ABS 0 bank0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbank0 0 0 ABS 0 bank0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@data_points_count 10B 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_i2c_configure_master F96 0 CODE 0 text4 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbank1 0 0 ABS 0 bank1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbank1 0 0 ABS 0 bank1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_sample1 50 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbank2 0 0 ABS 0 bank2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbank2 0 0 ABS 0 bank2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_sample2 51 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_OpenTimer0 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_OpenTimer1 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hbank3 0 0 ABS 0 bank3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lbank3 0 0 ABS 0 bank3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_FOSC2$ON 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_sample3 52 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_recv_msg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_sample4 53 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_sample5 54 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hpowerup BA 0 CODE 0 powerup dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lpowerup BA 0 CODE 0 powerup dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_send_stop 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_timer1_int_handler F54 0 CODE 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext0 0 0 ABS 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext0 0 0 ABS 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SSPCON1bits FC6 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext1 0 0 ABS 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext1 0 0 ABS 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext0 BE 0 CODE 0 text0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SSPCON2bits FC5 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext2 0 0 ABS 0 text2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext2 0 0 ABS 0 text2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext1 CE4 0 CODE 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext3 0 0 ABS 0 text3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext3 0 0 ABS 0 text3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext2 A04 0 CODE 0 text2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_i2c_tx_handler 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext4 0 0 ABS 0 text4 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext4 0 0 ABS 0 text4 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext3 D2E 0 CODE 0 text3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_ToMainLow_recvmsg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext5 0 0 ABS 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_SleepIfOkay 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext5 0 0 ABS 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext4 F96 0 CODE 0 text4 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+setDBG@b 1 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext6 0 0 ABS 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext6 0 0 ABS 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext5 FF8 0 CODE 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext7 0 0 ABS 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext7 0 0 ABS 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext6 7B6 0 CODE 0 text6 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HbssCOMRAM 0 0 ABS 0 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LbssCOMRAM 0 0 ABS 0 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+OpenUSART@config 2D 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext8 0 0 ABS 0 text8 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext8 0 0 ABS 0 text8 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext7 C44 0 CODE 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pbssCOMRAM 45 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext9 0 0 ABS 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HcstackBANK1 0 0 ABS 0 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext9 0 0 ABS 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LcstackBANK1 0 0 ABS 0 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext8 A70 0 CODE 0 text8 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@tlength 3C 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext9 FCC 0 CODE 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pcstackBANK1 100 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hclrtext 0 0 ABS 0 clrtext dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lclrtext 0 0 ABS 0 clrtext dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_timer0_int_handler 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_WriteTimer0 FCC 0 CODE 0 text30 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_WriteTimer1 FBA 0 CODE 0 text26 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_WriteTimer0 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_WriteTimer1 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_ofi2_in_low_int 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OSCTUNEbits F9B 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_memcpy C44 0 CODE 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of__initialization CDA 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_in_main C96 0 CODE 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_CCP2MX$DEFAULT 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_BAUDCONbits FB8 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_ToMainLow_recvmsg E5A 0 CODE 0 text12 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+memcpy@d 2E 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_InterruptHandlerLow 18 0 CODE 0 intcodelo dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_send_stop F96 0 CODE 0 text35 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_WriteUSART DFA 0 CODE 0 text22 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_i2c_master_recv 666 0 CODE 0 text29 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_SSPSTATbits FC7 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_init_queues CE4 0 CODE 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+memcpy@n 2C 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_USART_Status 48 0 COMRAM 1 bssCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_InterruptHandlerHigh 8 0 CODE 0 intcode dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_i2c_configure_master FA8 0 CODE 0 text4 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hidata 0 0 CODE 0 idata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lidata 0 0 CODE 0 idata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+memcpy@s 30 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hrdata 0 0 COMRAM 1 rdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lrdata 0 0 COMRAM 1 rdata dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_in_high_int FCC 0 CODE 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainLow_recvmsg@data 42 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hidloc 0 0 IDLOC 0 idloc dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lidloc 0 0 IDLOC 0 idloc dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_STVREN$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hstack 0 0 STACK 2 stack dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lstack 0 0 STACK 2 stack dist/UseXC8/production\PIC_Framework_3.X.production.obj
+int_func 850 0 CODE 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_init_queue 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hparam 0 0 ABS 0 rparam dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lparam 0 0 ABS 0 rparam dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HcstackCOMRAM 0 0 ABS 0 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LcstackCOMRAM 0 0 ABS 0 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_InterruptHandlerHigh 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_receive_data 4F2 0 CODE 0 text36 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainLow_recvmsg@msgtype 40 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_IESO$ON 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pcstackCOMRAM 1 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_in_main C44 0 CODE 0 text7 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_i2c_tx_handler 70E 0 CODE 0 text32 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_init_queue A04 0 CODE 0 text2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hsmallconst 0 0 SMALLCONST 0 smallconst dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lsmallconst 0 0 SMALLCONST 0 smallconst dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hnvbit 0 0 COMRAM 1 nvbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lnvbit 0 0 COMRAM 1 nvbit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hcinit 0 0 ABS 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lcinit 0 0 ABS 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pcinit C96 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@length 10E 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ramtop 400 0 RAM 0 ramtop C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__mediumconst 0 0 MEDIUMCONST 0 mediumconst C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+?_in_low_int 2A 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_init_queues 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_main 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_ofi2_in_low_int B34 0 CODE 0 text39 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ToMainLow_recvmsg E2C 0 CODE 0 text12 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hconst 0 0 CODE 0 const dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lconst 0 0 CODE 0 const dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_receive_data 5BE 0 CODE 0 text36 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_OpenUSART 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_debugNum 982 0 CODE 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2check_msg@qptr 16 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_check_msg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_in_main 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainHigh_recvmsg@maxlength 44 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+check_msg@qptr 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_Delay1KTCYx F54 0 CODE 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_in_high_int FDC 0 CODE 0 text9 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HbssBANK0 0 0 ABS 0 bssBANK0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LbssBANK0 0 0 ABS 0 bssBANK0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_WriteUSART E2C 0 CODE 0 text22 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pbssBANK0 80 0 BANK0 1 bssBANK0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_uart_send FF8 0 CODE 0 text21 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ToMainLow_MQ B6 0 BANK0 1 bssBANK0 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+i2c_master_recv@addr 16 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HbssBANK1 0 0 ABS 0 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LbssBANK1 0 0 ABS 0 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_InterruptHandlerLow BA 0 CODE 0 intcodelo dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pbssBANK1 18B 0 BANK1 1 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext10 0 0 ABS 0 text10 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext10 0 0 ABS 0 text10 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_OpenTimer0 EB6 0 CODE 0 text18 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_OpenTimer1 DC0 0 CODE 0 text17 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_enter_sleep_mode 1006 0 CODE 0 text42 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_i2c_rx_handler 426 0 CODE 0 text34 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext20 0 0 ABS 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext20 0 0 ABS 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_i2c_tx_handler 666 0 CODE 0 text32 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext10 EE4 0 CODE 0 text10 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext30 0 0 ABS 0 text30 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext11 0 0 ABS 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext30 0 0 ABS 0 text30 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext11 0 0 ABS 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext20 F34 0 CODE 0 text20 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainHigh_recvmsg@data 42 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext40 0 0 ABS 0 text40 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext21 0 0 ABS 0 text21 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@maxlength 34 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext40 0 0 ABS 0 text40 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext21 0 0 ABS 0 text21 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext11 F54 0 CODE 0 text11 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext30 FBA 0 CODE 0 text30 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext31 0 0 ABS 0 text31 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext12 0 0 ABS 0 text12 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext31 0 0 ABS 0 text31 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext12 0 0 ABS 0 text12 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext21 FEC 0 CODE 0 text21 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext40 FDC 0 CODE 0 text40 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext41 0 0 ABS 0 text41 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext22 0 0 ABS 0 text22 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext41 0 0 ABS 0 text41 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext22 0 0 ABS 0 text22 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext12 E2C 0 CODE 0 text12 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext31 EB6 0 CODE 0 text31 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext32 0 0 ABS 0 text32 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext13 0 0 ABS 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext32 0 0 ABS 0 text32 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext13 0 0 ABS 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext22 DFA 0 CODE 0 text22 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext41 F0C 0 CODE 0 text41 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext42 0 0 ABS 0 text42 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext23 0 0 ABS 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext42 0 0 ABS 0 text42 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext23 0 0 ABS 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext13 E5A 0 CODE 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext32 666 0 CODE 0 text32 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ADCON0bits FC2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext33 0 0 ABS 0 text33 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext14 0 0 ABS 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+___extmem_base 20000 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__Ltext33 0 0 ABS 0 text33 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext14 0 0 ABS 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext23 8EA 0 CODE 0 text23 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext42 1000 0 CODE 0 text42 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext24 0 0 ABS 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext24 0 0 ABS 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext14 232 0 CODE 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext33 DC0 0 CODE 0 text33 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext34 0 0 ABS 0 text34 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext15 0 0 ABS 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext34 0 0 ABS 0 text34 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext15 0 0 ABS 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext24 B34 0 CODE 0 text24 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext25 0 0 ABS 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_WriteTimer0 FBA 0 CODE 0 text30 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext25 0 0 ABS 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext15 BF0 0 CODE 0 text15 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext34 426 0 CODE 0 text34 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_FromMainLow_MQ 1C1 0 BANK1 1 bssBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+___inthi_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__Htext35 0 0 ABS 0 text35 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext16 0 0 ABS 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext35 0 0 ABS 0 text35 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext16 0 0 ABS 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext25 B92 0 CODE 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext26 0 0 ABS 0 text26 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext26 0 0 ABS 0 text26 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext16 330 0 CODE 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext35 F82 0 CODE 0 text35 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext36 0 0 ABS 0 text36 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_ofi2_check_msg 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext17 0 0 ABS 0 text17 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext36 0 0 ABS 0 text36 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext17 0 0 ABS 0 text17 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext26 FA8 0 CODE 0 text26 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext17 D78 0 CODE 0 text17 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext36 4F2 0 CODE 0 text36 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext37 0 0 ABS 0 text37 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext18 0 0 ABS 0 text18 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext37 0 0 ABS 0 text37 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext18 0 0 ABS 0 text18 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+ToMainHigh_recvmsg@msgtype 40 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext28 0 0 ABS 0 text28 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext28 0 0 ABS 0 text28 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext18 E88 0 CODE 0 text18 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext37 982 0 CODE 0 text37 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext38 0 0 ABS 0 text38 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext38 0 0 ABS 0 text38 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext28 F6E 0 CODE 0 text28 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_i2c_configure_master 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_WDTEN$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Htext29 0 0 ABS 0 text29 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext29 0 0 ABS 0 text29 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext38 70E 0 CODE 0 text38 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+___intlo_sp 0 0 STACK 2 stack C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__Htext39 0 0 ABS 0 text39 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ltext39 0 0 ABS 0 text39 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext29 5BE 0 CODE 0 text29 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__ptext39 AD2 0 CODE 0 text39 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+receive_data@recv 17 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OSCCONbits FD3 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_i2c_rx_handler 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_INTCONbits FF2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_OpenUSART 330 0 CODE 0 text16 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hend_init BE 0 CODE 0 end_init dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lend_init BA 0 CODE 0 end_init dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_WriteTimer1 FA8 0 CODE 0 text26 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_init_queue A70 0 CODE 0 text2 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HidataCOMRAM 0 0 ABS 0 idataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+memcpy@d1 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LidataCOMRAM 0 0 ABS 0 idataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_InterruptHandlerHigh 8EA 0 CODE 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pidataCOMRAM 1006 0 CODE 0 idataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_FOSC$HSPLL 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+uart_send@data 2 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hjflash_buffer 7800 0 CODE 0 jflash_buffer dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Ljflash_buffer 7800 0 CODE 0 jflash_buffer dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_init_queues D2E 0 CODE 0 text1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+recv_msg@msgtype 35 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_CP0$OFF 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__smallconst 0 0 SMALLCONST 0 smallconst C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+resetDBG@b 1 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_resetDBG B92 0 CODE 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hreset_vec 4 0 CODE 0 reset_vec dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lreset_vec 0 0 CODE 0 reset_vec dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_in_low_int A70 0 CODE 0 text8 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_i2c_master_recv 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_enable_interrupts 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+memcpy@s1 2A 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__accesstop 80 0 ABS 0 - C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__end_of_recv_msg 330 0 CODE 0 text14 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Hintcode_body 0 0 ABS 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__Lintcode_body 0 0 ABS 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pintcode_body 850 0 CODE 0 intcode_body dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_enable_interrupts FF8 0 CODE 0 text5 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+intlevel0 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__size_of_block_on_To_msgqueues 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+intlevel1 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+intlevel2 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__end_of_resetDBG BF0 0 CODE 0 text25 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+intlevel3 0 0 CODE 0 text C:\Users\Kindel\AppData\Local\Temp\s5g4.obj
+__size_ofi2_in_high_int 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__HdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__LdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_resetDBG 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__pdataCOMRAM 50 0 COMRAM 1 dataCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_SleepIfOkay 7B6 0 CODE 0 text38 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_ToMainHigh_recvmsg E5A 0 CODE 0 text13 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+start_initialization C96 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_init_i2c D78 0 CODE 0 text3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+main@last_reg_recvd 10D 0 BANK1 1 cstackBANK1 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_load_i2c_data 982 0 CODE 0 text37 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+_init_i2c D2E 0 CODE 0 text3 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__initialization C96 0 CODE 0 cinit dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_in_low_int 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_load_i2c_data 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__activetblptr 2 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_ofi2_check_msg F34 0 CODE 0 text41 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__CFG_FCMEN$ON 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__end_of_i2c_int_handler EE4 0 CODE 0 text31 dist/UseXC8/production\PIC_Framework_3.X.production.obj
+Delay1KTCYx@unit 28 0 COMRAM 1 cstackCOMRAM dist/UseXC8/production\PIC_Framework_3.X.production.obj
+__size_of_memcpy 0 0 ABS 0 - dist/UseXC8/production\PIC_Framework_3.X.production.obj
+# %SPLITSTAB Section
+# This section enumerates all the psect splits performed by the assembler.
+# The beginning of the section is indicated by %SPLITSTAB.
+# Each line is a record a particular split, where the parent psect in on
+# the left and the child on the right.  Note that a child psect is always
+# split form the top of the parent psect. All splits from a given parent
+# are listed in the order in which they occurred.
+%SPLITSTAB
+# %DABS Section
+# This section contains a table of all usuage of the assember
+# directive DABS in the program. Each line has the following format:
+#   <name> <space> <address> <size>
+# If the DABS was originally labelled then that shall be <name>,
+# otherwise name will be "-".  The <space> number is in decimal.
+# <address> and <size> are in byte units as unqaulified hexadecimal
+%DABS
+# %SEGMENTS Section
+# This sections enumerates the segments of the program.  Each segment
+# is described on a single line as follows:
+#    <name> <space> <link address> <file address> <size> <delta>
+# Addresses and size are in unqualified hexadecimal.  The link address
+# and size are in units of delta. The file address is in units of bytes.
+# All other numeric quantities are in decimal.
+%SEGMENTS
+reset_vec 0 0 0 4 1
+intcode 0 8 8 C 1
+intcodelo 0 18 18 FF3 1
+config 0 7FF8 7FF8 6 1
+cstackCOMRAM 1 1 1 56 1
+bssBANK0 1 80 80 6C 1
+cstackBANK1 1 100 100 F7 1
