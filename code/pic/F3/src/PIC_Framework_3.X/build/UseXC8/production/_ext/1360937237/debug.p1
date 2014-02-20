@@ -19,14 +19,14 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S156 . . LB7 ]
 [u S147 `S148 1 `S149 1 `S150 1 `S151 1 `S152 1 `S153 1 `S154 1 `S155 1 `S156 1 ]
 [n S147 . . . . . . . . . . ]
-"2113 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"2113 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _LATBbits `VS147 ~T0 @X0 0 e@3978 ]
 "71 ../src/debug.c
 [c E5003 0 1 2 3 4 .. ]
 [n E5003 . DBG1 DBG2 DBG3 DBG4 DBG5  ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
-"46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"46 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [; ;pic18f45j10.h: 46: asm("PORTA equ 0F80h");
 [; <" PORTA equ 0F80h ;# ">
 [; ;pic18f45j10.h: 49: typedef union {

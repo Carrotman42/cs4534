@@ -1,11 +1,13 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"238 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
-[v _ReadTimer1 `(ui ~T0 @X0 0 ef ]
-"239
+"13 ../src/debug.h
+[v _debugNum `(v ~T0 @X0 0 ef1`i ]
+"17 ../src/my_uart.h
+[v _uart_send `(v ~T0 @X0 0 ef1`uc ]
+"239 C:\Program Files (x86)\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer1 `(v ~T0 @X0 0 ef1`ui ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
-"46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"46 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [; ;pic18f45j10.h: 46: asm("PORTA equ 0F80h");
 [; <" PORTA equ 0F80h ;# ">
 [; ;pic18f45j10.h: 49: typedef union {
@@ -4604,6 +4606,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_uart.h: 13: } uart_comm;
 [; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
 [; ;my_uart.h: 16: void uart_recv_int_handler(void);
+[; ;my_uart.h: 17: void uart_send(unsigned char);
 [; ;sensor_types.h: 8: typedef char uint8;
 [; ;sensor_types.h: 9: typedef short uint16;
 [; ;sensor_types.h: 12: typedef struct {
@@ -4656,26 +4659,26 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 17: void timer0_int_handler() {
 [e :U _timer0_int_handler ]
 [f ]
-[; ;user_interrupts.c: 24: }
-"24
+[; ;user_interrupts.c: 23: }
+"23
 [e :UE 589 ]
 }
-"29
+"28
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;user_interrupts.c: 29: void timer1_int_handler() {
+[; ;user_interrupts.c: 28: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-"30
-[v _result `ui ~T0 @X0 1 a ]
-[; ;user_interrupts.c: 30: unsigned int result;
-[; ;user_interrupts.c: 37: result = ReadTimer1();
-"37
-[e = _result ( _ReadTimer1 ..  ]
-[; ;user_interrupts.c: 41: WriteTimer1(0);
+[; ;user_interrupts.c: 34: debugNum(4);
+"34
+[e ( _debugNum (1 -> 4 `i ]
+[; ;user_interrupts.c: 35: uart_send((char) 0x55);
+"35
+[e ( _uart_send (1 -> -> 85 `i `uc ]
+[; ;user_interrupts.c: 40: WriteTimer1(0xFFFF-3750);
+"40
+[e ( _WriteTimer1 (1 - -> 65535 `ui -> -> 3750 `i `ui ]
+[; ;user_interrupts.c: 41: }
 "41
-[e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
-[; ;user_interrupts.c: 42: }
-"42
 [e :UE 590 ]
 }
