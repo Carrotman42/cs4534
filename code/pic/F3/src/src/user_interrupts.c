@@ -16,7 +16,6 @@
 
 void timer0_int_handler() {
 
-<<<<<<< HEAD
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
     WriteTimer0(0x4000);
@@ -29,8 +28,6 @@ void timer0_int_handler() {
 #endif
 #endif
 
-=======
->>>>>>> 5f00084c4622bbb06b6acf10d71f96fb2eab59cf
 #ifdef SENSOR_PIC
     //ADCON0bits.GO = 1;
     //WriteTimer0(0xFFFF-375);

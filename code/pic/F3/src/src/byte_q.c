@@ -1,7 +1,7 @@
 
 #include "byte_q.h"
 
-void vqInit(q*byte_queue) {
+void vqInit(byte_queue *q) {
 	q->write = q->read = 0;
 }
 
@@ -9,7 +9,7 @@ void vqInit(q*byte_queue) {
 //    is not possible to fully fill the queue's buffer (we'd have
 //    to waste a byte somewhere if we ever want a buffer > 128 anyway)
 //    doing it this way makes it easier to program
-int vqSend(q*byte_queue, unsigned len, unsigned char *data) {
+int vqSend(byte_queue *q, unsigned len, unsigned char *data) {
 	// Make sure it can fit
 	unsigned char w = q->write, r = q->read;
 	unsigned char cap;
@@ -32,7 +32,7 @@ int vqSend(q*byte_queue, unsigned len, unsigned char *data) {
 	return 0;
 }
 
-inline unsigned char vqPop(q*byte_queue, char *ok) {
+inline unsigned char vqPop(byte_queue *q, char *ok) {
 	// Set whether there is any data to read
 	register unsigned char r = q->read;
 	if (*ok = (q->write != r)) {

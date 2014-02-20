@@ -10,10 +10,10 @@ typedef struct {
 	unsigned char data[VAR_Q_LEN];
 } byte_queue;
 
-void vqInit(q*byte_queue);
-int vqSend(q*byte_queue, unsigned len, unsigned char *data);
+void vqInit(byte_queue *q);
+int vqSend(byte_queue *q, unsigned len, unsigned char *data);
 
 // ok is an out param. If it is true then there was a value, else the queue
 //    was empty.
-inline unsigned char vqPop(q*byte_queue, char *ok);
+inline unsigned char vqPop(byte_queue*q, char *ok);
 
