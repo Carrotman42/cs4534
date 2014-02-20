@@ -6068,10 +6068,11 @@ uint8 payloadLen;
 char payload[];
 } RoverMsg;
 
-# 26 "../src/my_i2c.h"
+# 12 "../src/my_i2c.h"
 typedef struct __i2c_comm {
 unsigned char buffer[10];
 unsigned char buflen;
+unsigned char bufind;
 unsigned char event_count;
 unsigned char status;
 unsigned char error_code;
@@ -6079,19 +6080,25 @@ unsigned char error_count;
 unsigned char outbuffer[100 + 3];
 unsigned char outbuflen;
 unsigned char outbufind;
-unsigned char slave_addr;
+unsigned char baud_rate;
+unsigned char txnrx;
 } i2c_comm;
 
+void i2c_configure_master();
+unsigned char i2c_master_send(unsigned char, unsigned char,unsigned char *);
+unsigned char i2c_master_recv(unsigned char);
+unsigned char load_i2c_data();
+void handle_repeat_start();
+uint8 check_if_send_stop();
+void send_stop();
+uint8 receive_data();
 
-void start_i2c_slave_reply(unsigned char,unsigned char *);
-void i2c_configure_slave(unsigned char);
+void i2c_tx_handler();
+void i2c_rx_handler();
 
-# 58
+# 78
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
-void i2c_configure_master(unsigned char);
-unsigned char i2c_master_send(unsigned char,unsigned char *);
-unsigned char i2c_master_recv(unsigned char);
 
 # 1 "../src/timer0_thread.h"
 typedef struct __timer0_thread_struct {
@@ -6168,20 +6175,23 @@ OpenTimer0(0b11111111 & 0b10111111 & 0b11011111 & 0b11110001);
 # 278
 IPR1bits.SSPIP = 1;
 
-# 298
+
 PIE1bits.SSPIE = 1;
 
-# 316
+# 297
+i2c_configure_master();
+
+# 317
 enable_interrupts();
 
-# 324
+# 325
 while (1) {
 
 
 
 block_on_To_msgqueues();
 
-# 335
+# 336
 length = ToMainHigh_recvmsg(10, &msgtype, (void *) msgbuffer);
 if (length < 0) {
 
@@ -6211,7 +6221,7 @@ break;
 case 50:
 {
 
-# 366
+# 367
 break;
 };
 
@@ -6235,11 +6245,11 @@ switch (msgtype) {
 case 50:
 {
 
-# 391
+# 392
 break;
 };
 
-# 404
+# 405
 default:
 {
 

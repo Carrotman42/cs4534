@@ -1,4 +1,8 @@
 Version 3.2 HI-TECH Software Intermediate Code
+"121 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
+[v _WriteTimer0 `(v ~T0 @X0 0 ef1`ui ]
+"29 ../src/my_i2c.h
+[v _i2c_master_recv `(uc ~T0 @X0 0 ef1`uc ]
 "238 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
 [v _ReadTimer1 `(ui ~T0 @X0 0 ef ]
 "239
@@ -4626,25 +4630,32 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;brain_rover.h: 40: uint8 payloadLen;
 [; ;brain_rover.h: 44: char payload[];
 [; ;brain_rover.h: 45: } RoverMsg;
-[; ;my_i2c.h: 26: typedef struct __i2c_comm {
-[; ;my_i2c.h: 27: unsigned char buffer[10];
-[; ;my_i2c.h: 28: unsigned char buflen;
-[; ;my_i2c.h: 29: unsigned char event_count;
-[; ;my_i2c.h: 30: unsigned char status;
-[; ;my_i2c.h: 31: unsigned char error_code;
-[; ;my_i2c.h: 32: unsigned char error_count;
-[; ;my_i2c.h: 33: unsigned char outbuffer[100 + 3];
-[; ;my_i2c.h: 34: unsigned char outbuflen;
-[; ;my_i2c.h: 35: unsigned char outbufind;
-[; ;my_i2c.h: 36: unsigned char slave_addr;
-[; ;my_i2c.h: 37: } i2c_comm;
-[; ;my_i2c.h: 40: void start_i2c_slave_reply(unsigned char,unsigned char *);
-[; ;my_i2c.h: 41: void i2c_configure_slave(unsigned char);
-[; ;my_i2c.h: 58: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 59: void i2c_int_handler(void);
-[; ;my_i2c.h: 60: void i2c_configure_master(unsigned char);
-[; ;my_i2c.h: 61: unsigned char i2c_master_send(unsigned char,unsigned char *);
-[; ;my_i2c.h: 62: unsigned char i2c_master_recv(unsigned char);
+[; ;my_i2c.h: 12: typedef struct __i2c_comm {
+[; ;my_i2c.h: 13: unsigned char buffer[10];
+[; ;my_i2c.h: 14: unsigned char buflen;
+[; ;my_i2c.h: 15: unsigned char bufind;
+[; ;my_i2c.h: 16: unsigned char event_count;
+[; ;my_i2c.h: 17: unsigned char status;
+[; ;my_i2c.h: 18: unsigned char error_code;
+[; ;my_i2c.h: 19: unsigned char error_count;
+[; ;my_i2c.h: 20: unsigned char outbuffer[100 + 3];
+[; ;my_i2c.h: 21: unsigned char outbuflen;
+[; ;my_i2c.h: 22: unsigned char outbufind;
+[; ;my_i2c.h: 23: unsigned char baud_rate;
+[; ;my_i2c.h: 24: unsigned char txnrx;
+[; ;my_i2c.h: 25: } i2c_comm;
+[; ;my_i2c.h: 27: void i2c_configure_master();
+[; ;my_i2c.h: 28: unsigned char i2c_master_send(unsigned char, unsigned char,unsigned char *);
+[; ;my_i2c.h: 29: unsigned char i2c_master_recv(unsigned char);
+[; ;my_i2c.h: 30: unsigned char load_i2c_data();
+[; ;my_i2c.h: 31: void handle_repeat_start();
+[; ;my_i2c.h: 32: uint8 check_if_send_stop();
+[; ;my_i2c.h: 33: void send_stop();
+[; ;my_i2c.h: 34: uint8 receive_data();
+[; ;my_i2c.h: 36: void i2c_tx_handler();
+[; ;my_i2c.h: 37: void i2c_rx_handler();
+[; ;my_i2c.h: 78: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 79: void i2c_int_handler(void);
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
@@ -4656,26 +4667,32 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 17: void timer0_int_handler() {
 [e :U _timer0_int_handler ]
 [f ]
-[; ;user_interrupts.c: 24: }
-"24
+[; ;user_interrupts.c: 21: WriteTimer0(0x4000);
+"21
+[e ( _WriteTimer0 (1 -> -> 16384 `i `ui ]
+[; ;user_interrupts.c: 23: i2c_master_recv(0x4f);
+"23
+[e ( _i2c_master_recv (1 -> -> 79 `i `uc ]
+[; ;user_interrupts.c: 35: }
+"35
 [e :UE 589 ]
 }
-"29
+"40
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;user_interrupts.c: 29: void timer1_int_handler() {
+[; ;user_interrupts.c: 40: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-"30
-[v _result `ui ~T0 @X0 1 a ]
-[; ;user_interrupts.c: 30: unsigned int result;
-[; ;user_interrupts.c: 37: result = ReadTimer1();
-"37
-[e = _result ( _ReadTimer1 ..  ]
-[; ;user_interrupts.c: 41: WriteTimer1(0);
 "41
+[v _result `ui ~T0 @X0 1 a ]
+[; ;user_interrupts.c: 41: unsigned int result;
+[; ;user_interrupts.c: 48: result = ReadTimer1();
+"48
+[e = _result ( _ReadTimer1 ..  ]
+[; ;user_interrupts.c: 52: WriteTimer1(0);
+"52
 [e ( _WriteTimer1 (1 -> -> 0 `i `ui ]
-[; ;user_interrupts.c: 42: }
-"42
+[; ;user_interrupts.c: 53: }
+"53
 [e :UE 590 ]
 }

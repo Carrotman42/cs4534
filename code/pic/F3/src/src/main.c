@@ -276,7 +276,9 @@ void main(void) {
     //IPR1bits.RCIP = 0;
     // I2C interrupt
     IPR1bits.SSPIP = 1;
-    
+
+    //set i2c int high
+    PIE1bits.SSPIE = 1;
 
 
     
@@ -284,6 +286,7 @@ void main(void) {
     resetAccumulators();
     init_adc();
 
+    // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
     i2c_configure_slave(0x9E);
@@ -291,11 +294,9 @@ void main(void) {
     i2c_configure_slave(0x9A);
 #elif defined MASTER_PIC
     //sending clock frequency
-    i2c_configure_master(12000000); //12MHz clock
+    i2c_configure_master(); //12MHz clock set hardcoded
 #endif
 
-    // must specifically enable the I2C interrupts
-    PIE1bits.SSPIE = 1;
 
     // configure the hardware USART device
 #ifdef __USE18F26J50

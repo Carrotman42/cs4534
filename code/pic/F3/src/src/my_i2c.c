@@ -33,10 +33,11 @@ void init_i2c(i2c_comm *ic) {
 // Configure for I2C Master mode -- the variable "slave_addr" should be stored in
 //   i2c_comm (as pointed to by ic_ptr) for later use.
 //SSPADD=(FOSC / (4 * BAUD)) - 1;
-void i2c_configure_master(unsigned char fosc) {
+void i2c_configure_master() {
     SSPCON1bits.SSPM = 0x8; // Master with Baud rate as set below
     SSPCON1bits.SSPEN = 0x1; //Enable SDA/SCL
-    ic_ptr->baud_rate = (fosc / (4*100000))-1;
+    SSPSTATbits.SMP = 0x1;
+    SSPADD = (12000000 / (4*100000))-1; //should be 0x1D for a 12 MHz clock
 }
 
 // Sending in I2C Master mode [slave write]
@@ -50,8 +51,24 @@ void i2c_configure_master(unsigned char fosc) {
 //   will have a length of 0.
 // The subroutine must copy the msg to be sent from the "msg" parameter below into
 //   the structure to which ic_ptr points [there is already a suitable buffer there].
-unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
-    // Your code goes here
+
+//addr is the actual address.  It will be shifted here
+unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg) {
+    if(ic_ptr->status != I2C_IDLE){
+        return -1;
+    }
+    ic_ptr->txnrx = 1;
+    char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits
+    ic_ptr->outbuffer[0] = buf_addr;
+    int i =1;
+    for(i; i < length + 1; i++){
+        ic_ptr->outbuffer[i] = msg[i-1];
+    }
+    ic_ptr->outbuflen = length + 1; //char length + addr byte
+    ic_ptr->outbufind = 0; //start at 0th pos.  addr will be written in after S int happens
+    SSPCON2bits.SEN = 1; //send start signal
+    ic_ptr->status = I2C_STARTED;
+
     return(0);
 }
 
@@ -68,15 +85,132 @@ unsigned char i2c_master_send(unsigned char length, unsigned char *msg) {
 //   is determined by the parameter passed to i2c_master_recv()].
 // The interrupt handler will be responsible for copying the message received into
 
-unsigned char i2c_master_recv(unsigned char length) {
-    // Your code goes here
+unsigned char i2c_master_recv(unsigned char addr) {
+    if(ic_ptr->status != I2C_IDLE){
+        return -1;
+    }
+    ic_ptr->txnrx = 0;
+    char buf_addr = (addr << 1) | 0x1; // set addr in top 7 bits and set lsb
+    ic_ptr->outbuffer[0] = buf_addr;
+    ic_ptr->outbuflen = 1; //just enough room for addr
+    ic_ptr->outbufind = 0; //set for addr
+    ic_ptr->buflen = 3; //reset the buffer, we'll at LEAST read 3 bytes
+    ic_ptr->bufind = 0;
+    SSPCON2bits.SEN = 1;
+    ic_ptr->status = I2C_STARTED;
+    //debugNum(1);
     return(0);
 }
 
+//load the i2c data into the buffer.
+unsigned char load_i2c_data(){
+    if(ic_ptr->status == I2C_STARTED) ic_ptr->status = I2C_MASTER_SEND; //change the status to "sending data" on the next interrupt
+    SSPBUF = ic_ptr->outbuffer[ic_ptr->outbufind++];
+    return SSPCON1bits.WCOL;
+}
+
+void handle_repeat_start(){
+    SSPCON2bits.RSEN = 1;
+}
+
+uint8 check_if_send_stop(){
+    if(ic_ptr->outbufind == ic_ptr->outbuflen){
+        return 1;
+    }
+    return 0;
+}
+
+void send_stop(){
+    ic_ptr->status = I2C_STOPPED;
+    SSPCON2bits.PEN = 1;
+}
+
+void i2c_tx_handler(){
+    switch(ic_ptr->status){
+        case(I2C_STARTED):
+            load_i2c_data(); //start handled same way as sending data - address should already be loaded.
+            break;
+        case(I2C_MASTER_SEND):
+            if((SSPCON2bits.ACKSTAT == 1) || check_if_send_stop()){ //ack not received or it should stop naturally
+                //ic_ptr->outbufind--; //Resend last byte
+                send_stop();
+            }
+            else{
+                if(load_i2c_data() == 1) //WCOL bit set
+                    send_stop();
+            }
+            break;
+        case(I2C_STOPPED): //stop
+            ic_ptr->status = I2C_IDLE;
+            break;
+        default:
+            break;
+    }
+}
+
+//return 1 when we want to stop the transfer (on error or all wanted bytes are read), 0 otherwise
+uint8 receive_data(){
+    if(!SSPSTATbits.BF){//nothing in buffer
+        SSPCON2bits.ACKDT = 1;
+        SSPCON2bits.ACKEN = 1;
+        return 1;
+    }
+    unsigned char recv = SSPBUF;
+    ic_ptr->buffer[ic_ptr->bufind] = recv;
+    if(++ic_ptr->bufind == 3){
+        ic_ptr->buflen = recv+3; //3rd byte is the payload length, add the 3 bytes already received to the buffer length
+    }
+
+    if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
+        SSPCON2bits.ACKDT = 1;
+        SSPCON2bits.ACKEN = 1;
+        return 1;
+    }
+
+    SSPCON2bits.ACKDT = 0;
+    SSPCON2bits.ACKEN = 1;
+    ic_ptr->status = I2C_ACK;
+    return 0;
+}
+
+void i2c_rx_handler(){
+    switch(ic_ptr->status){
+        case(I2C_STARTED):
+            load_i2c_data();
+            // //need to set this after transmitting
+            break;
+        case(I2C_MASTER_SEND): //sent the addr
+            if(SSPCON2bits.ACKSTAT == 1){ //ack not received
+                send_stop();
+            }
+            else{
+                ic_ptr->status = I2C_RCV_DATA;
+                SSPCON2bits.RCEN = 1;
+            }
+            break;
+        case(I2C_RCV_DATA):
+            if(receive_data() == 1){ //receive is finished
+                send_stop();
+            }
+            break;
+        case(I2C_ACK):
+            ic_ptr->status = I2C_RCV_DATA;
+            SSPCON2bits.RCEN = 1;
+            break;
+        case(I2C_STOPPED):
+            ic_ptr->status = I2C_IDLE;
+            break;
+        default:
+            break;
+    }
+}
 
 
 void i2c_int_handler(){
-    //nothing for now
+    if(ic_ptr->txnrx)
+        i2c_tx_handler();
+    else
+        i2c_rx_handler();
 }
 
 
@@ -284,9 +418,14 @@ void i2c_int_handler() {
     if (msg_ready) {
 
         #ifdef SENSOR_PIC
+        //debugNum(1);
+        //if(ic_ptr->buffer[0] == 0xaa)
+        //    debugNum(2);
+        //if(ic_ptr->buffer[1] == 0xbb)
+            debugNum(4);
         ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         setBrainReqData(ic_ptr->buffer);
-        //ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        ////ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         #endif
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
@@ -298,7 +437,13 @@ void i2c_int_handler() {
     }
     if (msg_to_send) {
         #ifdef SENSOR_PIC
-        sendRequestedData();
+        char outbuff[4];
+        outbuff[0] = 0xa0;
+        outbuff[1] = 0x66;
+        outbuff[2] = 0x01;
+        outbuff[3] = 0xaa;
+        start_i2c_slave_reply(4, outbuff);
+        //sendRequestedData();
         #endif
         msg_to_send = 0;
     }

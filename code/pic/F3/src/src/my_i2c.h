@@ -12,6 +12,7 @@
 typedef struct __i2c_comm {
     unsigned char buffer[MAXI2CBUF];
     unsigned char buflen;
+    unsigned char bufind;
     unsigned char event_count;
     unsigned char status;
     unsigned char error_code;
@@ -20,7 +21,25 @@ typedef struct __i2c_comm {
     unsigned char outbuflen;
     unsigned char outbufind;
     unsigned char baud_rate;
+    unsigned char txnrx; //1 if tx, 0 if rx
 } i2c_comm;
+
+void i2c_configure_master();
+unsigned char i2c_master_send(unsigned char, unsigned char,unsigned char *);
+unsigned char i2c_master_recv(unsigned char);
+unsigned char load_i2c_data();
+void handle_repeat_start();
+uint8 check_if_send_stop();
+void send_stop();
+uint8 receive_data();
+
+void i2c_tx_handler();
+void i2c_rx_handler();
+
+#define I2C_MASTER_SEND 0x8
+#define I2C_STOPPED 0x9
+#define I2C_ACK 0xa
+
 
 #else //!I2C_MASTER = I2C_SLAVE
 typedef struct __i2c_comm {
@@ -48,6 +67,7 @@ void i2c_configure_slave(unsigned char);
 #define I2C_STARTED 0x6
 #define	I2C_RCV_DATA 0x7
 
+
 #define I2C_ERR_THRESHOLD 1
 #define I2C_ERR_OVERRUN 0x4
 #define I2C_ERR_NOADDR 0x5
@@ -57,8 +77,5 @@ void i2c_configure_slave(unsigned char);
 
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
-void i2c_configure_master(unsigned char);
-unsigned char i2c_master_send(unsigned char,unsigned char *);
-unsigned char i2c_master_recv(unsigned char);
 
 #endif

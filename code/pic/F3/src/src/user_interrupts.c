@@ -16,10 +16,21 @@
 
 void timer0_int_handler() {
 
+#ifdef MASTER_PIC
+#ifdef DEBUG_ON
+    WriteTimer0(0x4000);
+    //debugNum(8);
+    i2c_master_recv(0x4f);
+    //char buf[2];
+    //buf[0] = 0xaa;
+    //buf[1] = 0xbb;
+    //i2c_master_send(0x4F, 2, buf);
+#endif
+#endif
 
 #ifdef SENSOR_PIC
-    ADCON0bits.GO = 1;
-    WriteTimer0(0xFFFF-375);
+    //ADCON0bits.GO = 1;
+    //WriteTimer0(0xFFFF-375);
 #endif //SENSOR_PIC
 }
 
