@@ -6039,7 +6039,7 @@ uint8 receive_data();
 void i2c_tx_handler();
 void i2c_rx_handler();
 
-# 78
+# 81
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 

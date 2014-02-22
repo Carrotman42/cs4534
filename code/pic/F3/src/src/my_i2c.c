@@ -6,6 +6,7 @@
 #endif
 #include "my_i2c.h"
 #include "debug.h"
+#include "my_uart.h"
 
 #ifdef DEBUG_ON
 #include "testAD.h"
@@ -55,6 +56,15 @@ void i2c_configure_master() {
 //addr is the actual address.  It will be shifted here
 unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg) {
     if(ic_ptr->status != I2C_IDLE){
+        //copy addr and msg into a single array
+        char tempbuf[MAX_I2C_SENSOR_DATA_LEN +1];
+        tempbuf[0] = addr;
+        int i = 1;
+        for(i; i < length+1; i++){
+            tempbuf[i] = msg[i-1];
+        }
+        ToMainHigh_sendmsg(length+1, MSGT_MASTER_RECV_BUSY, tempbuf);
+        //debugNum(2);
         return -1;
     }
     ic_ptr->txnrx = 1;
@@ -87,6 +97,8 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
 
 unsigned char i2c_master_recv(unsigned char addr) {
     if(ic_ptr->status != I2C_IDLE){
+        ToMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
+        //debugNum(2);
         return -1;
     }
     ic_ptr->txnrx = 0;
@@ -190,12 +202,15 @@ void i2c_rx_handler(){
             break;
         case(I2C_RCV_DATA):
             if(receive_data() == 1){ //receive is finished
-                send_stop();
+                ic_ptr->status = I2C_NACK;
             }
             break;
         case(I2C_ACK):
             ic_ptr->status = I2C_RCV_DATA;
             SSPCON2bits.RCEN = 1;
+            break;
+        case(I2C_NACK):
+            send_stop();
             break;
         case(I2C_STOPPED):
             ic_ptr->status = I2C_IDLE;
@@ -418,14 +433,22 @@ void i2c_int_handler() {
     if (msg_ready) {
 
         #ifdef SENSOR_PIC
-        //debugNum(1);
-        //if(ic_ptr->buffer[0] == 0xaa)
-        //    debugNum(2);
-        //if(ic_ptr->buffer[1] == 0xbb)
-            debugNum(4);
         ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         setBrainReqData(ic_ptr->buffer);
         ////ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        #elif defined(PICMAN) || defined(MOTOR_PIC)
+        //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
+        //debugNum(1);
+        if(is_high_priority()){ //would pass ic_ptr->buffer but it's global so no need
+            uint8 i = 0;
+            for(i; i < ic_ptr->buflen; i++){
+                uart_send(ic_ptr->buffer[i]);
+                uart_send(ic_ptr->buffer[i]);
+            }
+        }
+        else{
+            ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        }
         #endif
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
@@ -436,7 +459,7 @@ void i2c_int_handler() {
         ic_ptr->error_count = 0;
     }
     if (msg_to_send) {
-        #ifdef SENSOR_PIC
+        debugNum(2);
         char outbuff[4];
         outbuff[0] = 0xa0;
         outbuff[1] = 0x66;
@@ -444,7 +467,6 @@ void i2c_int_handler() {
         outbuff[3] = 0xaa;
         start_i2c_slave_reply(4, outbuff);
         //sendRequestedData();
-        #endif
         msg_to_send = 0;
     }
 }
@@ -505,4 +527,16 @@ void i2c_configure_slave(unsigned char addr) {
     SSPCON1 |= SSPENB;
     // end of i2c configure
 }
+
+#if defined(PICMAN) || defined(MOTOR_PIC)
+//return 1 if high priority,0 otherwise
+uint8 is_high_priority(){
+    if(ic_ptr->buffer[0] == 0x01){
+        return 1;
+    }
+    return 0;
+}
+#endif
+
+
 #endif //I2C_MASTER

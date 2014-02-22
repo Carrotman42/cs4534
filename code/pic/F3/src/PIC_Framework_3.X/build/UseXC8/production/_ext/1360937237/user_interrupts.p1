@@ -1,14 +1,12 @@
 Version 3.2 HI-TECH Software Intermediate Code
 "121 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer0 `(v ~T0 @X0 0 ef1`ui ]
-"29 ../src/my_i2c.h
-[v _i2c_master_recv `(uc ~T0 @X0 0 ef1`uc ]
-"13 ../src/debug.h
-[v _debugNum `(v ~T0 @X0 0 ef1`i ]
-"17 ../src/my_uart.h
-[v _uart_send `(v ~T0 @X0 0 ef1`uc ]
+"28 ../src/my_i2c.h
+[v _i2c_master_send `(uc ~T0 @X0 0 ef3`uc`uc`*uc ]
 "239 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer1 `(v ~T0 @X0 0 ef1`ui ]
+"29 ../src/my_i2c.h
+[v _i2c_master_recv `(uc ~T0 @X0 0 ef1`uc ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
 "46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
@@ -4657,8 +4655,8 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;my_i2c.h: 34: uint8 receive_data();
 [; ;my_i2c.h: 36: void i2c_tx_handler();
 [; ;my_i2c.h: 37: void i2c_rx_handler();
-[; ;my_i2c.h: 78: void init_i2c(i2c_comm *);
-[; ;my_i2c.h: 79: void i2c_int_handler(void);
+[; ;my_i2c.h: 81: void init_i2c(i2c_comm *);
+[; ;my_i2c.h: 82: void i2c_int_handler(void);
 [; ;debug.h: 8: enum {DBG1, DBG2, DBG3, DBG4, DBG5};
 [; ;debug.h: 10: void setDBG(unsigned char );
 [; ;debug.h: 11: void resetDBG(unsigned char );
@@ -4673,29 +4671,32 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 21: WriteTimer0(0x4000);
 "21
 [e ( _WriteTimer0 (1 -> -> 16384 `i `ui ]
-[; ;user_interrupts.c: 23: i2c_master_recv(0x4f);
-"23
-[e ( _i2c_master_recv (1 -> -> 79 `i `uc ]
-[; ;user_interrupts.c: 35: }
-"35
+"24
+[v _buf `uc ~T0 @X0 -> -> 1 `i `ux a ]
+[; ;user_interrupts.c: 24: char buf[1];
+[; ;user_interrupts.c: 25: buf[0] = 0x01;
+"25
+[e = *U + &U _buf * -> -> -> 0 `i `ui `ux -> -> # *U &U _buf `ui `ux -> -> 1 `i `uc ]
+[; ;user_interrupts.c: 26: i2c_master_send(0x10, 1, buf);
+"26
+[e ( _i2c_master_send (3 , , -> -> 16 `i `uc -> -> 1 `i `uc &U _buf ]
+[; ;user_interrupts.c: 34: }
+"34
 [e :UE 589 ]
 }
-"40
+"39
 [v _timer1_int_handler `(v ~T0 @X0 1 ef ]
 {
-[; ;user_interrupts.c: 40: void timer1_int_handler() {
+[; ;user_interrupts.c: 39: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-[; ;user_interrupts.c: 46: debugNum(4);
-"46
-[e ( _debugNum (1 -> 4 `i ]
-[; ;user_interrupts.c: 47: uart_send((char) 0x55);
-"47
-[e ( _uart_send (1 -> -> 85 `i `uc ]
-[; ;user_interrupts.c: 52: WriteTimer1(0xFFFF-3750);
+[; ;user_interrupts.c: 52: WriteTimer1(0x4000);
 "52
-[e ( _WriteTimer1 (1 - -> 65535 `ui -> -> 3750 `i `ui ]
-[; ;user_interrupts.c: 53: }
+[e ( _WriteTimer1 (1 -> -> 16384 `i `ui ]
+[; ;user_interrupts.c: 53: i2c_master_recv(0x10);
 "53
+[e ( _i2c_master_recv (1 -> -> 16 `i `uc ]
+[; ;user_interrupts.c: 54: }
+"54
 [e :UE 590 ]
 }

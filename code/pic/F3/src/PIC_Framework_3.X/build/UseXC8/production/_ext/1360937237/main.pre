@@ -6097,7 +6097,7 @@ uint8 receive_data();
 void i2c_tx_handler();
 void i2c_rx_handler();
 
-# 78
+# 81
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 
@@ -6189,7 +6189,7 @@ PIE1bits.SSPIE = 1;
 # 297
 i2c_configure_master();
 
-# 310
+# 312
 OpenUSART(0b01111111 & 0b11111111 & 0b11111110 & 0b11111101 &
 0b11111111 & 0b11111111, 155);
 BAUDCONbits.BRG16 = 1;
@@ -6197,17 +6197,17 @@ TXSTAbits.TXEN = 1;
 RCSTAbits.SPEN = 1;
 RCSTAbits.CREN = 1;
 
-# 321
+# 323
 enable_interrupts();
 
-# 329
+# 331
 while (1) {
 
 
 
 block_on_To_msgqueues();
 
-# 340
+# 342
 length = ToMainHigh_recvmsg(10, &msgtype, (void *) msgbuffer);
 if (length < 0) {
 
@@ -6221,7 +6221,28 @@ case 10:
 
 break;
 };
+
+case 0x9:
+{
+
+debugNum(1);
+i2c_master_recv(msgbuffer[0]);
+};
+case 0x10:
+{
+
+debugNum(2);
+i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1);
+};
+
 case 40:
+{
+uint8 i = 0;
+for(i; i < length-1; i++){
+uart_send(msgbuffer[i]);
+}
+break;
+};
 case 41:
 {
 
@@ -6237,7 +6258,7 @@ break;
 case 50:
 {
 
-# 371
+# 394
 break;
 };
 
@@ -6261,11 +6282,11 @@ switch (msgtype) {
 case 50:
 {
 
-# 396
+# 419
 break;
 };
 
-# 409
+# 432
 default:
 {
 

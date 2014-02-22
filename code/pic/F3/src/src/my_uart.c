@@ -5,6 +5,7 @@
 #include <plib/usart.h>
 #endif
 #include "my_uart.h"
+#include "debug.h"
 
 static uart_comm *uc_ptr;
 
@@ -52,5 +53,6 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send(char data){
-    putcUSART(data);
+    //putcUSART(data);
+    debugNum(data);
 }

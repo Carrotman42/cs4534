@@ -289,12 +289,14 @@ void main(void) {
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-    i2c_configure_slave(0x9E);
+    i2c_configure_slave(0x40);//address 0x20
 #elif defined MOTOR_PIC
-    i2c_configure_slave(0x9A);
+    i2c_configure_slave(0x20);//address 0x10
 #elif defined MASTER_PIC
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
+#elif defined PICMAN
+    i2c_configure_slave(0x20);//address 0x10,different bus from sensor
 #endif
 
 
@@ -350,7 +352,28 @@ void main(void) {
                     //timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
                     break;
                 };
+                #ifdef I2C_MASTER
+                case MSGT_MASTER_RECV_BUSY:
+                {
+                    //retry
+                    debugNum(1);
+                    i2c_master_recv(msgbuffer[0]);
+                };
+                case MSGT_MASTER_SEND_BUSY:
+                {
+                    //retry
+                    debugNum(2);
+                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                };
+                #endif
                 case MSGT_I2C_DATA:
+                {
+                    uint8 i = 0;
+                    for(i; i < length-1; i++){
+                        uart_send(msgbuffer[i]);
+                    }
+                    break;
+                };
                 case MSGT_I2C_DBG:
                 {
                     // Here is where you could handle debugging, if you wanted

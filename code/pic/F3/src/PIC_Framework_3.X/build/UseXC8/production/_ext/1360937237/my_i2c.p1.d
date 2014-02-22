@@ -4,6 +4,7 @@
 ../src/../../../../common/communication/brain_rover.h  \
 ../src/testAD.h  \
 ../src/debug.h  \
+../src/my_uart.h  \
 ../src/../../../../common/sensor_types.h  \
 ../src/my_i2c.h  \
 ../src/maindefs.h  \

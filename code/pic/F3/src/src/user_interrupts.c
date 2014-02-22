@@ -19,12 +19,11 @@ void timer0_int_handler() {
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
     WriteTimer0(0x4000);
-    //debugNum(8);
-    i2c_master_recv(0x4f);
-    //char buf[2];
-    //buf[0] = 0xaa;
-    //buf[1] = 0xbb;
-    //i2c_master_send(0x4F, 2, buf);
+    //debugNum(4);
+    //i2c_master_recv(0x10);
+    char buf[1];
+    buf[0] = 0x01;
+    i2c_master_send(0x10, 1, buf);
 #endif
 #endif
 
@@ -43,11 +42,15 @@ void timer1_int_handler() {
 #ifdef __USE18F2680
     LATBbits.LATB1 = !LATBbits.LATB1;
 #endif
-    debugNum(4);
-    uart_send((char) 0x55);
+    //debugNum(4);
+    //uart_send((char) 0x55);
 //    result = ReadTimer1();
     //ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
 
     // reset the timer
-    WriteTimer1(0xFFFF-3750);
+    //WriteTimer1(0xFFFF-3750);
+#if defined(MASTER_PIC) && defined(DEBUG_ON)
+    WriteTimer1(0x4000);
+    i2c_master_recv(0x10);
+#endif
 }

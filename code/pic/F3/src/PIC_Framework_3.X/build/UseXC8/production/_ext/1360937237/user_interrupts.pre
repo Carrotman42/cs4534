@@ -6027,7 +6027,7 @@ uint8 receive_data();
 void i2c_tx_handler();
 void i2c_rx_handler();
 
-# 78
+# 81
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 
@@ -6046,9 +6046,12 @@ void timer0_int_handler() {
 
 WriteTimer0(0x4000);
 
-i2c_master_recv(0x4f);
 
-# 35
+char buf[1];
+buf[0] = 0x01;
+i2c_master_send(0x10, 1, buf);
+
+# 34
 }
 
 
@@ -6056,12 +6059,7 @@ i2c_master_recv(0x4f);
 
 void timer1_int_handler() {
 
-# 46
-debugNum(4);
-uart_send((char) 0x55);
-
-
-
-
-WriteTimer1(0xFFFF-3750);
+# 52
+WriteTimer1(0x4000);
+i2c_master_recv(0x10);
 }

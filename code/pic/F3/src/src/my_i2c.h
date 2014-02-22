@@ -39,6 +39,9 @@ void i2c_rx_handler();
 #define I2C_MASTER_SEND 0x8
 #define I2C_STOPPED 0x9
 #define I2C_ACK 0xa
+#define I2C_NACK 0xb
+#define MSGT_MASTER_RECV_BUSY 0x9
+#define MSGT_MASTER_SEND_BUSY 0x10
 
 
 #else //!I2C_MASTER = I2C_SLAVE
@@ -77,5 +80,10 @@ void i2c_configure_slave(unsigned char);
 
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
+
+#if defined(PICMAN) ||defined(MOTOR_PIC)
+uint8 is_high_priority();
+#endif
+
 
 #endif

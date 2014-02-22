@@ -6012,7 +6012,7 @@ uint8 receive_data();
 void i2c_tx_handler();
 void i2c_rx_handler();
 
-# 78
+# 81
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 
@@ -6024,10 +6024,20 @@ void resetDBG(unsigned char );
 void flipDBG(unsigned char );
 void debugNum(int );
 
+# 10 "../src/my_uart.h"
+typedef struct __uart_comm {
+unsigned char buffer[4];
+unsigned char buflen;
+} uart_comm;
+
+void init_uart_recv(uart_comm *);
+void uart_recv_int_handler(void);
+void uart_send(unsigned char);
+
 # 7 "../src/testAD.h"
 void reqADData();
 
-# 19 "../src/my_i2c.c"
+# 20 "../src/my_i2c.c"
 static i2c_comm *ic_ptr;
 
 
@@ -6040,7 +6050,7 @@ ic_ptr->status = 0x5;
 ic_ptr->error_count = 0;
 }
 
-# 36
+# 37
 void i2c_configure_master() {
 SSPCON1bits.SSPM = 0x8;
 SSPCON1bits.SSPEN = 0x1;
@@ -6048,9 +6058,18 @@ SSPSTATbits.SMP = 0x1;
 SSPADD = (12000000 / (4*100000))-1;
 }
 
-# 56
+# 57
 unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg) {
 if(ic_ptr->status != 0x5){
+
+char tempbuf[100 +1];
+tempbuf[0] = addr;
+int i = 1;
+for(i; i < length+1; i++){
+tempbuf[i] = msg[i-1];
+}
+ToMainHigh_sendmsg(length+1, 0x9, tempbuf);
+
 return -1;
 }
 ic_ptr->txnrx = 1;
@@ -6068,9 +6087,11 @@ ic_ptr->status = 0x6;
 return(0);
 }
 
-# 88
+# 98
 unsigned char i2c_master_recv(unsigned char addr) {
 if(ic_ptr->status != 0x5){
+ToMainHigh_sendmsg(1, 0x9, &addr);
+
 return -1;
 }
 ic_ptr->txnrx = 0;
@@ -6174,12 +6195,15 @@ SSPCON2bits.RCEN = 1;
 break;
 case(0x7):
 if(receive_data() == 1){
-send_stop();
+ic_ptr->status = 0xb;
 }
 break;
 case(0xa):
 ic_ptr->status = 0x7;
 SSPCON2bits.RCEN = 1;
+break;
+case(0xb):
+send_stop();
 break;
 case(0x9):
 ic_ptr->status = 0x5;
