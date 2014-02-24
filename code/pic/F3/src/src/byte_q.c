@@ -43,4 +43,60 @@ inline unsigned char vqPop(byte_queue *q, char *ok) {
 	return 0;
 }
 
+// The test file for this code. To test, all you have to do is
+//   compile this single file and give the flag -DBYTE_Q_TEST to gcc
+//   (and then run that executable)
+#ifdef BYTE_Q_TEST
+#include <stdio.h>
+
+int fill(int start, int len, unsigned char*dest) {
+	int i;
+	for (i = 0; i < len; i++) {
+		dest[i] = start;
+		start++;
+	}
+	return start;
+}
+
+int main() {
+	byte_queue q;
+	
+	vqInit(&q);
+	
+	unsigned char buf[100];
+	
+	unsigned vals[] = {10, 40, 20, 50, 100, 20, 100};
+	char skipPopp[] = { 1,  1,  1,  0,   1,  0,   1};
+	int valpos;
+	
+	char curNum = 0;
+	char expNum = 0;
+	char ok;
+	for (valpos = 0; valpos < sizeof(vals) / sizeof(vals[0]); valpos++) {
+		unsigned thisLen = vals[valpos];
+		curNum = fill(curNum, thisLen, buf);
+		if (vqSend(&q, thisLen, buf)) {
+			printf("Q WAS FULL! at %d\n", valpos);
+			return 1;
+		}
+		
+		if (!skipPopp[valpos]) {
+			while(1) {
+				char ret = vqPop(&q, &ok);
+				if (!ok) break;
+				if (ret != expNum) {
+					printf("Got %d, wanted %d!\n", ret, expNum);
+				}
+				expNum++;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+#endif
+
+
+
 
