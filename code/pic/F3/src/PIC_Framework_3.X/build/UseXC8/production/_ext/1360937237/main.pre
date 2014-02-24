@@ -6204,6 +6204,7 @@ OpenUSART(0b01111111 & 0b11111111 & 0b11111110 & 0b11111101 &
 
 # 324
 enable_interrupts();
+LATBbits.LB7 = 0;
 
 # 332
 while (1) {
@@ -6300,9 +6301,21 @@ break;
 case 31:
 {
 unsigned char test[5] = {'1','2','3','4','\r'};
-uart_send_array(&test, 5);
 
-# 443
+
+char i, count;
+count = 0;
+for (i = 0; i < length; i++) {
+if (msgbuffer[i] == test[i]) {
+count += 1;
+}
+}
+if (count >= 5) {
+PORTBbits.RB7 = 1;
+} else {
+PORTBbits.RB7 = 0;
+}
+
 break;
 };
 default:

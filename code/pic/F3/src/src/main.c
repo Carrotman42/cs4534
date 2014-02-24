@@ -322,7 +322,7 @@ void main(void) {
     // Peripheral interrupts can have their priority set to high or low
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
-
+    LATBbits.LB7 = 0;
 
     // loop forever
     // This loop is responsible for "handing off" messages to the subroutines
@@ -429,16 +429,20 @@ void main(void) {
                 case MSGT_UART_DATA:
                 {
                     unsigned char test[5] = {'1','2','3','4','\r'};
-                    uart_send_array(&test, 5);
+//                    uart_send_array(&test, 5);
 
-//                    char i, count;
-//                    count = 0;
-//                    for (i = 0; i < length; i++) {
-//                        if (msgbuffer[i] == test[i]) {
-//                            count += 1;
-//                        }
-//                        count = 0;
-//                    }
+                    char i, count;
+                    count = 0;
+                    for (i = 0; i < length; i++) {
+                        if (msgbuffer[i] == test[i]) {
+                            count += 1;
+                        }
+                    }
+                    if (count >= 5) {
+                        PORTBbits.RB7 = 1;
+                    } else {
+                        PORTBbits.RB7 = 0;
+                    }
 //                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
                 };
