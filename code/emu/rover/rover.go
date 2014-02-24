@@ -57,8 +57,9 @@ var messageID = byte(0)
 
 //115200
 func main() {
+	os.Args = os.Args[1:]
 	if len(os.Args) != 3 {
-		fmt.Println("Kevin's Rover Emulator")
+		fmt.Println("Kevin's Rover Emulator", os.Args)
 		fmt.Println("Command arguments:")
 		fmt.Println("  [usb/com port] [baud rate] [Protocol version]")
 		fmt.Println("    - Port: usually is a COM[0-9]+ port for windows. The port the WiFly is connected to")
@@ -75,7 +76,7 @@ func main() {
 		fmt.Println("Example usage: `rover.exe COM4 19200 1`")
 		fmt.Println("                Run rover emulator with WiFly module on COM4 at baud rate 19200")
 		fmt.Println("                  with protocol description=[FLAGS][PARAMS][PAYLOADLEN][PAYLOAD]")
-		
+		fmt.Println("\n    NOTE: default baud rate for our wiflies is 19200\n\n")
 		fmt.Println("Must specify usb/com port and baud rate to use")
 		os.Exit(1)
 	}
@@ -171,7 +172,6 @@ func (r*Rover) commThread(m*Map) {
 
 // For milestone 2: just read a request and write back a dummy sensor value
 func (r*Rover) milestone2(m*Map) {
-	var curByte byte
 	var buf [200]byte
 	for {
 		if n, err := r.Read(buf[:2]); err != nil {
@@ -187,10 +187,9 @@ func (r*Rover) milestone2(m*Map) {
 			}
 		}
 		
-		fmt.Printf("Got %#X %#X\n", buf[0], buf[1])
+		fmt.Printf("Got %#x %#x\n", buf[0], buf[1])
 		
-		curByte++
-		buf[0] = curByte
+		buf[0] = buf[0] + buf[1]
 		r.writeMessage(buf[:1])
 	}
 }
@@ -200,6 +199,11 @@ func (r*Rover) writeMessage(payload []byte) {
 	// Sensor ID == 0
 	msg := Protocol(1, 0, payload)
 	
+	fmt.Print("Response: ")
+	for _,v := range msg {
+		fmt.Printf("%#x ", v)
+	}
+	fmt.Println()
 	if _, err := r.Write(msg); err != nil {
 		fmt.Println("ERROR during write:", err)
 	}
