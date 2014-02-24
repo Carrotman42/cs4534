@@ -1,5 +1,5 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"2040 C:\Program Files\Microchip\xc8\v1.30\include\plib\adc.h
+"2040 C:\Program Files (x86)\Microchip\xc8\v1.30\include\plib\adc.h
 [v _OpenADC `(v ~T0 @X0 0 ef3`uc`uc`uc ]
 [s S188 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S188 . TRISA0 TRISA1 TRISA2 TRISA3 . TRISA5 ]
@@ -7,7 +7,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S189 . RA0 RA1 RA2 RA3 . RA5 ]
 [u S187 `S188 1 `S189 1 ]
 [n S187 . . . ]
-"2597 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"2597 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _TRISAbits `VS187 ~T0 @X0 0 e@3986 ]
 [s S223 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S223 . TMR1IF TMR2IF CCP1IF SSP1IF TXIF RCIF ADIF PSPIF ]
@@ -39,7 +39,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S219 . . . ]
 "3591
 [v _PIE1bits `VS219 ~T0 @X0 0 e@3997 ]
-"2026 C:\Program Files\Microchip\xc8\v1.30\include\plib\adc.h
+"2026 C:\Program Files (x86)\Microchip\xc8\v1.30\include\plib\adc.h
 [v _ReadADC `(i ~T0 @X0 0 ef ]
 "13 ../src/debug.h
 [v _debugNum `(v ~T0 @X0 0 ef1`i ]
@@ -47,7 +47,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [v _ToMainHigh_sendmsg `(c ~T0 @X0 0 ef3`uc`uc`*v ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
-"46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"46 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [; ;pic18f45j10.h: 46: asm("PORTA equ 0F80h");
 [; <" PORTA equ 0F80h ;# ">
 [; ;pic18f45j10.h: 49: typedef union {

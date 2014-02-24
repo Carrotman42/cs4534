@@ -19,17 +19,20 @@ void uart_recv_int_handler() {
     if (DataRdy1USART()) {
         uc_ptr->buffer[uc_ptr->buflen] = Read1USART();
 #else
+
+#endif
+#endif
     if (DataRdyUSART()) {
         uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
-#endif
-#endif
-
+        //We recieved the last byte of data
         uc_ptr->buflen++;
         // check if a message should be sent
-        if (uc_ptr->buflen == MAXUARTBUF) {
+        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r' || uc_ptr->buflen == MAXUARTBUF) {
             ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             uc_ptr->buflen = 0;
+            ReadUSART();    // clears buffer and returns value to nothing
         }
+
     }
 #ifdef __USE18F26J50
     if (USART1_Status.OVERRUN_ERROR == 1) {

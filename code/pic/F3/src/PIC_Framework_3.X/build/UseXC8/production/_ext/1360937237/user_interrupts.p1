@@ -1,15 +1,17 @@
 Version 3.2 HI-TECH Software Intermediate Code
-"121 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
+"121 C:\Program Files (x86)\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer0 `(v ~T0 @X0 0 ef1`ui ]
 "28 ../src/my_i2c.h
 [v _i2c_master_send `(uc ~T0 @X0 0 ef3`uc`uc`*uc ]
-"239 C:\Program Files\Microchip\xc8\v1.30\include\plib\timers.h
+"57 ../src/messages.h
+[v _ToMainLow_sendmsg `(c ~T0 @X0 0 ef3`uc`uc`*v ]
+"239 C:\Program Files (x86)\Microchip\xc8\v1.30\include\plib\timers.h
 [v _WriteTimer1 `(v ~T0 @X0 0 ef1`ui ]
 "29 ../src/my_i2c.h
 [v _i2c_master_recv `(uc ~T0 @X0 0 ef1`uc ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
-"46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"46 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [; ;pic18f45j10.h: 46: asm("PORTA equ 0F80h");
 [; <" PORTA equ 0F80h ;# ">
 [; ;pic18f45j10.h: 49: typedef union {
@@ -4603,12 +4605,17 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;messages.h: 78: signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
 [; ;messages.h: 79: signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
 [; ;my_uart.h: 10: typedef struct __uart_comm {
-[; ;my_uart.h: 11: unsigned char buffer[4];
+[; ;my_uart.h: 11: unsigned char buffer[10];
 [; ;my_uart.h: 12: unsigned char buflen;
-[; ;my_uart.h: 13: } uart_comm;
-[; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
-[; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_uart.h: 17: void uart_send(unsigned char);
+[; ;my_uart.h: 13: unsigned char outBuff[10];
+[; ;my_uart.h: 14: unsigned char outLength;
+[; ;my_uart.h: 15: unsigned char outIndex;
+[; ;my_uart.h: 16: } uart_comm;
+[; ;my_uart.h: 18: void init_uart_recv(uart_comm *);
+[; ;my_uart.h: 19: void uart_recv_int_handler(void);
+[; ;my_uart.h: 20: void uart_send(unsigned char);
+[; ;my_uart.h: 21: void uart_send_int_handler();
+[; ;my_uart.h: 22: void uart_send_array(char* data, char length);
 [; ;sensor_types.h: 8: typedef char uint8;
 [; ;sensor_types.h: 9: typedef short uint16;
 [; ;sensor_types.h: 12: typedef struct {
@@ -4690,13 +4697,16 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 39: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-[; ;user_interrupts.c: 52: WriteTimer1(0x4000);
-"52
+[; ;user_interrupts.c: 50: ToMainLow_sendmsg(0, 31, (void*) 0);
+"50
+[e ( _ToMainLow_sendmsg (3 , , -> -> 0 `i `uc -> -> 31 `i `uc -> -> 0 `i `*v ]
+[; ;user_interrupts.c: 55: WriteTimer1(0x4000);
+"55
 [e ( _WriteTimer1 (1 -> -> 16384 `i `ui ]
-[; ;user_interrupts.c: 53: i2c_master_recv(0x10);
-"53
+[; ;user_interrupts.c: 56: i2c_master_recv(0x10);
+"56
 [e ( _i2c_master_recv (1 -> -> 16 `i `uc ]
-[; ;user_interrupts.c: 54: }
-"54
+[; ;user_interrupts.c: 58: }
+"58
 [e :UE 590 ]
 }

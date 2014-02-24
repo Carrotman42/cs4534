@@ -24,7 +24,7 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S381 . . WCOL1 ]
 [u S371 `S372 1 `S373 1 `S374 1 `S375 1 `S376 1 `S377 1 `S378 1 `S379 1 `S380 1 `S381 1 ]
 [n S371 . . . . . . . . . . . ]
-"6382 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"6382 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _SSPCON1bits `VS371 ~T0 @X0 0 e@4038 ]
 [s S394 :2 `uc 1 :1 `uc 1 ]
 [n S394 . . R_NOT_W ]
@@ -128,13 +128,13 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S350 . SEN1 ]
 [u S331 `S332 1 `S333 1 `S334 1 `S335 1 `S336 1 `S337 1 `S338 1 `S339 1 `S340 1 `S341 1 `S342 1 `S343 1 `S344 1 `S345 1 `S346 1 `S347 1 `S348 1 `S349 1 `S350 1 ]
 [n S331 . . . . . . . . . . . . . . . . . . . . ]
-"5976 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"5976 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [v _SSPCON2bits `VS331 ~T0 @X0 0 e@4037 ]
 "7583
 [v _SSPBUF `Vuc ~T0 @X0 0 e@4041 ]
 [; ;htc.h: 22: extern void __builtin_software_breakpoint(void);
 [; ;pic18f45j10.h: 44: extern volatile unsigned char PORTA @ 0xF80;
-"46 C:\Program Files\Microchip\xc8\v1.30\include\pic18f45j10.h
+"46 C:\Program Files (x86)\Microchip\xc8\v1.30\include\pic18f45j10.h
 [; ;pic18f45j10.h: 46: asm("PORTA equ 0F80h");
 [; <" PORTA equ 0F80h ;# ">
 [; ;pic18f45j10.h: 49: typedef union {
@@ -4779,12 +4779,17 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;debug.h: 12: void flipDBG(unsigned char );
 [; ;debug.h: 13: void debugNum(int );
 [; ;my_uart.h: 10: typedef struct __uart_comm {
-[; ;my_uart.h: 11: unsigned char buffer[4];
+[; ;my_uart.h: 11: unsigned char buffer[10];
 [; ;my_uart.h: 12: unsigned char buflen;
-[; ;my_uart.h: 13: } uart_comm;
-[; ;my_uart.h: 15: void init_uart_recv(uart_comm *);
-[; ;my_uart.h: 16: void uart_recv_int_handler(void);
-[; ;my_uart.h: 17: void uart_send(unsigned char);
+[; ;my_uart.h: 13: unsigned char outBuff[10];
+[; ;my_uart.h: 14: unsigned char outLength;
+[; ;my_uart.h: 15: unsigned char outIndex;
+[; ;my_uart.h: 16: } uart_comm;
+[; ;my_uart.h: 18: void init_uart_recv(uart_comm *);
+[; ;my_uart.h: 19: void uart_recv_int_handler(void);
+[; ;my_uart.h: 20: void uart_send(unsigned char);
+[; ;my_uart.h: 21: void uart_send_int_handler();
+[; ;my_uart.h: 22: void uart_send_array(char* data, char length);
 [; ;testAD.h: 7: void reqADData();
 "20 ../src/my_i2c.c
 [v _ic_ptr `*S587 ~T0 @X0 1 s ]

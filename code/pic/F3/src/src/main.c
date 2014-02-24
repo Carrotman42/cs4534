@@ -424,12 +424,21 @@ void main(void) {
                     //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
                 };
-                case MSGT_OVERRUN:
-                    break;
+//                case MSGT_OVERRUN:
+//                    break;
                 case MSGT_UART_DATA:
                 {
-                    unsigned char test[5] = {'1','2','3','4','5'};
+                    unsigned char test[5] = {'1','2','3','4','\r'};
                     uart_send_array(&test, 5);
+
+//                    char i, count;
+//                    count = 0;
+//                    for (i = 0; i < length; i++) {
+//                        if (msgbuffer[i] == test[i]) {
+//                            count += 1;
+//                        }
+//                        count = 0;
+//                    }
 //                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
                 };
