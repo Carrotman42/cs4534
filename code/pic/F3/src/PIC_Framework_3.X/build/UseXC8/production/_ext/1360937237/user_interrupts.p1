@@ -4697,20 +4697,20 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;user_interrupts.c: 39: void timer1_int_handler() {
 [e :U _timer1_int_handler ]
 [f ]
-"48
+"51
 [v F5155 `uc ~T0 @X0 1 s temp ]
 [i F5155
 -> -> 0 `i `uc
 ]
-[; ;user_interrupts.c: 48: static char temp = 0;
-[; ;user_interrupts.c: 49: if (temp++ == 0) {
-"49
+[; ;user_interrupts.c: 51: static char temp = 0;
+[; ;user_interrupts.c: 52: if (temp++ == 0) {
+"52
 [e $ ! == -> ++ F5155 -> -> 1 `i `uc `i -> 0 `i 591  ]
 {
 [v F5157 `uc ~T0 @X0 -> 5 `i s ]
 [i F5157
 :U ..
-"50
+"53
 -> -> 49 `ui `uc
 -> -> 50 `ui `uc
 -> -> 51 `ui `uc
@@ -4719,21 +4719,21 @@ Version 3.2 HI-TECH Software Intermediate Code
 ..
 ]
 [v _test `uc ~T0 @X0 -> 5 `i a ]
-[; ;user_interrupts.c: 50: unsigned char test[5] = {'1','2','3','4','\r'};
+[; ;user_interrupts.c: 53: unsigned char test[5] = {'1','2','3','4','\r'};
 [e = _test F5157 ]
-[; ;user_interrupts.c: 51: uart_send_array(&test, 5);
-"51
+[; ;user_interrupts.c: 54: uart_send_array(&test, 5);
+"54
 [e ( _uart_send_array (2 , &U _test -> -> 5 `i `uc ]
-"52
+"55
 }
-[; ;user_interrupts.c: 52: } else {
+[; ;user_interrupts.c: 55: } else {
 [e $U 592  ]
 [e :U 591 ]
 {
 [v F5159 `uc ~T0 @X0 -> 5 `i s ]
 [i F5159
 :U ..
-"53
+"56
 -> -> 49 `ui `uc
 -> -> 51 `ui `uc
 -> -> 50 `ui `uc
@@ -4742,25 +4742,25 @@ Version 3.2 HI-TECH Software Intermediate Code
 ..
 ]
 [v _test `uc ~T0 @X0 -> 5 `i a ]
-[; ;user_interrupts.c: 53: unsigned char test[5] = {'1','3','2','4','\r'};
+[; ;user_interrupts.c: 56: unsigned char test[5] = {'1','3','2','4','\r'};
 [e = _test F5159 ]
-[; ;user_interrupts.c: 54: uart_send_array(&test, 5);
-"54
+[; ;user_interrupts.c: 57: uart_send_array(&test, 5);
+"57
 [e ( _uart_send_array (2 , &U _test -> -> 5 `i `uc ]
-[; ;user_interrupts.c: 55: temp = 0;
-"55
+[; ;user_interrupts.c: 58: temp = 0;
+"58
 [e = F5155 -> -> 0 `i `uc ]
-"56
+"59
 }
 [e :U 592 ]
-[; ;user_interrupts.c: 56: }
-[; ;user_interrupts.c: 62: WriteTimer1(0x4000);
-"62
-[e ( _WriteTimer1 (1 -> -> 16384 `i `ui ]
-[; ;user_interrupts.c: 63: i2c_master_recv(0x10);
-"63
-[e ( _i2c_master_recv (1 -> -> 16 `i `uc ]
-[; ;user_interrupts.c: 65: }
+[; ;user_interrupts.c: 59: }
+[; ;user_interrupts.c: 65: WriteTimer1(0x4000);
 "65
+[e ( _WriteTimer1 (1 -> -> 16384 `i `ui ]
+[; ;user_interrupts.c: 66: i2c_master_recv(0x10);
+"66
+[e ( _i2c_master_recv (1 -> -> 16 `i `uc ]
+[; ;user_interrupts.c: 68: }
+"68
 [e :UE 590 ]
 }

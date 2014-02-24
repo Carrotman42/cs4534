@@ -6064,7 +6064,7 @@ i2c_master_send(0x10, 1, buf);
 
 void timer1_int_handler() {
 
-# 48
+# 51
 static char temp = 0;
 if (temp++ == 0) {
 unsigned char test[5] = {'1','2','3','4','\r'};
@@ -6075,7 +6075,7 @@ uart_send_array(&test, 5);
 temp = 0;
 }
 
-# 62
+# 65
 WriteTimer1(0x4000);
 i2c_master_recv(0x10);
 

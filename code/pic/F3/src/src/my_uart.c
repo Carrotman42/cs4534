@@ -27,10 +27,17 @@ void uart_recv_int_handler() {
         //We recieved the last byte of data
         uc_ptr->buflen++;
         // check if a message should be sent
-        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r' || uc_ptr->buflen == MAXUARTBUF) {
+        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
             ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             uc_ptr->buflen = 0;
             ReadUSART();    // clears buffer and returns value to nothing
+        }
+        // portion of the bytes were received or there was a corrupt byte or there was 
+        // an overflow transmitted to the buffer
+        else if (uc_ptr->buflen >= MAXUARTBUF)
+        {
+            ToMainLow_sendmsg(uc_ptr->buflen, MSGT_OVERRUN, (void *) uc_ptr->buffer);
+            uc_ptr->buflen = 0;
         }
 
     }
@@ -57,6 +64,8 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send_array(char* data, char length) {
+    //TODO: Create logic to prevent you from overriding the current buffer if
+    //it has not yet been sent. 
     uint8_t i;
     for(i = 0; i<length; i++) {
         uc_ptr->outBuff[i] = *(data + i);
@@ -81,7 +90,8 @@ void uart_send_int_handler() {
 }
 
 void uart_send(char data){
-    // putcUSART(data);
+    //TODO possibly create logic to (without using a while) prevent writing if the buffer is not
+    //clear
     WriteUSART(data);
 //    debugNum(data);
 }

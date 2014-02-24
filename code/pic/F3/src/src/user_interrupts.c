@@ -45,6 +45,9 @@ void timer1_int_handler() {
     //debugNum(4);
     //uart_send((char) 0x55);
 //    result = ReadTimer1();
+    /* Test UART send, send one correct sequence and one incorrect
+     The end device will test based on the correct sequence and turn a led on
+     or off based on what was recieved*/
     static char temp = 0;
     if (temp++ == 0) {
         unsigned char test[5] = {'1','2','3','4','\r'};

@@ -38,6 +38,8 @@
 #endif
 
 // Message type definitions
+
+#define GLEN_DEBUG 1        // master pic = 1, slave pic = 0
 #define MSGT_AD 50
 
 #define MSGT_TIMER0 10

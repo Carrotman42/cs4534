@@ -6069,15 +6069,22 @@ uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
 
 uc_ptr->buflen++;
 
-if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r' || uc_ptr->buflen == 10) {
+if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
 ToMainLow_sendmsg(uc_ptr->buflen, 31, (void *) uc_ptr->buffer);
 uc_ptr->buflen = 0;
 ReadUSART();
 }
 
+
+else if (uc_ptr->buflen >= 10)
+{
+ToMainLow_sendmsg(uc_ptr->buflen, 30, (void *) uc_ptr->buffer);
+uc_ptr->buflen = 0;
 }
 
-# 43
+}
+
+# 50
 if (USART_Status.OVERRUN_ERROR == 1) {
 
 
@@ -6095,6 +6102,8 @@ uc_ptr->buflen = 0;
 }
 
 void uart_send_array(char* data, char length) {
+
+
 uint8_t i;
 for(i = 0; i<length; i++) {
 uc_ptr->outBuff[i] = *(data + i);
@@ -6119,6 +6128,7 @@ PIR1bits.TXIF = 0;
 }
 
 void uart_send(char data){
+
 
 WriteUSART(data);
 
