@@ -149,6 +149,7 @@ void i2c_tx_handler(){
             }
             else{
                 if(load_i2c_data() == 1) //WCOL bit set
+                    SSPCON1bits.WCOL = 0;
                     send_stop();
             }
             break;

@@ -431,10 +431,11 @@ void main(void) {
                     // test code for the master pic
                     // Glen_Debug = 1 ---> Master PIC
                     // Glen_Debug = 0 ---> Slave PIC
-#if GLEN_DEBUG == 1
+#if GLEN_DEBUG == 0
                     unsigned char test[5] = {'1','2','3','4','\r'};
-//                    uart_send_array(&test, 5);
+                    uart_send_array(&test, 5);
 
+                    /*
                     char i, count;
                     count = 0;
                     for (i = 0; i < length; i++) {
@@ -446,7 +447,7 @@ void main(void) {
                         PORTBbits.RB7 = 1;
                     } else {
                         PORTBbits.RB7 = 0;
-                    }
+                    }*/
 #else
                    //Write code to copy and resend exact message back to master
                     // This will be the test for the slave pic if implemented

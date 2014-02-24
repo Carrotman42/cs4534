@@ -22,6 +22,8 @@ void uart_recv_int_handler() {
 
 #endif
 #endif
+
+    //debugNum(1);
     if (DataRdyUSART()) {
         uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
         //We recieved the last byte of data
