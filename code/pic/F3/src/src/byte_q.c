@@ -65,8 +65,8 @@ int main() {
 	
 	unsigned char buf[100];
 	
-	unsigned vals[] = {10, 40, 20, 50, 100, 20, 100};
-	char skipPopp[] = { 1,  1,  1,  0,   1,  0,   1};
+	unsigned vals[] = {10, 40, 20, 50, 100, 20, 100, 10};
+	char skipPopp[] = { 1,  1,  1,  0,   1,  0,   1, 0};
 	int valpos;
 	
 	char curNum = 0;
