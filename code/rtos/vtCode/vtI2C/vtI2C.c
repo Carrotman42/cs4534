@@ -202,16 +202,14 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 	// Get the i2c structure for this task/device
 	vtI2CStruct *devPtr = (vtI2CStruct *) pvParameters;
 	vtI2CMsg msgBuffer;
-	uint8_t tmpRxBuf[vtI2CMLen];
 	I2C_M_SETUP_Type transferMCfg;
-	int i;
 
 	for (;;) {
 		RECV(devPtr->inQ, msgBuffer);
 		
 		// process the messsage and perform the I2C transaction
 		transferMCfg.sl_addr7bit = msgBuffer.slvAddr;
-		transferMCfg.tx_data = &msgBuffer.data;
+		transferMCfg.tx_data = (uint8_t*)(&msgBuffer.data);
 		transferMCfg.tx_length = sizeof msgBuffer.data;
 		transferMCfg.rx_data = msgBuffer.dest;
 		transferMCfg.rx_length = msgBuffer.destLen;

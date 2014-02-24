@@ -127,7 +127,7 @@ TIMER_FUNC_NOARG(CopyToLCDTimer) {
 
 RoverMsgRouter Conductor = {
 	handleAD,
-	handleDebug,
+//	handleDebug,
 };
 
 TASK_FUNC(FromI2C, vtI2CStruct, from) {
