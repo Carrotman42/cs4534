@@ -442,8 +442,8 @@ void i2c_int_handler() {
         if(is_high_priority()){ //would pass ic_ptr->buffer but it's global so no need
             uint8 i = 0;
             for(i; i < ic_ptr->buflen; i++){
-                uart_send(ic_ptr->buffer[i]);
-                uart_send(ic_ptr->buffer[i]);
+                //uart_send(ic_ptr->buffer[i]);
+                //uart_send(ic_ptr->buffer[i]);
             }
         }
         else{

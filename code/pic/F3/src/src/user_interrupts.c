@@ -45,7 +45,7 @@ void timer1_int_handler() {
     //debugNum(4);
     //uart_send((char) 0x55);
 //    result = ReadTimer1();
-    //ToMainLow_sendmsg(0, MSGT_TIMER1, (void *) 0);
+    ToMainLow_sendmsg(0, MSGT_UART_DATA, (void *) 0);
 
     // reset the timer
     //WriteTimer1(0xFFFF-3750);

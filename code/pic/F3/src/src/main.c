@@ -193,7 +193,7 @@ void main(void) {
     signed char length;
     unsigned char msgtype;
     unsigned char last_reg_recvd;
-    //uart_comm uc;
+    uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
     unsigned char to_send_buffer[MSGLEN+1];
@@ -228,7 +228,7 @@ void main(void) {
 #endif
 
     // initialize my uart recv handling code
-    //init_uart_recv(&uc);
+    init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
@@ -273,7 +273,8 @@ void main(void) {
     // Timer1 interrupt
     IPR1bits.TMR1IP = 0;
     // USART RX interrupt
-    //IPR1bits.RCIP = 0;
+    IPR1bits.RCIP = 0;
+    IPR1bits.TXIP = 0;
     // I2C interrupt
     IPR1bits.SSPIP = 1;
 
@@ -310,11 +311,11 @@ void main(void) {
         USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #else
     OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_HIGH, 155);
-    BAUDCONbits.BRG16 = 1;
-    TXSTAbits.TXEN = 1;
-    RCSTAbits.SPEN = 1;
-    RCSTAbits.CREN = 1;
+        USART_CONT_RX & USART_BRGH_HIGH, 38);
+//    BAUDCONbits.BRG16 = 1;
+//    TXSTAbits.TXEN = 1;
+//    RCSTAbits.SPEN = 1;
+//    RCSTAbits.CREN = 1;
 #endif
 #endif
 
@@ -370,7 +371,7 @@ void main(void) {
                 {
                     uint8 i = 0;
                     for(i; i < length-1; i++){
-                        uart_send(msgbuffer[i]);
+                        //uart_send(msgbuffer[i]);
                     }
                     break;
                 };
@@ -418,17 +419,20 @@ void main(void) {
                     #endif
                     break;
                 };
-                /*case MSGT_TIMER1:
+                case MSGT_TIMER1:
                 {
-                    timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
+                    //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
                 };
                 case MSGT_OVERRUN:
+                    break;
                 case MSGT_UART_DATA:
                 {
-                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
+                    unsigned char test[5] = {'1','2','3','4','5'};
+                    uart_send_array(&test, 5);
+//                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
-                };*/
+                };
                 default:
                 {
                     // Your code should handle this error
