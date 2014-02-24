@@ -58,7 +58,6 @@
 #define RECV(chan, dest) if(xQueueReceive(chan,(void *)&(dest),portMAX_DELAY) != pdTRUE) FATAL(0);
 #define SEND(chan, src)  if(xQueueSend(chan, &src, portMAX_DELAY) != pdTRUE) FATAL(0);
 
-
 // Helper defines, used internally in this common.h. They are considered private and should not
 //    be used outside of this file.
 #define __stip(name, inside, period) \

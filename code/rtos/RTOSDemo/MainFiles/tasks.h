@@ -15,9 +15,16 @@ TASK_PROTOTYPE(LCDTask, LCDBuf, 1000, tskIDLE_PRIORITY);
 TASK_PROTOTYPE_NOARG(TestSignalTask, 200, tskIDLE_PRIORITY);
 #endif
 
-#ifdef SENSOR_TASKS
-TASK_PROTOTYPE_NOARG(PumpSensor, 200, tskIDLE_PRIORITY);
-//TIMER_PROTOTYPE_NOARG(PumpSensor, 1/portTICK_RATE_MS);
+#ifdef PERIODIC_TASKS
+TASK_PROTOTYPE_NOARG(PeriodicTask, 500, tskIDLE_PRIORITY);
+#endif
+
+#ifdef COMM_TASKS
+
+// Deals with processing incoming sensor data, so it should have a large-ish stack
+TASK_PROTOTYPE(FromI2C, vtI2CStruct, 2000, tskIDLE_PRIORITY);
+// Deals with sending data to the rover. Not complex, but important:
+//TASK_PROTOTYPE(ToI2C, 200, vtI2CStruct*, tskIDLE_PRIORITY+2);
 #endif
 
 #endif

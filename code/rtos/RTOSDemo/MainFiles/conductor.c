@@ -8,52 +8,45 @@
 #include "task.h"
 #include "projdefs.h"
 #include "semphr.h"
-
+#include "timers.h"
+				
+#include "armcommon.h"
 /* include files. */
 #include "vtUtilities.h"
 #include "vtI2C.h"
-#include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
+
 #include "conductor.h"
 
-/* The i2cTemp task. */
-static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
-
-
-#include "armcommon.h"
 #include "brain_rover.h"
 #include "klcd.h"
+
+#define COMM_TASKS
+#include "tasks.h"
+
 
 #define LCD_REFRESH_RATE
 #ifdef LCD_REFRESH_RATE					 
 TIMER_PROTOTYPE_NOARG(CopyToLCDTimer, 250/portTICK_RATE_MS);
 #endif	
-/*-----------------------------------------------------------*/
+
+// Of type BrainMsg
+static xQueueHandle toRover;
+
 // Public API
-void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature)
-{
-	/* Start the task */
-	portBASE_TYPE retval;
-	params->dev = i2c;
-	params->tempData = temperature;
-	if ((retval = xTaskCreate( vConductorUpdateTask, ( signed char * ) "Conductor", 1000, (void *) params, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
-		VT_HANDLE_FATAL_ERROR(retval);
-	}
+void StartProcessingTasks(vtI2CStruct *i2c) {
+	MAKE_Q(toRover, BrainMsg, 2);
 	
-#ifdef LCD_REFRESH_RATE
-	START_TIMER(MakeCopyToLCDTimer(), 0);
-#endif
+	StartFromI2C(i2c);
+	//StartToI2C(i2c);
 }
 
 // End of Public API
-/*-----------------------------------------------------------*/
 
 
 #define SAVED_SIZE SIGNAL_SAMPLES
 static char saved[SAVED_SIZE] = {0};
 static int savedPos = 0;
-static int validBuf = 0;
-static int copyBuf = 0, lcdBuf = 0;
 
 void copyToLCD() {
 	static int times = 0;
@@ -134,49 +127,28 @@ TIMER_FUNC_NOARG(CopyToLCDTimer) {
 
 RoverMsgRouter Conductor = {
 	handleAD,
+	handleDebug,
 };
 
-
-// This is the actual task that is run
-static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
-{
-	uint8_t rxLen, status;
-	uint8_t buffer[700];
-	// Get the parameters
-	vtConductorStruct *param = (vtConductorStruct *) pvParameters;
-	// Get the I2C device pointer
-	vtI2CStruct *devPtr = param->dev;
-	uint8_t recvMsgType;
+TASK_FUNC(FromI2C, vtI2CStruct, from) {
+	uint8_t rxLen;
+	uint8_t buffer[255];
 
 	// Like all good tasks, this should never exit
-	for(;;)
-	{
-		// Wait for a message from an I2C operation
-		if (vtI2CDeQ(devPtr,vtI2CMLen,buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
-			VT_HANDLE_FATAL_ERROR(0);
-		}
-		if (status == ERROR) {
+	for(;;) {
+		BrainMsg msg;
+		packBrainMsgRequest(&msg, 0);
+
+		// Attempt to read
+		if (ERROR == ki2cReadReq(from, 0x01, msg, buffer, sizeof buffer, &rxLen)) {
 			continue;
 		}
-
-		/*{
-			static int times = 0;
-			times++;
-			char b[10];
-			char *c = b;
-			*c++ = 'C';
-			*c++ = '0' + times%10;
-			*c++ = '0' + recvMsgType;
-			*c++ = '0' + rxLen;
-			*c++ = 0;
-			LCDwriteLn(0, b);
-		}*/
 		
-		
-		static char ebuf[10];
-		char* err;
 		// Test the error code from unpacking:
 		int ret = unpackRoverMsg((char*)buffer, rxLen, &Conductor);
+		
+		static char ebuf[3];
+		char* err;
 		switch (ret) {
 			case 0:
 				err = NULL; //no error
@@ -198,15 +170,12 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				break;
 		}
 		if (err) {
-			//LCDwriteLn(1, err);
+			LCDwriteLn(1, err);
 		} else {
-			//LCDwriteLn(1, "noerr");
+			LCDwriteLn(1, "noerr");
 		}
-	}
-}
-
-
-
+	}												 
+} ENDTASK
 
 
 
