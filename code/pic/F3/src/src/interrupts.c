@@ -135,10 +135,15 @@ void InterruptHandlerLow() {
         timer1_int_handler();
     }
 
-    /*// check to see if we have an interrupt on USART RX
+    // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
         uart_recv_int_handler();
-    }*/
+    }
+    if (PIR1bits.TXIF && PIE1bits.TXIE)
+    {
+        PIR1bits.TXIF = 0; // clear interrupt flag
+        uart_send_int_handler();
+    }
 }
 
