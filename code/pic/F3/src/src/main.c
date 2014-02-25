@@ -370,7 +370,7 @@ void main(void) {
                 #endif
                 case MSGT_I2C_DATA:
                 {
-#ifdef MASTER_PIC
+#if defined(PICMAN) || defined(MASTER_PIC)
                     uart_send_array(msgbuffer, length);
 #elif defined(SENSOR_PIC)
                     uint8 i = 0;
@@ -384,10 +384,18 @@ void main(void) {
                 case MSGT_I2C_RQST:
                 {
 #ifdef SENSOR_PIC
+                    //char outbuf[5] = {1,0,0,1,0};
+                    //start_i2c_slave_reply(5, outbuf);
+                    to_send_len++;
+                    debugNum(to_send_len);
+                    to_send_buffer[HEADER_MEMBERS-2] = 4;
+                    to_send_buffer[HEADER_MEMBERS-1] = 1;
+                    to_send_buffer[HEADER_MEMBERS+0] = 2;
                     start_i2c_slave_reply(to_send_len, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
 #endif
+                    break;
                 };
                 case MSGT_I2C_DBG:
                 {
@@ -441,7 +449,15 @@ void main(void) {
 //                    break;
                 case MSGT_UART_DATA:
                 {
-#ifdef MASTER_PIC
+#ifdef PICMAN
+                    debugNum(1);
+                    debugNum(1);
+                    debugNum(length);
+                    debugNum(1);
+                    debugNum(1);
+                    debugNum(msgbuffer[5]);
+                    start_i2c_slave_reply(length, msgbuffer);
+#elif defined(MASTER_PIC)
                     //unsigned char test[7] = {1,0,0,18,2,7,8};
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
@@ -473,6 +489,11 @@ void main(void) {
                     // This will be the test for the slave pic if implemented
 #endif
 //                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
+                    break;
+                };
+                case MSGT_UART_RECV_FAILED:
+                {
+                    debugNum(1);
                     break;
                 };
                 default:
