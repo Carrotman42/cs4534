@@ -290,9 +290,9 @@ void main(void) {
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-    i2c_configure_slave(0x40);//address 0x20
+    i2c_configure_slave(0x20);//address 0x20
 #elif defined MOTOR_PIC
-    i2c_configure_slave(0x20);//address 0x10
+    i2c_configure_slave(0x40);//address 0x10
 #elif defined MASTER_PIC
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
@@ -382,6 +382,10 @@ void main(void) {
                     last_reg_recvd = msgbuffer[0];
                     break;
                 };
+                case MSGT_I2C_MASTER_RECV_FAILED:
+                {
+                    break;
+                };
                 case MSGT_I2C_RQST:
                 {
                     //nothing anymore
@@ -428,9 +432,14 @@ void main(void) {
 //                    break;
                 case MSGT_UART_DATA:
                 {
+#ifdef MASTER_PIC
+                    //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
+                    unsigned char addr = 0x10;
+                    i2c_master_send(addr, length, (char *) msgbuffer);
                     // test code for the master pic
                     // Glen_Debug = 1 ---> Master PIC
                     // Glen_Debug = 0 ---> Slave PIC
+#endif
 #if GLEN_DEBUG == 0
                     unsigned char test[5] = {'1','2','3','4','\r'};
                     uart_send_array(&test, 5);

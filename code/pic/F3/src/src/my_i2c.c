@@ -68,6 +68,7 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
         return -1;
     }
     ic_ptr->txnrx = 1;
+    ic_ptr->addr = addr;
     char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits
     ic_ptr->outbuffer[0] = buf_addr;
     int i =1;
@@ -102,15 +103,15 @@ unsigned char i2c_master_recv(unsigned char addr) {
         return -1;
     }
     ic_ptr->txnrx = 0;
+    ic_ptr->addr = addr;
     char buf_addr = (addr << 1) | 0x1; // set addr in top 7 bits and set lsb
     ic_ptr->outbuffer[0] = buf_addr;
     ic_ptr->outbuflen = 1; //just enough room for addr
     ic_ptr->outbufind = 0; //set for addr
-    ic_ptr->buflen = 3; //reset the buffer, we'll at LEAST read 3 bytes
+    ic_ptr->buflen = HEADER_MEMBERS; //reset the buffer, we'll at LEAST read 3 bytes
     ic_ptr->bufind = 0;
     SSPCON2bits.SEN = 1;
     ic_ptr->status = I2C_STARTED;
-    //debugNum(1);
     return(0);
 }
 
@@ -148,13 +149,17 @@ void i2c_tx_handler(){
                 send_stop();
             }
             else{
-                if(load_i2c_data() == 1) //WCOL bit set
+                if(load_i2c_data() == 1) { //WCOL bit set
                     SSPCON1bits.WCOL = 0;
                     send_stop();
+                }
             }
             break;
         case(I2C_STOPPED): //stop
             ic_ptr->status = I2C_IDLE;
+#ifdef MASTER_PIC
+            i2c_master_recv(ic_ptr->addr);
+#endif
             break;
         default:
             break;
@@ -170,11 +175,15 @@ uint8 receive_data(){
     }
     unsigned char recv = SSPBUF;
     ic_ptr->buffer[ic_ptr->bufind] = recv;
-    if(++ic_ptr->bufind == 3){
-        ic_ptr->buflen = recv+3; //3rd byte is the payload length, add the 3 bytes already received to the buffer length
+    if(++ic_ptr->bufind == HEADER_MEMBERS){
+        ic_ptr->buflen = recv + HEADER_MEMBERS; //5th byte is the payload length, add the 5 bytes already received to the buffer length
     }
+    ic_ptr->checksum += recv;
 
     if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
+        uint8 checksum_byte = ic_ptr->buffer[HEADER_MEMBERS-2];
+        if((ic_ptr->checksum - checksum_byte)  != checksum_byte) //compare checksums
+            ToMainHigh_sendmsg(0, MSGT_I2C_MASTER_RECV_FAILED, (void *) 0);
         SSPCON2bits.ACKDT = 1;
         SSPCON2bits.ACKEN = 1;
         return 1;
@@ -461,12 +470,8 @@ void i2c_int_handler() {
     }
     if (msg_to_send) {
         debugNum(2);
-        char outbuff[4];
-        outbuff[0] = 0xa0;
-        outbuff[1] = 0x66;
-        outbuff[2] = 0x01;
-        outbuff[3] = 0xaa;
-        start_i2c_slave_reply(4, outbuff);
+        unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
+        start_i2c_slave_reply(8, outbuff);
         //sendRequestedData();
         msg_to_send = 0;
     }

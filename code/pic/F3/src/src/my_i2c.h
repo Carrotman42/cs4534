@@ -6,22 +6,24 @@
 #include "../../../../common/communication/brain_rover.h"
 
 #define MAXI2CBUF MSGLEN
-#define MAX_I2C_SENSOR_DATA_LEN 100
+#define MAX_I2C_SENSOR_DATA_LEN 50
 
 #ifdef I2C_MASTER
 typedef struct __i2c_comm {
-    unsigned char buffer[MAXI2CBUF];
+    unsigned char buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
     unsigned char buflen;
     unsigned char bufind;
     unsigned char event_count;
     unsigned char status;
     unsigned char error_code;
     unsigned char error_count;
-    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + 3]; // +3 for overhead
+    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
     unsigned char outbuflen;
     unsigned char outbufind;
     unsigned char baud_rate;
     unsigned char txnrx; //1 if tx, 0 if rx
+    unsigned char checksum;
+    unsigned char addr;
 } i2c_comm;
 
 void i2c_configure_master();
@@ -52,10 +54,11 @@ typedef struct __i2c_comm {
     unsigned char status;
     unsigned char error_code;
     unsigned char error_count;
-    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + ROVERMSG_MEMBERS]; // +3 for overhead
+    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS]; // +3 for overhead
     unsigned char outbuflen;
     unsigned char outbufind;
     unsigned char slave_addr;
+    unsigned char checksum;
 } i2c_comm;
 
 

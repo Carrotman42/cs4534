@@ -39,7 +39,7 @@
 
 // Message type definitions
 
-#define GLEN_DEBUG 1        // master pic = 1, slave pic = 0
+#define GLEN_DEBUG 2        // master pic = 1, slave pic = 0
 #define MSGT_AD 50
 
 #define MSGT_TIMER0 10
@@ -58,9 +58,9 @@
 #define DEBUG_ON
 
 //#define PICMAN
-//#define SENSOR_PIC
+#define SENSOR_PIC
 //#define MOTOR_PIC
-#define MASTER_PIC
+//#define MASTER_PIC
 
 #ifdef MASTER_PIC
 #define I2C_MASTER

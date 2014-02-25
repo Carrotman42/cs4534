@@ -18,12 +18,12 @@ void timer0_int_handler() {
 
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
-    WriteTimer0(0x4000);
+    //WriteTimer0(0x4000);
     //debugNum(4);
     //i2c_master_recv(0x10);
-    char buf[1];
-    buf[0] = 0x01;
-    i2c_master_send(0x10, 1, buf);
+    //char buf[1];
+    //buf[0] = 0x01;
+    //i2c_master_send(0x10, 1, buf);
 #endif
 #endif
 
@@ -60,12 +60,13 @@ void timer1_int_handler() {
         temp = 0;
     }
 #endif
-    //ToMainLow_sendmsg(0, MSGT_UART_DATA, (void*) 0);
+    unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
+    ToMainLow_sendmsg(5, MSGT_UART_DATA, (void*) test);
 
     // reset the timer
     //WriteTimer1(0xFFFF-3750);
 #if defined(MASTER_PIC) && defined(DEBUG_ON)
     WriteTimer1(0x4000);
-    i2c_master_recv(0x10);
+    //i2c_master_recv(0x10);
 #endif
 }

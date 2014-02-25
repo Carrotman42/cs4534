@@ -32,7 +32,7 @@ void sendRequestedData(){
 
 void sendADdata() {
     //readNum(1);
-	char outBuff[MAX_I2C_SENSOR_DATA_LEN + ROVERMSG_MEMBERS]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
+	char outBuff[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
         int bytes_packed = packADData( ADacc.data, ADacc.len, outBuff, sizeof(outBuff));
         if(bytes_packed == 0){
             //error
@@ -40,7 +40,7 @@ void sendADdata() {
         else{
             //char* dat = (char*) ADacc->data;
             //readNum((int)dat[0]);
-            start_i2c_slave_reply(MAX_I2C_SENSOR_DATA_LEN + ROVERMSG_MEMBERS, outBuff);
+            start_i2c_slave_reply(MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS, outBuff);
         }
 }
 
