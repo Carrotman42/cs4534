@@ -60,8 +60,8 @@
 
 #define DEBUG_ON
 
-//#define PICMAN
-#define SENSOR_PIC
+#define PICMAN
+//#define SENSOR_PIC
 //#define MOTOR_PIC
 //#define MASTER_PIC
 

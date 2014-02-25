@@ -33,7 +33,7 @@ void uart_recv_int_handler() {
     if (DataRdyUSART()) {
 
         unsigned char recv = ReadUSART();
-        debugNum(uc_ptr->buflen);
+        debugNum(recv);
         int pos = uc_ptr->buflen++;
 
         uc_ptr->buffer[pos] = recv;
@@ -58,6 +58,7 @@ void uart_recv_int_handler() {
         // check if a message should be sent
 //        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
         if (pos == payload_length+HEADER_MEMBERS-1){
+            pos++;
             if(checksum_calc_value == checksum_recv_value)
                 ToMainLow_sendmsg(pos, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             else //Invalid Checksum

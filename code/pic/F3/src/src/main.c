@@ -386,8 +386,12 @@ void main(void) {
 #ifdef SENSOR_PIC
                     //char outbuf[5] = {1,0,0,1,0};
                     //start_i2c_slave_reply(5, outbuf);
-                    //debugNum(to_send_len);
-                    start_i2c_slave_reply(to_send_len + 1, to_send_buffer);
+                    to_send_len++;
+                    debugNum(to_send_len);
+                    to_send_buffer[HEADER_MEMBERS-2] = 4;
+                    to_send_buffer[HEADER_MEMBERS-1] = 1;
+                    to_send_buffer[HEADER_MEMBERS+0] = 2;
+                    start_i2c_slave_reply(to_send_len, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
 #endif
@@ -445,7 +449,15 @@ void main(void) {
 //                    break;
                 case MSGT_UART_DATA:
                 {
-#ifdef MASTER_PIC
+#ifdef PICMAN
+                    debugNum(1);
+                    debugNum(1);
+                    debugNum(length);
+                    debugNum(1);
+                    debugNum(1);
+                    debugNum(msgbuffer[5]);
+                    start_i2c_slave_reply(length, msgbuffer);
+#elif defined(MASTER_PIC)
                     //unsigned char test[7] = {1,0,0,18,2,7,8};
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
