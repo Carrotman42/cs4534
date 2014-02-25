@@ -39,6 +39,7 @@ void StartProcessingTasks(vtI2CStruct *i2c) {
 	
 	StartFromI2C(i2c);
 	//StartToI2C(i2c);
+	START_TIMER(MakeCopyToLCDTimer(), 0);
 }
 
 // End of Public API
@@ -149,15 +150,20 @@ TASK_FUNC(FromI2C, vtI2CStruct, from) {
 	uint8_t rxLen;
 	uint8_t buffer[255];
 
+	uint8_t msgCount = 0;
 	// Like all good tasks, this should never exit
 	for(;;) {
 		BrainMsg msg;
 		packBrainMsgRequest(&msg, 0);
 
+		//vTaskDelay(1000/portTICK_RATE_MS);
 		int q = ki2cReadReq(from, 0x10, msg, buffer, sizeof buffer, &rxLen);
+		msgCount++;
 		aBuf(a, 100);
 		aStr(a, "I2C ret: ");
 		aByte(a, q);
+		aStr(a, "; msgCount: ");
+		aByte(a, msgCount);
 		aChar(a, 0);
 		aPrint(a, 7);
 
