@@ -50,15 +50,16 @@ void timer1_int_handler() {
      or off based on what was recieved*/
     #if GLEN_DEBUG == 1
     static char temp = 0;
-    if (temp++ == 0) {
-        unsigned char test[5] = {'1','2','3','4','\r'};
+//    if (temp++ == 0) {
+//        unsigned char test[5] = {'1','2','3','4','\r'};
+        unsigned char test[5] = {1,0,0,1,0};
         uart_send_array(&test, 5);
         
-    } else {
-        unsigned char test[5] = {'1','3','2','4','\r'};
-        uart_send_array(&test, 5);
-        temp = 0;
-    }
+//    } else {
+//        unsigned char test[5] = {'1','3','2','4','\r'};
+//        uart_send_array(&test, 5);
+//        temp = 0;
+//    }
 #endif
     unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
     ToMainLow_sendmsg(5, MSGT_UART_DATA, (void*) test);

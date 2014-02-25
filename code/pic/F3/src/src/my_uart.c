@@ -31,24 +31,28 @@ void uart_recv_int_handler() {
 
     //debugNum(1);
     if (DataRdyUSART()) {
+//        debugNum(uc_ptr->buflen);
         uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
         //We recieved the last byte of data
         uc_ptr->buflen++;
         //Check the 5th byte recieved for payload length
         if(uc_ptr->buflen == HEADER_MEMBERS){
+//            debugNum(1);
             payload_length = uc_ptr->buffer[HEADER_MEMBERS-1];
         }
         // Get checksum byte
-        else if(uc_ptr->buflen == HEADER_MEMBERS-1){
+        if(uc_ptr->buflen == HEADER_MEMBERS-1){
+//            debugNum(2);
             checksum_recv_value = uc_ptr->buffer[HEADER_MEMBERS-2];
         }
         // Count any other byte other than checksum
-        else if(uc_ptr->buflen != HEADER_MEMBERS-1){
+        else{
+//            debugNum(4);
             checksum_calc_value += uc_ptr->buffer[uc_ptr->buflen-1];
         }
         // check if a message should be sent
 //        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
-        if (uc_ptr->buflen == payload_length){
+        if (uc_ptr->buflen == payload_length+HEADER_MEMBERS){
             if(checksum_calc_value == checksum_recv_value)
                 ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             else //Invalid Checksum

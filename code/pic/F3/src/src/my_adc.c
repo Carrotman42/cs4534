@@ -47,7 +47,7 @@ void adc_int_handler() {
     data >>= 2;
 
     //if(data != 0xFF){
-        debugNum(2);
+        //debugNum(2);
         addBuffer((char) data);
         if(count >= 7){
             ToMainHigh_sendmsg(7,MSGT_AD, ADCBuffer);

@@ -471,6 +471,7 @@ void i2c_int_handler() {
 
         unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
         start_i2c_slave_reply(8, outbuff);
+
         //sendRequestedData();
         msg_to_send = 0;
     }

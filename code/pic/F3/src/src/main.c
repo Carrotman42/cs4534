@@ -357,13 +357,13 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(1);
+                    //debugNum(1);
                     i2c_master_recv(msgbuffer[0]);
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-                    debugNum(2);
+                    //debugNum(2);
                     i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
                 };
                 #endif
@@ -441,8 +441,8 @@ void main(void) {
                     // Glen_Debug = 0 ---> Slave PIC
 #endif
 #if GLEN_DEBUG == 0
-                    unsigned char test[5] = {'1','2','3','4','\r'};
-                    uart_send_array(&test, 5);
+//                    unsigned char test[5] = {'1','2','3','4','\r'};
+                    uart_send_array(msgbuffer, 5);
 
                     /*
                     char i, count;
