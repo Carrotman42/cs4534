@@ -195,6 +195,7 @@ uint8 receive_data(){
 }
 
 void i2c_rx_handler(){
+    debugNum(1);
     switch(ic_ptr->status){
         case(I2C_STARTED):
             load_i2c_data();
@@ -217,6 +218,7 @@ void i2c_rx_handler(){
         case(I2C_ACK):
             ic_ptr->status = I2C_RCV_DATA;
             SSPCON2bits.RCEN = 1;
+            debugNum(2);
             break;
         case(I2C_NACK):
             send_stop();
@@ -288,6 +290,7 @@ void handle_start(unsigned char data_read) {
 
 void i2c_int_handler() {
 
+    //debugNum(2);
     unsigned char i2c_data;
     unsigned char data_read = 0;
     unsigned char data_written = 0;
@@ -442,21 +445,17 @@ void i2c_int_handler() {
     if (msg_ready) {
 
         #ifdef SENSOR_PIC
-        ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
-        setBrainReqData(ic_ptr->buffer);
-        ////ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
+        //setBrainReqData(ic_ptr->buffer);
+        ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         #elif defined(PICMAN) || defined(MOTOR_PIC)
         //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         //debugNum(1);
         if(is_high_priority()){ //would pass ic_ptr->buffer but it's global so no need
-            uint8 i = 0;
-            for(i; i < ic_ptr->buflen; i++){
-                //uart_send(ic_ptr->buffer[i]);
-                //uart_send(ic_ptr->buffer[i]);
-            }
+            uart_send_array(ic_ptr->buffer, ic_ptr->buflen);
         }
         else{
-            ToMainHigh_sendmsg(ic_ptr->buflen + 1, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+            ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         }
         #endif
         ic_ptr->buflen = 0;
@@ -469,8 +468,12 @@ void i2c_int_handler() {
     }
     if (msg_to_send) {
 
-        unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
-        start_i2c_slave_reply(8, outbuff);
+        //unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
+        //start_i2c_slave_reply(8, outbuff);
+
+        //char outbuf[5] = {1,0,0,1,0};
+        //start_i2c_slave_reply(5, outbuf);
+        ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) 0);
 
         //sendRequestedData();
         msg_to_send = 0;
@@ -537,7 +540,7 @@ void i2c_configure_slave(unsigned char addr) {
 #if defined(PICMAN) || defined(MOTOR_PIC)
 //return 1 if high priority,0 otherwise
 uint8 is_high_priority(){
-    if(ic_ptr->buffer[0] == 0x01){
+    if((ic_ptr->buffer[0] & HIGH_PRIORITY) == HIGH_PRIORITY){
         return 1;
     }
     return 0;

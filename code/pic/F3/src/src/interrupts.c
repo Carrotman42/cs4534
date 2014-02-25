@@ -89,9 +89,9 @@ void InterruptHandlerHigh() {
     // check to see if we have an I2C interrupt
     if (PIR1bits.SSPIF) {
         // clear the interrupt flag
-        PIR1bits.SSPIF = 0;
         // call the handler
         i2c_int_handler();
+        PIR1bits.SSPIF = 0;
     }
 
     // check to see if we have an interrupt on timer 0

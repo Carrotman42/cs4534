@@ -196,7 +196,8 @@ void main(void) {
     uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
-    unsigned char to_send_buffer[MSGLEN+1];
+    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
+    uint8 to_send_len;
     int data_points_count = 0;
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
@@ -290,9 +291,9 @@ void main(void) {
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-    i2c_configure_slave(0x20);//address 0x20
+    i2c_configure_slave(0x20);//address 0x10
 #elif defined MOTOR_PIC
-    i2c_configure_slave(0x40);//address 0x10
+    i2c_configure_slave(0x40);//address 0x20
 #elif defined MASTER_PIC
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
@@ -369,11 +370,24 @@ void main(void) {
                 #endif
                 case MSGT_I2C_DATA:
                 {
+#ifdef MASTER_PIC
+                    uart_send_array(msgbuffer, length);
+#elif defined(SENSOR_PIC)
                     uint8 i = 0;
-                    for(i; i < length-1; i++){
-                        //uart_send(msgbuffer[i]);
+                    for(i; i < length; i++){
+                        to_send_buffer[i] = msgbuffer[i];
                     }
+                    to_send_len = length;
+#endif
                     break;
+                };
+                case MSGT_I2C_RQST:
+                {
+#ifdef SENSOR_PIC
+                    start_i2c_slave_reply(to_send_len, to_send_buffer);
+                    //char outbuf[5] = {0x01,0,0,1,0};
+                    //start_i2c_slave_reply(sizeof outbuf, outbuf);
+#endif
                 };
                 case MSGT_I2C_DBG:
                 {
@@ -384,11 +398,6 @@ void main(void) {
                 };
                 case MSGT_I2C_MASTER_RECV_FAILED:
                 {
-                    break;
-                };
-                case MSGT_I2C_RQST:
-                {
-                    //nothing anymore
                     break;
                 };
                 case MSGT_AD:
@@ -433,6 +442,8 @@ void main(void) {
                 case MSGT_UART_DATA:
                 {
 #ifdef MASTER_PIC
+                    //unsigned char test[7] = {1,0,0,18,2,7,8};
+                    //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
                     unsigned char addr = 0x10;
                     i2c_master_send(addr, length, (char *) msgbuffer);
@@ -441,7 +452,7 @@ void main(void) {
                     // Glen_Debug = 0 ---> Slave PIC
 #endif
 #if GLEN_DEBUG == 0
-//                    unsigned char test[5] = {'1','2','3','4','\r'};
+//                  unsigned char test[5] = {'1','2','3','4','\r'};
                     uart_send_array(msgbuffer, 5);
 
                     /*

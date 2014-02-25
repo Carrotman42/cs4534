@@ -61,8 +61,8 @@ void timer1_int_handler() {
 //        temp = 0;
 //    }
 #endif
-    unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
-    ToMainLow_sendmsg(5, MSGT_UART_DATA, (void*) test);
+    //unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
+    //ToMainLow_sendmsg(5, MSGT_UART_DATA, (void*) test);
 
     // reset the timer
     //WriteTimer1(0xFFFF-3750);
