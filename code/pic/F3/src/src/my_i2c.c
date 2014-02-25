@@ -99,7 +99,6 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
 unsigned char i2c_master_recv(unsigned char addr) {
     if(ic_ptr->status != I2C_IDLE){
         ToMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
-        //debugNum(2);
         return -1;
     }
     ic_ptr->txnrx = 0;
@@ -469,7 +468,7 @@ void i2c_int_handler() {
         ic_ptr->error_count = 0;
     }
     if (msg_to_send) {
-        debugNum(2);
+
         unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
         start_i2c_slave_reply(8, outbuff);
         //sendRequestedData();
