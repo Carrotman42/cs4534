@@ -125,36 +125,17 @@ TIMER_FUNC_NOARG(CopyToLCDTimer) {
 } ENDTIMER
 #endif
 
-#define aStr(dest, str) {\
-		char* s = str, c;	\
-		while ((c = *s)) {	 \
-		 	aChar(dest, c);	  \
-			s++;			   \
-		}						\
-	}
-
-#define aByte(dest, val) \
-	aNib(dest, ((val) / 16) % 16); \
-	aNib(dest, ((val)     ) % 16);
-
-#define aNib(dest, val) \
-	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10);
-
-#define aChar(dest, ch) *dest++ = (ch)
-
 int ms2Msg(sensorADData* data, int len) {
-	char bb[100], *b = b;
+	aBuf(b, 100);
 	aStr(b, "Len: ");
 	aByte(b, len);
 	aStr(b, "; Data: ");
-	int d = data[0].data;
-	aByte(b, d);
+	aByte(b, data[0].data);
 	aChar(b, ' ');
-	d = data[1].data;
-	aChar(b, d);
+	aByte(b, data[1].data);
 	aChar(b, 0);
+	aPrint(b, 5);
 
-	LCDwriteLn(5, bb);
 	// Then just pass the data to try and plot it
 	return handleAD(data, len);
 }
@@ -173,13 +154,13 @@ TASK_FUNC(FromI2C, vtI2CStruct, from) {
 		BrainMsg msg;
 		packBrainMsgRequest(&msg, 0);
 
-		int q = ki2cReadReq(from, 0x01, msg, buffer, sizeof buffer, &rxLen);
-		char aa[100], *a = aa;
+		int q = ki2cReadReq(from, 0x10, msg, buffer, sizeof buffer, &rxLen);
+		aBuf(a, 100);
 		aStr(a, "I2C ret: ");
 		aByte(a, q);
 		aChar(a, 0);
+		aPrint(a, 7);
 
-		LCDwriteLn(7, aa);
 		// Attempt to read
 		if (ERROR == q) {
 			LCDwriteLn(10, "I2C read err");

@@ -120,4 +120,29 @@
 		FATAL(0); \
 	}
 
+
+// staticf (Static string format) functions
+#define aBuf(name, len) char name##name[len], *name = name##name;
+
+#define aStr(dest, str) {   \
+		char* s = str, c;	\
+		while ((c = *s)) {	\
+		 	aChar(dest, c);	\
+			s++;			\
+		}					\
+	}
+
+#define aByte(dest, val) {         \
+		int t = (val);             \
+		aNib(dest, (t / 16) % 16); \
+		aNib(dest, (t     ) % 16); \
+	}
+
+#define aNib(dest, val) \
+	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
+
+#define aChar(dest, ch) *dest++ = (ch)
+
+#define aPrint(name, line) LCDwriteLn(line, name##name);
+
 #endif

@@ -597,6 +597,8 @@ end_stage:
 	}
 }
 
+#include "brain_rover.h"
+
 // A reimplemented version that is specialized to our message format.
 //   It reads the first 3 bytes. Then it looks at that third byte and
 //   reads that many more bytes.
@@ -738,9 +740,9 @@ send_slar:
 			if ((txrx_setup->rx_data != NULL) && (txrx_setup->rx_count < txrx_setup->rx_length)){
 				uint8_t recv = (I2Cx->I2DAT & I2C_I2DAT_BITMASK);
 				*(uint8_t *)(txrx_setup->rx_data + txrx_setup->rx_count) = recv;
-				if (++txrx_setup->rx_count == 3) {
-					// The third byte says how much *more* data we should receive
-					txrx_setup->rx_length = 3 + recv;
+				if (++txrx_setup->rx_count == HEADER_MEMBERS) {
+					// This byte says how much *more* data we should receive
+					txrx_setup->rx_length = HEADER_MEMBERS + recv;
 				}
 			}
 			if (txrx_setup->rx_count < (txrx_setup->rx_length - 1)) {
