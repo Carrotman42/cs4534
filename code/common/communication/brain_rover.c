@@ -10,6 +10,9 @@
 void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
 	dest->flags = SENSOR_REQ;
 	dest->sensorMask = sensorMask;
+	dest->checksum = SENSOR_REQ + sensorMask;
+	dest->messageid = 0;
+	dest->dummy = 0;
 }
 
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one

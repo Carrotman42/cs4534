@@ -12,10 +12,9 @@ typedef struct {
     uint8 sensorMask;
     uint8 messageid;
     uint8 checksum;
-	// Note: This is not always the number of elements in the payload. If a sensor
-	//    has samples that are more than 1 byte each you'll have to divide this number
-	//    by the length. Note:
-    uint8 payloadLen;
+	// Note: this should always be zero. It is this way so that every message is the same size to
+	//   simplify UART stuff.
+    uint8 dummy;
 } BrainMsg;
 
 typedef struct {
