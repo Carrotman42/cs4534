@@ -15,7 +15,7 @@ void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one
 //    just in case we change the format of RoverMsg
 static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, int sensorID) {
-	if (payloadLen + ROVERMSG_MEMBERS >= maxout) {
+	if (payloadLen + HEADER_MEMBERS >= maxout) {
 		return 0;
 	}
         
@@ -28,7 +28,7 @@ static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout,
 	while (dest != end) {
 		*dest++ = *data++;				 		
 	}
-	return payloadLen + ROVERMSG_MEMBERS;
+	return payloadLen + HEADER_MEMBERS;
 }
 
 // Usually called on a PIC

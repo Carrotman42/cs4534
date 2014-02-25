@@ -8,8 +8,14 @@
 
 // You can use this struct because it is constant length
 typedef struct {
-	uint8 flags;
-	uint8 sensorMask;
+    uint8 flags;
+    uint8 sensorMask;
+    uint8 messageid;
+    uint8 checksum;
+	// Note: This is not always the number of elements in the payload. If a sensor
+	//    has samples that are more than 1 byte each you'll have to divide this number
+	//    by the length. Note:
+    uint8 payloadLen;
 } BrainMsg;
 
 typedef struct {
@@ -30,21 +36,21 @@ BrainMsg* unpackBrainMsg(char *buf);
 		  
 // You should NOT be using this struct outside of brain_rover.c . I'll move it somewhere safer later
 //    when things have settled.
-#define ROVERMSG_MEMBERS 3
+#define HEADER_MEMBERS 5
 typedef struct {
     uint8 flags;
     uint8 sensorID;
+    uint8 messageid;
+    uint8 checksum;
 	// Note: This is not always the number of elements in the payload. If a sensor
 	//    has samples that are more than 1 byte each you'll have to divide this number
-	//    by the length. Note: 
+	//    by the length. Note:
     uint8 payloadLen;
-	// Hey Dave, I looked up some stuff and found that this might work. It works for my project
-	//     but if it doesn't work for yours, just put a '1' in there (since it doesn't actually
-	//     matter what size it is).
 	char payload[];
 } RoverMsg;
 // THE FOLLOWING ARE FLAGS FOR RoverMsg.flags
 #define SENSOR_RESP 1
+#define HIGH_PRIORITY 0x80
 // END FLAGS
 
 
