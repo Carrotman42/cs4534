@@ -7,8 +7,14 @@
 #endif
 #include "my_uart.h"
 #include "debug.h"
+#include "../../../../common/communication/brain_rover.h"
+
+
 
 static uart_comm *uc_ptr;
+static unsigned char payload_length;
+static unsigned char checksum_recv_value;
+static unsigned char checksum_calc_value;
 
 void uart_recv_int_handler() {
 #ifdef __USE18F26J50
@@ -28,10 +34,30 @@ void uart_recv_int_handler() {
         uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
         //We recieved the last byte of data
         uc_ptr->buflen++;
+        //Check the 5th byte recieved for payload length
+        if(uc_ptr->buflen == HEADER_MEMBERS){
+            payload_length = uc_ptr->buffer[HEADER_MEMBERS-1];
+        }
+        // Get checksum byte
+        else if(uc_ptr->buflen == HEADER_MEMBERS-1){
+            checksum_recv_value = uc_ptr->buffer[HEADER_MEMBERS-2];
+        }
+        // Count any other byte other than checksum
+        else if(uc_ptr->buflen != HEADER_MEMBERS-1){
+            checksum_calc_value += uc_ptr->buffer[uc_ptr->buflen-1];
+        }
         // check if a message should be sent
-        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
-            ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
+//        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
+        if (uc_ptr->buflen == payload_length){
+            if(checksum_calc_value == checksum_recv_value)
+                ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
+            else //Invalid Checksum
+                ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_RECV_FAILED, (void *) uc_ptr->buffer);
+            //Clean up for next packet
             uc_ptr->buflen = 0;
+            payload_length = 0;
+            checksum_recv_value = 0;
+            checksum_calc_value = 0;
             ReadUSART();    // clears buffer and returns value to nothing
         }
         // portion of the bytes were received or there was a corrupt byte or there was 
@@ -40,6 +66,9 @@ void uart_recv_int_handler() {
         {
             ToMainLow_sendmsg(uc_ptr->buflen, MSGT_OVERRUN, (void *) uc_ptr->buffer);
             uc_ptr->buflen = 0;
+            payload_length = 0;
+            checksum_recv_value = 0;
+            checksum_calc_value = 0;
         }
 
     }
@@ -63,6 +92,9 @@ void uart_recv_int_handler() {
 void init_uart_recv(uart_comm *uc) {
     uc_ptr = uc;
     uc_ptr->buflen = 0;
+    payload_length = 0;
+    checksum_recv_value = 0;
+    checksum_calc_value = 0;
 }
 
 void uart_send_array(char* data, char length) {

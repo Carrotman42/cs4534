@@ -13,6 +13,7 @@ typedef struct __uart_comm {
     unsigned char outBuff[MAXUARTBUF];
     unsigned char outLength;
     unsigned char outIndex;
+    unsigned char checksum;
 } uart_comm;
 
 void init_uart_recv(uart_comm *);
