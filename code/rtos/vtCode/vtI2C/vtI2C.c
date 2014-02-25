@@ -20,8 +20,7 @@
 // Structure used to define the messages that are sent to/from the I2C thread 
 typedef struct __vtI2CMsg {
 	uint8_t *dest; // Receive buffer
-	uint8_t destLen; // Receive buffer max length
-	uint8_t destAct; // Actual amount of data read
+	uint8_t destLen; // Receive buffer max length, or length received on the way out
 	uint8_t status;  // Status response for msg
 	uint8_t slvAddr; // Address of the device to whom the message is being sent (or was sent)
 	
@@ -219,7 +218,7 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		// Block until the I2C operation is complete -- we *cannot* overlap operations on the I2C bus...
 		FAILIF(xSemaphoreTake(devPtr->binSemaphore,portMAX_DELAY) != pdTRUE);
 		
-		msgBuffer.destAct = transferMCfg.rx_count;
+		msgBuffer.destLen = transferMCfg.rx_count;
 		
 		SEND(devPtr->outQ, msgBuffer);
 	}
