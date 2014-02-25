@@ -168,6 +168,8 @@ void i2c_tx_handler(){
 //return 1 when we want to stop the transfer (on error or all wanted bytes are read), 0 otherwise
 uint8 receive_data(){
     if(!SSPSTATbits.BF){//nothing in buffer
+        debugNum(2);
+        debugNum(2);
         SSPCON2bits.ACKDT = 1;
         SSPCON2bits.ACKEN = 1;
         return 1;
@@ -175,14 +177,22 @@ uint8 receive_data(){
     unsigned char recv = SSPBUF;
     ic_ptr->buffer[ic_ptr->bufind] = recv;
     if(++ic_ptr->bufind == HEADER_MEMBERS){
+        debugNum(1);
+        debugNum(1);
+        debugNum(recv);
+        debugNum(1);
+        debugNum(1);
         ic_ptr->buflen = recv + HEADER_MEMBERS; //5th byte is the payload length, add the 5 bytes already received to the buffer length
     }
     ic_ptr->checksum += recv;
 
     if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
+        debugNum(1);
+        debugNum(1);
         uint8 checksum_byte = ic_ptr->buffer[HEADER_MEMBERS-2];
-        if((ic_ptr->checksum - checksum_byte)  != checksum_byte) //compare checksums
+        if((ic_ptr->checksum - checksum_byte)  != checksum_byte){ //compare checksums
             ToMainHigh_sendmsg(0, MSGT_I2C_MASTER_RECV_FAILED, (void *) 0);
+        }
         SSPCON2bits.ACKDT = 1;
         SSPCON2bits.ACKEN = 1;
         return 1;
@@ -211,6 +221,8 @@ void i2c_rx_handler(){
             }
             break;
         case(I2C_RCV_DATA):
+            debugNum(4);
+            debugNum(4);
             if(receive_data() == 1){ //receive is finished
                 ic_ptr->status = I2C_NACK;
             }
@@ -219,12 +231,14 @@ void i2c_rx_handler(){
             ic_ptr->status = I2C_RCV_DATA;
             SSPCON2bits.RCEN = 1;
             debugNum(2);
+            debugNum(2);
             break;
         case(I2C_NACK):
             send_stop();
             break;
         case(I2C_STOPPED):
             ic_ptr->status = I2C_IDLE;
+            ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
             break;
         default:
             break;

@@ -31,32 +31,37 @@ void uart_recv_int_handler() {
 
     //debugNum(1);
     if (DataRdyUSART()) {
-//        debugNum(uc_ptr->buflen);
-        uc_ptr->buffer[uc_ptr->buflen] = ReadUSART();
+
+        unsigned char recv = ReadUSART();
+        debugNum(uc_ptr->buflen);
+        int pos = uc_ptr->buflen++;
+
+        uc_ptr->buffer[pos] = recv;
+        //debugNum(recv);
         //We recieved the last byte of data
-        uc_ptr->buflen++;
+        ;
         //Check the 5th byte recieved for payload length
-        if(uc_ptr->buflen == HEADER_MEMBERS){
+        if(pos == HEADER_MEMBERS-1){
 //            debugNum(1);
-            payload_length = uc_ptr->buffer[HEADER_MEMBERS-1];
+            payload_length = recv;
         }
         // Get checksum byte
-        if(uc_ptr->buflen == HEADER_MEMBERS-1){
+        if(pos == HEADER_MEMBERS-2){
 //            debugNum(2);
-            checksum_recv_value = uc_ptr->buffer[HEADER_MEMBERS-2];
+            checksum_recv_value = recv;
         }
         // Count any other byte other than checksum
         else{
 //            debugNum(4);
-            checksum_calc_value += uc_ptr->buffer[uc_ptr->buflen-1];
+            checksum_calc_value += recv;
         }
         // check if a message should be sent
 //        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
-        if (uc_ptr->buflen == payload_length+HEADER_MEMBERS){
+        if (pos == payload_length+HEADER_MEMBERS-1){
             if(checksum_calc_value == checksum_recv_value)
-                ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_DATA, (void *) uc_ptr->buffer);
+                ToMainLow_sendmsg(pos, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             else //Invalid Checksum
-                ToMainLow_sendmsg(uc_ptr->buflen, MSGT_UART_RECV_FAILED, (void *) uc_ptr->buffer);
+                ToMainLow_sendmsg(pos, MSGT_UART_RECV_FAILED, (void *) uc_ptr->buffer);
             //Clean up for next packet
             uc_ptr->buflen = 0;
             payload_length = 0;
@@ -66,9 +71,9 @@ void uart_recv_int_handler() {
         }
         // portion of the bytes were received or there was a corrupt byte or there was 
         // an overflow transmitted to the buffer
-        else if (uc_ptr->buflen >= MAXUARTBUF)
+        else if (pos >= MAXUARTBUF)
         {
-            ToMainLow_sendmsg(uc_ptr->buflen, MSGT_OVERRUN, (void *) uc_ptr->buffer);
+            ToMainLow_sendmsg(pos, MSGT_OVERRUN, (void *) uc_ptr->buffer);
             uc_ptr->buflen = 0;
             payload_length = 0;
             checksum_recv_value = 0;
@@ -90,6 +95,9 @@ void uart_recv_int_handler() {
         RCSTAbits.CREN = 0;
         RCSTAbits.CREN = 1;
         ToMainLow_sendmsg(0, MSGT_OVERRUN, (void *) 0);
+    }
+    if (USART_Status.FRAME_ERROR) {
+        init_uart_recv(uc_ptr);
     }
 }
 

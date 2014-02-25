@@ -370,7 +370,7 @@ void main(void) {
                 #endif
                 case MSGT_I2C_DATA:
                 {
-#ifdef MASTER_PIC
+#if defined(PICMAN) || defined(MASTER_PIC)
                     uart_send_array(msgbuffer, length);
 #elif defined(SENSOR_PIC)
                     uint8 i = 0;
@@ -384,10 +384,14 @@ void main(void) {
                 case MSGT_I2C_RQST:
                 {
 #ifdef SENSOR_PIC
-                    start_i2c_slave_reply(to_send_len, to_send_buffer);
+                    //char outbuf[5] = {1,0,0,1,0};
+                    //start_i2c_slave_reply(5, outbuf);
+                    //debugNum(to_send_len);
+                    start_i2c_slave_reply(to_send_len + 1, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
 #endif
+                    break;
                 };
                 case MSGT_I2C_DBG:
                 {
@@ -473,6 +477,11 @@ void main(void) {
                     // This will be the test for the slave pic if implemented
 #endif
 //                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
+                    break;
+                };
+                case MSGT_UART_RECV_FAILED:
+                {
+                    debugNum(1);
                     break;
                 };
                 default:
