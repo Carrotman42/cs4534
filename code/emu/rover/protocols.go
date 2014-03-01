@@ -4,6 +4,7 @@ import (
 	"io"
 	"net"
 	"fmt"
+	serial "github.com/tarm/goserial"
 )
 
 type FrameData struct {
@@ -32,6 +33,16 @@ func ListenTCP(port string) Protocol {
 		return TelnetProtocol{c}
 	}
 }
+
+func ConnectSerial(port string, baud int) Protocol {
+	c := &serial.Config{Name: port, Baud: baud}
+	if s, err := serial.OpenPort(c); err != nil {
+		panic(err)
+	} else {
+		return SerialProtocol{s}
+	}
+}
+
 // Telnet interface: used to test the emulator itself
 type TelnetProtocol struct {
 	d io.ReadWriteCloser
@@ -58,8 +69,38 @@ func (t TelnetCmd) CheckFrameCmd() (start, stop bool) {
 	}
 }
 
+// The protocol for the actual project
+type SerialProtocol struct {
+	d io.ReadWriteCloser
+}
+func (SerialProtocol) ReadCmd() InCmd {
+	return nil
+}
 
+type SerialCommand uint8
+const (
+	FrameDataCmd SerialCommand = 0x01 // TODO: Loop this up
+)
+func (p SerialProtocol) writePacket(cmd SerialCommand, param uint8, payload []byte) {
+	if len(payload) > 255 {
+		panic("Payload was too long for the protocol!")
+	}
+	buf := make([]byte, 5 + len(payload))
+	buf[0] = uint8(cmd)
+	buf[1] = param
+	buf[2] = 0
+	buf[3] = 0
+	buf[4] = byte(len(payload))
+	copy(buf[5:], payload)
+	
+	if _, err := p.d.Write(buf); err != nil {
+		panic(err)
+	}
+}
 
+func (t SerialProtocol) WriteFrameData(f FrameData) {
+	t.writePacket(FrameDataCmd, 0, []byte{f.Ultrasonic, f.IR1, f.IR2, f.REnc, f.LEnc})
+}
 
 
 
