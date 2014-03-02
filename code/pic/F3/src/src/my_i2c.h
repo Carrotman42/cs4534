@@ -24,6 +24,8 @@ typedef struct __i2c_comm {
     unsigned char txnrx; //1 if tx, 0 if rx
     unsigned char checksum;
     unsigned char addr;
+    unsigned char nack; //0 if last was ack, 1 if last was nack
+    unsigned char checksum_failed; //boolean to see if the checksum failed
 } i2c_comm;
 
 void i2c_configure_master();
