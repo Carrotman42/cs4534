@@ -26,6 +26,10 @@ func (m*Map) Init() {
 		m.Course[10][i] = true
 		m.Course[CourseSize - 10][i] = true
 	}
+	
+	for i := 10; i < 30; i++ {
+		m.Course[i][20] = true
+	}
 }
 
 const (
