@@ -41,18 +41,18 @@ void uart_recv_int_handler() {
         //We recieved the last byte of data
         ;
         //Check the 5th byte recieved for payload length
-        if(pos == HEADER_MEMBERS-1){
+        if(pos == PAYLOADLEN_POS){
 //            debugNum(1);
             payload_length = recv;
         }
         // Get checksum byte
-        if(pos == HEADER_MEMBERS-2){
+        if(pos == CHECKSUM_POS){
 //            debugNum(2);
             checksum_recv_value = recv;
         }
         // Count any other byte other than checksum
         else{
-//            debugNum(4);
+            //debugNum(1);
             checksum_calc_value += recv;
         }
         // check if a message should be sent

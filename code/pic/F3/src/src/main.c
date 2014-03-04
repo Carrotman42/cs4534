@@ -17,6 +17,7 @@
 //#include "timer1_thread.h"
 #include "timer0_thread.h"
 #include "debug.h"
+#include "comm.h"
 
 #ifdef SENSOR_PIC
 #include "my_adc.h"
@@ -378,6 +379,8 @@ void main(void) {
                         to_send_buffer[i] = msgbuffer[i];
                     }
                     to_send_len = length;
+#elif defined(MOTOR_PIC)
+                    setBrainData(msgbuffer, 0);
 #endif
                     break;
                 };
@@ -388,15 +391,16 @@ void main(void) {
                     //start_i2c_slave_reply(5, outbuf);
                     to_send_len++;
                     debugNum(to_send_len);
-                    to_send_buffer[HEADER_MEMBERS-2] = 4;
-                    to_send_buffer[HEADER_MEMBERS-1] = 1;
-                    to_send_buffer[HEADER_MEMBERS+0] = 2;
+                    to_send_buffer[CHECKSUM_POS] = 4;
+                    to_send_buffer[PAYLOADLEN_POS] = 1;
+                    to_send_buffer[HEADER_MEMBERS] = 2; //first elem of payload
                     start_i2c_slave_reply(to_send_len, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
 #elif defined(MOTOR_PIC)
-                    char outbuf[5] = {0x02,0,0,2,0};
-                    start_i2c_slave_reply(sizeof outbuf, outbuf);
+                    sendResponse();
+                    //char outbuf[5];
+                    //start_i2c_slave_reply(sizeof outbuf, outbuf);
 #endif
                     break;
                 };
@@ -477,7 +481,6 @@ void main(void) {
                         addr = 0x10;
                     else
                         addr = 0x20;
-
                     i2c_master_send(addr, length, (char *) msgbuffer);
                     // test code for the master pic
                     // Glen_Debug = 1 ---> Master PIC
@@ -510,6 +513,9 @@ void main(void) {
                 case MSGT_UART_RECV_FAILED:
                 {
                     debugNum(1);
+                    debugNum(2);
+                    debugNum(1);
+                    debugNum(2);
                     break;
                 };
                 default:

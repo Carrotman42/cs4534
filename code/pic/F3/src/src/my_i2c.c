@@ -107,7 +107,7 @@ unsigned char i2c_master_recv(unsigned char addr) {
     ic_ptr->outbuffer[0] = buf_addr;
     ic_ptr->outbuflen = 1; //just enough room for addr
     ic_ptr->outbufind = 0; //set for addr
-    ic_ptr->buflen = HEADER_MEMBERS; //reset the buffer, we'll at LEAST read 3 bytes
+    ic_ptr->buflen = HEADER_MEMBERS; //reset the buffer, we'll at LEAST read 5 bytes
     ic_ptr->bufind = 0;
     SSPCON2bits.SEN = 1;
     ic_ptr->status = I2C_STARTED;
@@ -133,11 +133,13 @@ uint8 check_if_send_stop(){
 }
 
 void send_stop(){
+    //debugNum(1);
     ic_ptr->status = I2C_STOPPED;
     SSPCON2bits.PEN = 1;
 }
 
 void i2c_tx_handler(){
+
     switch(ic_ptr->status){
         case(I2C_STARTED):
             load_i2c_data(); //start handled same way as sending data - address should already be loaded.
@@ -193,13 +195,13 @@ uint8 receive_data(){
     }
     unsigned char recv = SSPBUF;
     ic_ptr->buffer[ic_ptr->bufind] = recv;
-    if(++ic_ptr->bufind == HEADER_MEMBERS){
-        ic_ptr->buflen = recv + HEADER_MEMBERS; //5th byte is the payload length, add the 5 bytes already received to the buffer length
+    if(++ic_ptr->bufind == PAYLOADLEN_POS + 1){ //increment first, then test
+        ic_ptr->buflen += recv; //add the bytes already received to the payload length
     }
     ic_ptr->checksum += recv;
 
     if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
-        uint8 checksum_byte = ic_ptr->buffer[HEADER_MEMBERS-2];
+        uint8 checksum_byte = ic_ptr->buffer[CHECKSUM_POS];
         if((ic_ptr->checksum - checksum_byte)  != checksum_byte){ //compare checksums
             ic_ptr->checksum_failed = 1;
         }
@@ -280,6 +282,7 @@ void i2c_rx_handler(){
 
 
 void i2c_int_handler(){
+
     if(ic_ptr->txnrx)
         i2c_tx_handler();
     else
