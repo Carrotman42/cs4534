@@ -56,7 +56,7 @@ typedef struct __i2c_comm {
     unsigned char status;
     unsigned char error_code;
     unsigned char error_count;
-    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS]; // +3 for overhead
+    unsigned char outbuffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS]; // +5 for overhead
     unsigned char outbuflen;
     unsigned char outbufind;
     unsigned char slave_addr;

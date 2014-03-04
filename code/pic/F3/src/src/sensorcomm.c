@@ -18,12 +18,12 @@ void setBrainReqData(char* buf){
 
     //reqADData();
     BrainMsgRecv.flags = tempBrain->flags;
-    BrainMsgRecv.sensorMask = tempBrain->sensorMask;
+    BrainMsgRecv.parameters = tempBrain->parameters;
 }
 
 void sendRequestedData(){
-    if(BrainMsgRecv.flags == SENSOR_REQ){ //Requesting sensor data
-        if(BrainMsgRecv.sensorMask == sensorADid){ //requesting A/D converter data
+    if(BrainMsgRecv.flags == SENSOR_COMMANDS){ //Requesting sensor data
+        if(BrainMsgRecv.parameters == sensorADid){ //requesting A/D converter data
             sendADdata();
             resetADacc(); //make sure we don't send extra on next request
         }
