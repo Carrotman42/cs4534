@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	//"math"
-	//"github.com/tarm/goserial"
-	//"io"
 	"os"
 	"strconv"
+	"./gui"
 )
 
 
@@ -22,7 +20,8 @@ type Src interface {
 func main() {
 	fmt.Println("Started")
 	tel := ListenTCP("1123")
-	_ = NewRover(tel)
+	win := gui.MakeGui()
+	_ = NewRover(tel, win)
 	select{}
 }
 
@@ -68,6 +67,7 @@ func mainSerial() {
 	_, _ = port, baud
 	select{}
 }
+
 /*
 func CreateRover(m *Map, com string, baud int) *Rover {
 	r := &Rover{}
@@ -85,27 +85,6 @@ func CreateRover(m *Map, com string, baud int) *Rover {
 	go r.commThread(m)
 	
 	return r
-}
-
-func CreateMap() (m Map) { 
-	for i := 10; i < (CourseSize - 10); i++ {
-		m.course[i][10] = true
-		m.course[i][CourseSize - 10] = true
-		m.course[10][i] = true
-		m.course[CourseSize - 10][i] = true
-	}
-	
-	return m
-}
-
-
-const (
-	ArmUnitsPerTile = 10
-	
-	CourseSize = 100
-)
-type Map struct {
-	course [CourseSize][CourseSize]bool
 }
 
 func multAdd(x, i int, v float64) int {

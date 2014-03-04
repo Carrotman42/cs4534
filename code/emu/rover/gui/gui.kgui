@@ -1,0 +1,28 @@
+
+
+type mainG group {
+	Paint kgui.CanvasProperty
+	Mouse kgui.MouseEventSlot
+	
+	Map gMapProperty
+	Snap gSnapProperty
+}
+
+type Main impl {mainG}
+
+%always (m*Main) (
+	m.Paint = func(sn m.Snap) kgui.Canvas {
+		fmt.Println("In paint!")
+		r := kgui.NewCanvasMaker()
+		
+		r.ChangeColor(kgui.Color{0,0,0})
+		r.Text(kgui.AFont, kgui.Point{0,0}, sn.FrameData.String())
+		
+		if sn.SendFrames {
+			fmt.Println("Wrote send frames!")
+			r.Text(kgui.AFont, kgui.Point{0, 15}, "Sending frame data!")
+		}
+		
+		return r.Freeze()
+	}
+)
