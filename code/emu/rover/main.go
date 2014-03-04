@@ -100,9 +100,6 @@ func CreateRover(m *Map, com string, baud int) *Rover {
 	return r
 }
 
-func multAdd(x, i int, v float64) int {
-	return x + int(float64(i) * v)
-}
 
 // Returns value in ticks
 //func (r *Rover) GetFrontSensor(m *Map) int {
@@ -110,15 +107,7 @@ func multAdd(x, i int, v float64) int {
 //	return m.DistToWall(x, y, r.Dir)
 //}
 
-func (m*Map) DistToWall(x, y, dir int) int {
-	sin, cos := math.Sincos(float64(dir) / 180 * math.Pi)
-	
-	for i := 0; ; i++ {
-		if m.course[multAdd(x, i, cos)][multAdd(y, i, sin)] {
-			return i*TicksPerTile
-		}
-	}
-}*/
+*/
 
 
 

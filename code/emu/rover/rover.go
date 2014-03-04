@@ -45,15 +45,45 @@ func (r*Rover) StartLoops() {
 	go r.Loop()
 }
 
+func (r*Rover) Tick() {
+	ang := float64(r.Dir)*math.Pi/180
+	newx, newy := r.X + int(float64(r.Vel) * math.Cos(ang)), r.Y + int(float64(r.Vel) * math.Sin(ang))
+
+	if !r.Map.Outside(newx, newy, r.Dir) {
+		// Didn't hit the wall
+		r.X, r.Y = newx, newy
+	}
+	
+	// Update FrameData
+	r.FrameData.Ultrasonic = r.CalcSensorDist(5, 0, 0)
+	r.FrameData.IR1 = r.CalcSensorDist(2, 5, 90)
+	r.FrameData.IR2 = r.CalcSensorDist(-2, 5, 90)
+	//r.FrameData.Ultrasonic = r.CalcSensorDist()
+}
+
+func multAdd(x, i int, v float64) int {
+	return x + int(float64(i) * v)
+}
+
+// TODO: Calculate the real offsets of the sensors from the centroid
+func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
+	sin, cos := math.Sincos(float64(r.Dir) / 180 * math.Pi)
+	
+	x,y := multAdd(r.X, offx, cos), multAdd(r.Y, offy, sin)
+	v, ok := r.Map.DistToWall(x, y, offdir + r.Dir)
+	if v > 255 || !ok {
+		v = 255
+	}
+	return uint8(v)
+}
+
 func (r*Rover) FrameLoop() {
 	for {
 		time.Sleep(time.Second/25)
 		
 		r.Lock()
 		
-		ang := float64(r.Dir)*math.Pi/180
-		r.X += int(float64(r.Vel) * math.Cos(ang))
-		r.Y += int(float64(r.Vel) * math.Sin(ang))
+		r.Tick()
 		
 		if r.SendFrames {
 			r.WriteFrameData(r.FrameData)
