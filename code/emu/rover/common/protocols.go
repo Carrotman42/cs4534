@@ -17,6 +17,9 @@ type Protocol interface {
 // Abstract definition of an incoming message
 type InCmd interface {
 	CheckFrameCmd() (start, stop bool)
+	CheckStartCmd() (speed int, ok bool)
+	CheckStopCmd() (ok bool)
+	CheckTurnCmd() (val int, ok bool)
 }
 
 // Convenience structs for protocols

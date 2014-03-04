@@ -6,22 +6,25 @@ type RoverSnapshot struct {
 	// In ArmUnits
 	X, Y int
 	
+	// In degrees
+	Dir int
+	
+	// In ArmUnits/ArmTime
+	Vel int
+	
 	// In SendFrames mode
 	SendFrames bool
 }
 
 
-func CreateMap() (m Map) { 
+func (m*Map) Init() {
 	for i := 10; i < (CourseSize - 10); i++ {
 		m.Course[i][10] = true
 		m.Course[i][CourseSize - 10] = true
 		m.Course[10][i] = true
 		m.Course[CourseSize - 10][i] = true
 	}
-	
-	return m
 }
-
 
 const (
 	ArmUnitsPerTile = 10

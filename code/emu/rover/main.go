@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"./gui"
+	"./common"
 )
 
 
@@ -16,12 +17,24 @@ type Src interface {
 	Read() uint8
 }
 
+type NullProt struct{}
+func (NullProt) ReadCmd() common.InCmd {
+	select{}
+}
+func (NullProt) WriteFrameData(common.FrameData){}
 
 func main() {
-	fmt.Println("Started")
+	//fmt.Println("Started, waiting for telnet...")
 	tel := ListenTCP("1123")
+	//tel := NullProt{}
+	
 	win := gui.MakeGui()
-	_ = NewRover(tel, win)
+	
+	rov := NewRover(tel, win)
+	rov.X, rov.Y = 30*common.ArmUnitsPerTile, common.CourseSize/2*common.ArmUnitsPerTile
+	
+	win.SetMap(rov.Map)
+	
 	select{}
 }
 

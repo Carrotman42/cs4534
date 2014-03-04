@@ -5,6 +5,7 @@ import (
 	"time"
 	"./common"
 	"io"
+	"math"
 )
 
 
@@ -21,6 +22,8 @@ type Rover struct {
 	
 	// This value is automatically updated any time any of the more precise values have changed, eg X/Y
 	common.RoverSnapshot
+	
+	Map common.Map
 }
 
 func NewRover(p common.Protocol, list RoverListener) *Rover {
@@ -29,6 +32,7 @@ func NewRover(p common.Protocol, list RoverListener) *Rover {
 	ret.Protocol = p
 	
 	ret.StartLoops()
+	ret.Map.Init()
 	return ret
 }
 
@@ -43,14 +47,18 @@ func (r*Rover) StartLoops() {
 
 func (r*Rover) FrameLoop() {
 	for {
-		time.Sleep(time.Second)
+		time.Sleep(time.Second/25)
 		
 		r.Lock()
+		
+		ang := float64(r.Dir)*math.Pi/180
+		r.X += int(float64(r.Vel) * math.Cos(ang))
+		r.Y += int(float64(r.Vel) * math.Sin(ang))
+		
 		if r.SendFrames {
 			r.WriteFrameData(r.FrameData)
 		}
 		if r.Listener != nil {
-			fmt.Println("Writing to gui: ", r.RoverSnapshot, r.SendFrames)
 			r.Listener.Update(r.RoverSnapshot)
 		}
 		
@@ -70,6 +78,12 @@ func (r*Rover) Loop() {
 		
 		if start, stop := cmd.CheckFrameCmd(); start || stop {
 			r.HandleFrameCmd(start)
+		} else if speed, ok := cmd.CheckStartCmd(); ok {
+			r.Vel = speed
+		} else if cmd.CheckStopCmd() {
+			r.Vel = 0
+		} else if val, ok := cmd.CheckTurnCmd(); ok {
+			r.Dir += val
 		}
 	}
 }
@@ -84,7 +98,7 @@ func ListenTCP(port string) common.Protocol {
 		if err := l.Close(); err != nil {
 			panic(err)
 		}
-		return TelnetProtocol{c}
+		return &TelnetProtocol{c,0}
 	}
 }
 
@@ -100,13 +114,21 @@ func ConnectSerial(port string, baud int) common.Protocol {
 // Telnet interface: used to test the emulator itself
 type TelnetProtocol struct {
 	d io.ReadWriteCloser
+	
+	lastSpeed int
 }
-func (t TelnetProtocol) ReadCmd() common.InCmd {
+func (t*TelnetProtocol) ReadCmd() common.InCmd {
 	var buf [1]byte
 	if _, err := t.d.Read(buf[:]); err != nil {
 		panic(err)
 	}
-	return TelnetCmd{buf[0]}
+	ret := TelnetCmd{buf[0], t.lastSpeed}
+	if v,ok := ret.CheckStartCmd(); ok {
+		t.lastSpeed = v
+	} else if ret.CheckStopCmd() {
+		t.lastSpeed = 0
+	}
+	return ret
 }
 func (t TelnetProtocol) WriteFrameData(f common.FrameData) {
 	fmt.Fprint(t.d, f.String())
@@ -114,6 +136,7 @@ func (t TelnetProtocol) WriteFrameData(f common.FrameData) {
 
 type TelnetCmd struct {
 	letter byte
+	lastSpeed int
 }
 func (t TelnetCmd) CheckFrameCmd() (start, stop bool) {
 	switch t.letter {
@@ -122,7 +145,27 @@ func (t TelnetCmd) CheckFrameCmd() (start, stop bool) {
 		default: return false, false
 	}
 }
-
+func (t TelnetCmd) CheckStartCmd() (speed int, ok bool) {
+	if t.letter == 'w' {
+		return t.lastSpeed + 2, true
+	} else if t.letter == 's' {
+		return t.lastSpeed - 2, true
+	}
+	return 0,false
+}
+func (t TelnetCmd) CheckStopCmd() (ok bool) {
+	return t.letter == ' '
+}
+func (t TelnetCmd) CheckTurnCmd() (val int, ok bool) {
+	if t.letter == 'a' {
+		return -90, true
+	} else if t.letter == 'd' {
+		return 90, true
+	}
+	return 0, false
+}
+	
+	
 // The protocol for the actual project
 type SerialProtocol struct {
 	d io.ReadWriteCloser

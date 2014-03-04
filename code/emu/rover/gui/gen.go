@@ -7,13 +7,11 @@ import (
 	"sync"
 	"runtime"
 )
-var _ = fmt.Println
-var _ = kgui.Canvas{}
-var _ = os.Open
-var _ = sync.Mutex{}
-var _ = runtime.NumGoroutine
+
+ import "math" 
  
  
+ const SCALE = 0.5 
  
 type GMapSlotConn struct {
 	D chan gMap
@@ -298,13 +296,13 @@ flagPaintUpdated := c.Paint.Tick(&Paint)
 flagPaintInitted = flagPaintInitted || flagPaintUpdated
 flagSnapUpdated := c.Snap.Tick(&Snap)
 flagSnapInitted = flagSnapInitted || flagSnapUpdated
+flagMapUpdated := c.Map.Tick(&Map)
+flagMapInitted = flagMapInitted || flagMapUpdated
 var Mouse kgui.MouseEvent
 _ = Mouse
 var flagMouseUpdated bool
 _ = flagMouseUpdated
-flagMapUpdated := c.Map.Tick(&Map)
-flagMapInitted = flagMapInitted || flagMapUpdated
-if !(flagPaintUpdated||flagSnapUpdated||flagMouseUpdated||flagMapUpdated) {
+if !(flagPaintUpdated||flagSnapUpdated||flagMapUpdated||flagMouseUpdated) {
 for { select {
 case nl := <-c.Paint.Attacher:
 c.Paint.Attach(nl)
@@ -317,8 +315,6 @@ c.Snap.Set(Snap)
 c.Snap.Tick(nil)
 flagSnapInitted = true
 flagSnapUpdated = true
-case Mouse = <-c.Mouse.D:
-flagMouseUpdated = true
 case nl := <-c.Map.Attacher:
 c.Map.Attach(nl)
 continue
@@ -327,11 +323,13 @@ c.Map.Set(Map)
 c.Map.Tick(nil)
 flagMapInitted = true
 flagMapUpdated = true
+case Mouse = <-c.Mouse.D:
+flagMouseUpdated = true
 case nl := <-c.quitter: defer func() { nl.Unlock() }(); break mainLoop
 };break}}
-inittedAllcalcPaint = inittedAllcalcPaint || flagSnapInitted
-if inittedAllcalcPaint && (flagSnapUpdated) {
-c.Paint.Set(c.calcPaint(Snap))
+inittedAllcalcPaint = inittedAllcalcPaint || flagSnapInitted&&flagMapInitted
+if inittedAllcalcPaint && (flagSnapUpdated||flagMapUpdated) {
+c.Paint.Set(c.calcPaint(Snap,Map))
 }
 }}
 func (t*mainG) Init() {
@@ -347,14 +345,35 @@ t.SnapSetter.Init()
 t.MapSetter.Init()
 go t.Loop()
 }
-func (m*Main) calcPaint(sn gSnap) kgui.Canvas {
-fmt . Println ( "In paint!" ) 
- r := kgui . NewCanvasMaker ( ) 
+func (m*Main) calcPaint(sn gSnap,pam gMap) kgui.Canvas {
+r := kgui . NewCanvasMaker ( ) 
  r . ChangeColor ( kgui . Color { 0 , 0 , 0 } ) 
- r . Text ( kgui . AFont , kgui . Point { 0 , 0 } , sn . FrameData . String ( ) ) 
- if sn . SendFrames { fmt . Println ( "Wrote send frames!" ) 
- r . Text ( kgui . AFont , kgui . Point { 0 , 15 } , "Sending frame data!" ) 
+ _ , h := kgui . AFont . MeasureText ( "L" ) 
+ p := kgui . Point { 0 , 0 } 
+ r . Text ( kgui . AFont , kgui . Point { 0 , 0 } , fmt . Sprint ( "Latest frame: " , sn . FrameData ) ) 
+ p . Y += h 
+ r . Text ( kgui . AFont , p , fmt . Sprint ( "Sending frame data: " , sn . SendFrames ) ) 
+ p . Y += h 
+ x , y := float64 ( sn . X ) * SCALE , float64 ( sn . Y ) * SCALE 
+ y += p . Y 
+ rad := 5 * SCALE 
+ roverX , roverY := x , y 
+ gridSize := ArmUnitsPerTile * SCALE 
+ startY := p . Y 
+ max := CourseSize * SCALE 
+ for x , xs := range pam . Course { x := float64 ( x ) * gridSize 
+ for y , v := range xs { y := float64 ( y ) * gridSize + startY 
+ if v { r . ChangeColor ( kgui . Color { 0 , x / max , y / max } ) 
+ r . Polygon ( ps ( x , y , x + gridSize , y , x + gridSize , y + gridSize , x , y + gridSize ) ) 
  } 
+ } 
+ } 
+ r . ChangeColor ( kgui . Color { 0 , 0 , 0 } ) 
+ x , y = roverX , roverY 
+ r . Polygon ( ps ( x - rad , y - rad , x + rad , y - rad , x + rad , y + rad , x - rad , y + rad ) ) 
+ ang := float64 ( sn . Dir ) * math . Pi / 180 
+ endX , endY := x + 10 * math . Cos ( ang ) , y + 10 * math . Sin ( ang ) 
+ r . LineStrip ( 2 , ps ( x , y , endX , endY ) ) 
  return r . Freeze ( ) 
  
 }
@@ -382,3 +401,10 @@ b.SnapSetter.Send(in)
 func (b*Main) MapSet(in gMap) {
 b.MapSetter.Send(in)
 }
+
+var _ = fmt.Println
+var _ = kgui.Canvas{}
+var _ = os.Open
+var _ = sync.Mutex{}
+var _ = runtime.NumGoroutine
+ 
