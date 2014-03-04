@@ -29,6 +29,8 @@ func (m*Map) Init() {
 	
 	for i := 10; i < 30; i++ {
 		m.Course[i][20] = true
+		m.Course[30][i+10] = true
+		m.Course[i][40] = true
 	}
 }
 
