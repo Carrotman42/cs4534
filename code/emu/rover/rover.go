@@ -114,6 +114,8 @@ func (r*Rover) Loop() {
 			r.Vel = 0
 		} else if val, ok := cmd.CheckTurnCmd(); ok {
 			r.Dir += val
+		} else if err := cmd.Error(); err != nil {
+			fmt.Println("Error:", err)
 		}
 	}
 }
@@ -194,14 +196,90 @@ func (t TelnetCmd) CheckTurnCmd() (val int, ok bool) {
 	}
 	return 0, false
 }
+
+// Don't even treat mistypes as errors, just ignore them
+func (TelnetCmd) Error() error {
+	return nil
+}
 	
 	
 // The protocol for the actual project
 type SerialProtocol struct {
-	d io.ReadWriteCloser
+	io.ReadWriteCloser
 }
-func (SerialProtocol) ReadCmd() common.InCmd {
-	return nil
+func (s SerialProtocol) ReadByte() byte {
+	var buf [1]byte
+	if _,err := s.Read(buf[:]); err != nil {
+		panic(err) //TODO remove panic
+	}
+	return buf[0]
+}
+
+
+type SerialErrCmd struct {
+	errText string
+	cmd, param, mId, ll, check byte
+	payload []byte
+	common.NullCmd
+}
+func (s SerialErrCmd) Error() error {
+	return fmt.Errorf("%s: %d %d %d %d %d\nPayload: %v", s.errText, s.cmd, s.param, s.mId, s.ll, s.check, s.payload)
+}
+func SerialErr(str string, cmd, param, mId, ll, check byte, payload []byte) SerialErrCmd {
+	return SerialErrCmd{
+		str,cmd,param,mId,ll,check,payload,common.NullCmd{},
+	}
+}
+
+func (s SerialProtocol) ReadCmd() common.InCmd {
+	cmd := s.ReadByte()
+	param := s.ReadByte()
+	mId := s.ReadByte()
+	ll := s.ReadByte()
+	check := s.ReadByte()
+
+	buf := make([]byte, ll)
+	if _,err := s.Read(buf); err != nil {
+		return SerialErr("Could not read payload: " + err.Error(), cmd,param,mId,ll,check,buf)
+	}
+	
+	// Calc checksum:
+	tot := cmd + param + mId + ll
+	for _,v := range buf {
+		tot += v
+	}
+	if check != tot {
+		return SerialErr("failed checksum:",cmd,param,mId,ll,check,buf)
+	}
+	
+	switch cmd {
+		case 0x04: // High-level command
+			switch param {
+				case 0: //Start frames
+					return common.FrameCmd{StartStop:true}
+				case 3: //Stop frames
+					return common.FrameCmd{StartStop:false}
+				default:
+					return SerialErr("Invalid command: ",cmd,param,mId,ll,check,buf)
+			}
+		case 0x02: // Motor commands
+			switch param {
+				case 0: //Start forward
+					return common.SpeedCmd{Speed:int(buf[0]), Stop: false}
+				case 1: //Start backward
+					return common.SpeedCmd{Speed:-int(buf[0]), Stop: false}
+				case 2: //Stop
+					return common.SpeedCmd{Speed:0, Stop: true}
+				case 3: //Turn right
+					return common.TurnCmd{Val: int(buf[0])}
+				case 4: //Turn right
+					return common.TurnCmd{Val: -int(buf[0])}
+				default:
+					return SerialErr("Invalid command: ",cmd,param,mId,ll,check,buf)
+			}
+		default:
+			return SerialErr("Invalid command: ",cmd,param,mId,ll,check,buf)
+	}
 }
 
 type SerialCommand uint8
@@ -220,7 +298,7 @@ func (p SerialProtocol) writePacket(cmd SerialCommand, param uint8, payload []by
 	buf[4] = byte(len(payload))
 	copy(buf[5:], payload)
 	
-	if _, err := p.d.Write(buf); err != nil {
+	if _, err := p.Write(buf); err != nil {
 		panic(err)
 	}
 }
