@@ -143,6 +143,7 @@ void i2c_tx_handler(){
             load_i2c_data(); //start handled same way as sending data - address should already be loaded.
             break;
         case(I2C_MASTER_SEND):
+            ic_ptr->nack = SSPCON2bits.ACKSTAT;
             if((SSPCON2bits.ACKSTAT == 1) || check_if_send_stop()){ //ack not received or it should stop naturally
                 //ic_ptr->outbufind--; //Resend last byte
                 send_stop();
@@ -156,9 +157,27 @@ void i2c_tx_handler(){
             break;
         case(I2C_STOPPED): //stop
             ic_ptr->status = I2C_IDLE;
-#ifdef MASTER_PIC
-            i2c_master_recv(ic_ptr->addr);
-#endif
+            if(!ic_ptr->nack){
+                i2c_master_recv(ic_ptr->addr);
+            }
+            else{
+                char error[6];
+                error[0] = 0x40; //error flag
+                error[2] = 0x00; //msg id
+                if(ic_ptr->addr == 0x10){ //sensor pic
+                    error[1] = 0x01; //param
+                    error[3] = 0x43; //checksum
+                    error[4] = 0x01; //payload len
+                    error[5] = 0x01; //payload
+                }
+                else{
+                    error[1] = 0x01; //param
+                    error[3] = 0x44; //checksum
+                    error[4] = 0x01; //payload len
+                    error[5] = 0x02; //payload
+                }
+                ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_SEND_FAILED, error);
+            }
             break;
         default:
             break;
@@ -168,8 +187,6 @@ void i2c_tx_handler(){
 //return 1 when we want to stop the transfer (on error or all wanted bytes are read), 0 otherwise
 uint8 receive_data(){
     if(!SSPSTATbits.BF){//nothing in buffer
-        debugNum(2);
-        debugNum(2);
         SSPCON2bits.ACKDT = 1;
         SSPCON2bits.ACKEN = 1;
         return 1;
@@ -177,21 +194,14 @@ uint8 receive_data(){
     unsigned char recv = SSPBUF;
     ic_ptr->buffer[ic_ptr->bufind] = recv;
     if(++ic_ptr->bufind == HEADER_MEMBERS){
-        debugNum(1);
-        debugNum(1);
-        debugNum(recv);
-        debugNum(1);
-        debugNum(1);
         ic_ptr->buflen = recv + HEADER_MEMBERS; //5th byte is the payload length, add the 5 bytes already received to the buffer length
     }
     ic_ptr->checksum += recv;
 
     if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
-        debugNum(1);
-        debugNum(1);
         uint8 checksum_byte = ic_ptr->buffer[HEADER_MEMBERS-2];
         if((ic_ptr->checksum - checksum_byte)  != checksum_byte){ //compare checksums
-            ToMainHigh_sendmsg(0, MSGT_I2C_MASTER_RECV_FAILED, (void *) 0);
+            ic_ptr->checksum_failed = 1;
         }
         SSPCON2bits.ACKDT = 1;
         SSPCON2bits.ACKEN = 1;
@@ -205,13 +215,13 @@ uint8 receive_data(){
 }
 
 void i2c_rx_handler(){
-    debugNum(1);
     switch(ic_ptr->status){
         case(I2C_STARTED):
+            ic_ptr->checksum_failed = 0;
             load_i2c_data();
-            // //need to set this after transmitting
             break;
         case(I2C_MASTER_SEND): //sent the addr
+            ic_ptr->nack = SSPCON2bits.ACKSTAT;
             if(SSPCON2bits.ACKSTAT == 1){ //ack not received
                 send_stop();
             }
@@ -221,8 +231,6 @@ void i2c_rx_handler(){
             }
             break;
         case(I2C_RCV_DATA):
-            debugNum(4);
-            debugNum(4);
             if(receive_data() == 1){ //receive is finished
                 ic_ptr->status = I2C_NACK;
             }
@@ -230,15 +238,40 @@ void i2c_rx_handler(){
         case(I2C_ACK):
             ic_ptr->status = I2C_RCV_DATA;
             SSPCON2bits.RCEN = 1;
-            debugNum(2);
-            debugNum(2);
             break;
         case(I2C_NACK):
             send_stop();
             break;
         case(I2C_STOPPED):
             ic_ptr->status = I2C_IDLE;
-            ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
+            ic_ptr->checksum = 0;
+            if(!ic_ptr->nack){
+                if(!ic_ptr->checksum_failed){
+                    ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
+                }
+                else{
+                    char error[6] = {0x40, 0x04, 0x00, 0x45, 0x01, 0x00};
+                    ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
+                }
+            }
+            else{
+                char error[6];
+                error[0] = 0x40; //error flag
+                error[2] = 0x00; //msg id
+                if(ic_ptr->addr == 0x10){ //sensor pic
+                    error[1] = 0x01; //param
+                    error[3] = 0x43; //checksum
+                    error[4] = 0x01; //payload len
+                    error[5] = 0x01; //payload
+                }
+                else{
+                    error[1] = 0x01; //param
+                    error[3] = 0x44; //checksum
+                    error[4] = 0x01; //payload len
+                    error[5] = 0x02; //payload
+                }
+                ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
+            }
             break;
         default:
             break;

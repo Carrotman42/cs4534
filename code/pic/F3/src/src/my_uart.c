@@ -33,7 +33,7 @@ void uart_recv_int_handler() {
     if (DataRdyUSART()) {
 
         unsigned char recv = ReadUSART();
-        debugNum(recv);
+        //debugNum(recv);
         int pos = uc_ptr->buflen++;
 
         uc_ptr->buffer[pos] = recv;

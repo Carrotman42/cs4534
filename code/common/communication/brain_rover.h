@@ -23,6 +23,7 @@ typedef struct {
 
 // THE FOLLOWING ARE FLAGS FOR BrainMsg.flags
 #define SENSOR_REQ 1
+#define MOTOR_TURN 2 //for now
 // END FLAGS
 
 // Should only use the functions prototyped out here

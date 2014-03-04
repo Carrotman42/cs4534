@@ -394,6 +394,9 @@ void main(void) {
                     start_i2c_slave_reply(to_send_len, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
+#elif defined(MOTOR_PIC)
+                    char outbuf[5] = {0x02,0,0,2,0};
+                    start_i2c_slave_reply(sizeof outbuf, outbuf);
 #endif
                     break;
                 };
@@ -404,10 +407,18 @@ void main(void) {
                     last_reg_recvd = msgbuffer[0];
                     break;
                 };
+#ifdef MASTER_PIC
                 case MSGT_I2C_MASTER_RECV_FAILED:
                 {
+                    uart_send_array(msgbuffer, length);
                     break;
                 };
+                case MSGT_I2C_MASTER_SEND_FAILED:
+                {
+                    uart_send_array(msgbuffer, length);
+                    break;
+                };
+#endif
                 case MSGT_AD:
                 {
                     #ifdef SENSOR_PIC
@@ -461,7 +472,12 @@ void main(void) {
                     //unsigned char test[7] = {1,0,0,18,2,7,8};
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
-                    unsigned char addr = 0x10;
+                    unsigned char addr;
+                    if(msgbuffer[0] == 0x01)
+                        addr = 0x10;
+                    else
+                        addr = 0x20;
+
                     i2c_master_send(addr, length, (char *) msgbuffer);
                     // test code for the master pic
                     // Glen_Debug = 1 ---> Master PIC

@@ -70,4 +70,20 @@ void timer1_int_handler() {
     WriteTimer1(0x4000);
     //i2c_master_recv(0x10);
 #endif
+
+#if defined(PICMAN) && defined(DEBUG_ON)
+    WriteTimer1(0x4000);
+    //i2c_master_recv(0x10);
+
+    static char temp = 0;
+    if (temp++ == 0) {
+        unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
+        uart_send_array(test, 5);
+    //ToMainHigh_sendmsg(5, MSGT_I2C_DATA, (void *) test);
+    }else {
+        unsigned char test[7] = {0x02, 0x0, 0x0, 0x05, 0x2, 0x1, 0x0};
+        uart_send_array(&test, 7);
+        temp = 0;
+    }
+#endif
 }
