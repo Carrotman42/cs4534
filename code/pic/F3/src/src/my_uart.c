@@ -59,10 +59,12 @@ void uart_recv_int_handler() {
 //        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
         if (pos == payload_length+HEADER_MEMBERS-1){
             pos++;
-            if(checksum_calc_value == checksum_recv_value)
+            if(checksum_calc_value == checksum_recv_value){
                 ToMainLow_sendmsg(pos, MSGT_UART_DATA, (void *) uc_ptr->buffer);
-            else //Invalid Checksum
+            }
+            else{ //Invalid Checksum
                 ToMainLow_sendmsg(pos, MSGT_UART_RECV_FAILED, (void *) uc_ptr->buffer);
+            }
             //Clean up for next packet
             uc_ptr->buflen = 0;
             payload_length = 0;

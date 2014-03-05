@@ -230,6 +230,7 @@ void main(void) {
 #endif
 
     // initialize my uart recv handling code
+
     init_uart_recv(&uc);
 
     // initialize the i2c code
@@ -286,20 +287,20 @@ void main(void) {
 
     
 #ifdef SENSOR_PIC
-    resetAccumulators();
+    //resetAccumulators();
     init_adc();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-    i2c_configure_slave(0x20);//address 0x10
+    i2c_configure_slave(SENSOR_ADDR << 1);//address 0x10
 #elif defined MOTOR_PIC
-    i2c_configure_slave(0x40);//address 0x20
+    i2c_configure_slave(MOTOR_ADDR << 1);//address 0x20
 #elif defined MASTER_PIC
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
 #elif defined PICMAN
-    i2c_configure_slave(0x20);//address 0x10,different bus from sensor
+    i2c_configure_slave(PICMAN_ADDR << 1);//address 0x10,different bus from sensor
 #endif
 
 
@@ -371,7 +372,12 @@ void main(void) {
                 #endif
                 case MSGT_I2C_DATA:
                 {
-#if defined(PICMAN) || defined(MASTER_PIC)
+#ifdef MASTER_PIC
+                    //handle whatever data will come through via i2c
+                    //msgbuffer can hold real data - error codes will be returned through the error cases
+                    
+                    uart_send_array(msgbuffer, length); //for now
+#elif defined(PICMAN)
                     uart_send_array(msgbuffer, length);
 #elif defined(SENSOR_PIC)
                     uint8 i = 0;
@@ -380,7 +386,7 @@ void main(void) {
                     }
                     to_send_len = length;
 #elif defined(MOTOR_PIC)
-                    setBrainData(msgbuffer, 0);
+                    setBrainData(msgbuffer, I2C_COMM);
 #endif
                     break;
                 };
@@ -464,28 +470,32 @@ void main(void) {
 //                    break;
                 case MSGT_UART_DATA:
                 {
-#ifdef PICMAN
-                    debugNum(1);
-                    debugNum(1);
-                    debugNum(length);
-                    debugNum(1);
-                    debugNum(1);
-                    debugNum(msgbuffer[5]);
-                    start_i2c_slave_reply(length, msgbuffer);
-#elif defined(MASTER_PIC)
+//#ifdef PICMAN
+//                    debugNum(1);
+//                    debugNum(1);
+//                    debugNum(length);
+//                    debugNum(1);
+//                    debugNum(1);
+//                    debugNum(msgbuffer[5]);
+//                    start_i2c_slave_reply(length, msgbuffer);
+//#elif defined(MASTER_PIC)
                     //unsigned char test[7] = {1,0,0,18,2,7,8};
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
-                    unsigned char addr;
+                    //send ack
+                    setBrainData(msgbuffer, UART_COMM);//pass data received and tell received over uart.
+                    handleCommand(); //sends the response and then sets up the command handling
+
+                    /*unsigned char addr;
                     if(msgbuffer[0] == 0x01)
                         addr = 0x10;
                     else
                         addr = 0x20;
-                    i2c_master_send(addr, length, (char *) msgbuffer);
+                    */
                     // test code for the master pic
                     // Glen_Debug = 1 ---> Master PIC
                     // Glen_Debug = 0 ---> Slave PIC
-#endif
+//#endif
 #if GLEN_DEBUG == 0
 //                  unsigned char test[5] = {'1','2','3','4','\r'};
                     uart_send_array(msgbuffer, 5);

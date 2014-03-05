@@ -5,7 +5,9 @@
 
 #include "../../../../common/communication/brain_rover.h"
 #include "comm.h"
+#include "debug.h"
 
-void sendMotorAckResponse(uint8 parameters, uint8 wifly);
+uint8 sendMotorAckResponse(uint8 parameters, uint8 wifly);
+void sendEncoderData();
 
 #endif	/* MOTORCOMM_H */

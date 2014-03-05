@@ -1,14 +1,12 @@
 #include "sensorcomm.h"
 
-#ifdef SENSOR_PIC
-
 #include "../../../../common/sensor_types.h"
 #include "../../../../common/common.h"
 #include "testAD.h"
 #include "debug.h"
 #include "my_i2c.h"
 
-
+/*
 static BrainMsg BrainMsgRecv;
 static sensorADaccumulator ADacc;
 
@@ -74,5 +72,4 @@ void resetADacc(){
 void resetAccumulators(){
     resetADacc();
 }
-
-#endif //SENSOR_PIC
+*/

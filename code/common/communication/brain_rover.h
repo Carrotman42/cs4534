@@ -63,6 +63,24 @@ uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 wifly);
 uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 wifly);
 uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 wifly);
 
+uint8 generateLeftWheelError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateRightWheelError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateChecksumError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateUltrasonicError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateIR1Error(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateIR2Error(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateColorSensorError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateLeftEncoderError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateRightEncoderError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateSensorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
+
+uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly);
+uint8 generateGetSensorFrame(char* out, uint8 buflen); //
+uint8 generateGetEncoderData(char* out, uint8 buflen);
+
+int packEncoderData(encoderData* data, uint8 len, char* out, uint8 maxout);
 
 
 

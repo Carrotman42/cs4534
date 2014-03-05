@@ -62,14 +62,18 @@
 
 //#define PICMAN
 //#define SENSOR_PIC
-#define MOTOR_PIC
-//#define MASTER_PIC
+//#define MOTOR_PIC
+#define MASTER_PIC
 
 #ifdef MASTER_PIC
 #define I2C_MASTER
 #else
 #define I2C_SLAVE
 #endif
+
+#define MOTOR_ADDR 0x20
+#define SENSOR_ADDR 0x10
+#define PICMAN_ADDR 0x10
 
 #endif
 

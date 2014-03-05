@@ -20,24 +20,30 @@ void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
 
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one
 //    just in case we change the format of RoverMsg
-static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, int sensorID) {
+static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, uint8 flags, uint8 parameters) {
     if (payloadLen + HEADER_MEMBERS >= maxout) {
         return 0;
     }
+    msg->checksum = 0;
 
-    msg->flags = SENSOR_COMMANDS;
-    msg->parameters = sensorID;
+    msg->flags = flags;
+    msg->parameters = parameters;
     msg->payloadLen = payloadLen;
+    msg->messageid = i2c_messageid++;
 
     char* dest = msg->payload;
     char* end = dest + payloadLen;
+    msg->checksum = flags+ parameters + payloadLen + msg->messageid;
     while (dest != end) {
+        msg->checksum += *data;
         *dest++ = *data++;
     }
     return payloadLen + HEADER_MEMBERS;
 }
 
-static void packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 wifly){ //wifly = 1 if wifly comm, 0 if i2c (used for messageid)
+//returns number of bytes packed
+static uint8 packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 outlen, uint8 wifly){ //wifly = 1 if wifly comm, 0 if i2c (used for messageid)
+    if(outlen < 5) return 0;
     msg->flags = flags;
     msg->parameters = parameters;
     msg->payloadLen = 0; //0 byte payload for ack
@@ -46,93 +52,70 @@ static void packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 wifly){ //wif
     else
         msg->messageid = i2c_messageid++;
     msg->checksum = flags + parameters + msg->messageid;
+    return HEADER_MEMBERS;
 }
 
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packStartForwardAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5) return -1;
-    packAck(MOTOR_COMMANDS, 0x00, (Msg*) out, wifly);
-    return 0;
+    return packAck(MOTOR_COMMANDS, 0x00, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5) return -1;
-    packAck(MOTOR_COMMANDS, 0x01, (Msg*) out, wifly);
-    return 0;
+    return packAck(MOTOR_COMMANDS, 0x01, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packStopAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5) return -1;
-    packAck(MOTOR_COMMANDS, 0x02, (Msg*) out, wifly);
-    return 0;
+    return packAck(MOTOR_COMMANDS, 0x02, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packTurnCWAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(MOTOR_COMMANDS, 0x03, (Msg*) out, wifly);
-    return 0;
+    return packAck(MOTOR_COMMANDS, 0x03, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(MOTOR_COMMANDS, 0x04, (Msg*) out, wifly);
-    return 0;
+    return packAck(MOTOR_COMMANDS, 0x04, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 uint8 packStartFramesAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(HIGH_LEVEL_COMMANDS, 0x00, (Msg*) out, wifly);
-    return 0;
+    return packAck(HIGH_LEVEL_COMMANDS, 0x00, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
 uint8 packFrameDataAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(HIGH_LEVEL_COMMANDS, 0x01, (Msg*) out, wifly);
-    return 0;
+    return packAck(HIGH_LEVEL_COMMANDS, 0x01, (Msg*) out, outlen, wifly);
 }
 
 //Out must always be (at least) 5 bytes
 uint8 packStopFramesAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(HIGH_LEVEL_COMMANDS, 0x03, (Msg*) out, wifly);
-    return 0;
+    return packAck(HIGH_LEVEL_COMMANDS, 0x03, (Msg*) out, outlen, wifly);
 }
 
 uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(ERROR_FLAG, 0x01, (Msg*) out, wifly);
-    return 0;
+    return packAck(ERROR_FLAG, 0x01, (Msg*) out, outlen, wifly);
 }
 
 uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(ERROR_FLAG, 0x02, (Msg*) out, wifly);
-    return 0;
+    return packAck(ERROR_FLAG, 0x02, (Msg*) out, outlen, wifly);
 }
 
 uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(ERROR_FLAG, 0x03, (Msg*) out, wifly);
-    return 0;
+    return packAck(ERROR_FLAG, 0x03, (Msg*) out, outlen, wifly);
 }
 
 uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 wifly){
-    if(outlen < 5)  return -1;
-    packAck(ERROR_FLAG, 0x04, (Msg*) out, wifly);
-    return 0;
+    return packAck(ERROR_FLAG, 0x04, (Msg*) out, outlen, wifly);
 }
 
 
@@ -141,8 +124,104 @@ uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 wifly){
 //    signify that the buffer was too small (this should never happen, but
 //    during development we should be carely to make sure this doesn't happen)
 int packADData(sensorADData* data, int len, char* out, int maxout) {
-	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, sensorADid);
+	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, SENSOR_COMMANDS, sensorADid);
 }
+
+int packEncoderData(encoderData* data, uint8 len, char* out, uint8 maxout){
+    return packReturnData((char*) data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID);
+}
+
+
+
+static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 payload, uint8 wifly){
+    if(buflen < 6) return 0;
+    errorbuf->flags = ERROR_FLAG;
+    errorbuf->parameters = parameters;
+    errorbuf->payloadLen = 1; //1 byte payload for every error
+    if(wifly)
+        errorbuf->messageid = wifly_messageid++;
+    else
+        errorbuf->messageid = i2c_messageid++;
+    errorbuf->payload[0] = payload;
+    errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen + payload;
+    return 1;
+}
+
+uint8 generateLeftWheelError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x03, 0x01, wifly);
+}
+
+uint8 generateRightWheelError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x03, 0x02, wifly);
+}
+
+uint8 generateChecksumError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x04, 0x01, wifly);
+}
+
+uint8 generateUltrasonicError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x01, wifly);
+}
+
+uint8 generateIR1Error(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x02, wifly);
+}
+
+uint8 generateIR2Error(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x03, wifly);
+}
+
+uint8 generateColorSensorError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x04, wifly);
+}
+
+uint8 generateLeftEncoderError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x05, wifly);
+}
+
+uint8 generateRightEncoderError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x02, 0x06, wifly);
+}
+
+uint8 generateSensorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x01, 0x01, wifly);
+}
+
+uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x01, 0x02, wifly);
+}
+
+uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*)errorbuf, buflen, 0x01, 0x03, wifly);
+}
+
+
+uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly){
+    return 0;
+}
+
+uint8 generateGetSensorFrame(char* out, uint8 buflen){
+    if(buflen < 5) return 0;
+    Msg* brainmsg = (Msg*) out;
+    brainmsg->flags = SENSOR_COMMANDS;
+    brainmsg->parameters = 0x01;
+    brainmsg->payloadLen = 0; 
+    brainmsg->messageid = i2c_messageid++; //will always hit the Master Pic and then move through i2c
+    brainmsg->checksum = SENSOR_COMMANDS + 0x01 + brainmsg->messageid + brainmsg->payloadLen;
+    return HEADER_MEMBERS;
+}
+
+uint8 generateGetEncoderData(char* out, uint8 buflen){
+    if(buflen < 5) return 0;
+    Msg* brainmsg = (Msg*) out;
+    brainmsg->flags = MOTOR_COMMANDS;
+    brainmsg->parameters = 0x05;
+    brainmsg->payloadLen = 0;
+    brainmsg->messageid = i2c_messageid++; //will always hit the Master Pic and then move through i2c
+    brainmsg->checksum = MOTOR_COMMANDS + 0x05 + brainmsg->messageid + brainmsg->payloadLen;
+    return HEADER_MEMBERS;
+}
+
 
 BrainMsg* unpackBrainMsg(char *buf){
     return (BrainMsg*) buf;

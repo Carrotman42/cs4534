@@ -4,6 +4,7 @@
 #include "messages.h"
 #include "maindefs.h"
 #include "../../../../common/communication/brain_rover.h"
+#include "comm.h"
 
 #define MAXI2CBUF MSGLEN
 #define MAX_I2C_SENSOR_DATA_LEN 50

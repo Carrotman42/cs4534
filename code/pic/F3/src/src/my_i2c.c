@@ -198,11 +198,13 @@ uint8 receive_data(){
     if(++ic_ptr->bufind == PAYLOADLEN_POS + 1){ //increment first, then test
         ic_ptr->buflen += recv; //add the bytes already received to the payload length
     }
-    ic_ptr->checksum += recv;
+    if(ic_ptr->bufind != CHECKSUM_POS+1){ //add everything but the checksum
+        ic_ptr->checksum += recv;
+    }
 
     if(ic_ptr->bufind >= ic_ptr->buflen){ //at end of bytes that slave told us to read
-        uint8 checksum_byte = ic_ptr->buffer[CHECKSUM_POS];
-        if((ic_ptr->checksum - checksum_byte)  != checksum_byte){ //compare checksums
+        unsigned char checksum_byte = ic_ptr->buffer[CHECKSUM_POS];
+        if(ic_ptr->checksum  != checksum_byte){ //compare checksums
             ic_ptr->checksum_failed = 1;
         }
         SSPCON2bits.ACKDT = 1;
@@ -252,25 +254,19 @@ void i2c_rx_handler(){
                     ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
                 }
                 else{
-                    char error[6] = {0x40, 0x04, 0x00, 0x45, 0x01, 0x00};
+                    char error[6];
+                    generateChecksumError(error, sizeof error, UART_COMM); //the intention is that this may be sent over uart
+                                                                   //but will not be sent over i2c
                     ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
                 }
             }
             else{
                 char error[6];
-                error[0] = 0x40; //error flag
-                error[2] = 0x00; //msg id
-                if(ic_ptr->addr == 0x10){ //sensor pic
-                    error[1] = 0x01; //param
-                    error[3] = 0x43; //checksum
-                    error[4] = 0x01; //payload len
-                    error[5] = 0x01; //payload
+                if(ic_ptr->addr == SENSOR_ADDR){ //sensor pic
+                    generateSensorPICDetectionError(error, sizeof error, UART_COMM);
                 }
-                else{
-                    error[1] = 0x01; //param
-                    error[3] = 0x44; //checksum
-                    error[4] = 0x01; //payload len
-                    error[5] = 0x02; //payload
+                else{//motor pic
+                    generateMotorPICDetectionError(error, sizeof error, UART_COMM);
                 }
                 ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
             }

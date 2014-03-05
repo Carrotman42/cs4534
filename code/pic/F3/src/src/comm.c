@@ -4,6 +4,7 @@
 static BrainMsg BrainMsgRecv;
 static char payload[payloadSize];
 static uint8 wifly;
+static uint8 framesRequested;
 
 //wifly is 1 the brain msg is received via wifly, 0 through i2c
 void setBrainData(char* msg, uint8 uart){
@@ -21,19 +22,31 @@ void setBrainData(char* msg, uint8 uart){
     wifly = uart;
 }
 
-void sendResponse(){
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
+uint8 sendResponse(){
     switch(BrainMsgRecv.flags){
-        case 0x02:
-            if((BrainMsgRecv.parameters == 0x05) || (BrainMsgRecv.parameters == 0x06)){
-                //sendMotorData();
+        case MOTOR_COMMANDS:
+#ifdef MOTOR_PIC
+            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
+                sendEncoderData();
+                return 0;
+            }
+#endif
+            if(sendMotorAckResponse(BrainMsgRecv.parameters, wifly)){
+#ifdef MOTOR_PIC
+                return 0; //motor pic doesn't need to pass anything forward on an ack
+#endif
+                return MOTOR_ADDR;
             }
             else{
-                sendMotorAckResponse(BrainMsgRecv.parameters, wifly);
+                return 0;
             }
-            break;
         default:
             break;
     }
+    return 0;
 }
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
@@ -44,5 +57,31 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 #ifndef MASTER_PIC
         start_i2c_slave_reply(buflen, outbuf);
 #endif
+    }
+}
+
+
+void handleCommand(){
+    uint8 addr = sendResponse();
+    if(BrainMsgRecv.flags == HIGH_LEVEL_COMMANDS){
+#ifdef MASTER_PIC
+        switch(BrainMsgRecv.parameters){
+            case 0x00:
+                framesRequested = 1;
+                break;
+            case 0x01:
+                break;
+            case 0x02:
+                break;
+            case 0x03:
+                framesRequested = 0;
+                break;
+            default:
+                break;
+        }
+#elif defined(PICMAN)
+        
+#endif
+
     }
 }

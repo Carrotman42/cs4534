@@ -82,8 +82,15 @@ void timer1_int_handler() {
     //ToMainHigh_sendmsg(5, MSGT_I2C_DATA, (void *) test);
     }else {*/
         unsigned char test[7] = {0x02, 0x4, 0x0, 0x02, 0x9, 0x1, 0x0};
-        uart_send_array(&test, 7);
+        //unsigned char test[5] = {0x02, 0x5, 0x0, 0x00, 0x7};
+        uart_send_array(&test, sizeof test);
         //temp = 0;
     //}
+#elif defined(MASTER_PIC)
+        char frameReq[5];
+        uint8 length = generateGetEncoderData(frameReq, sizeof frameReq);
+        i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
+        WriteTimer1(0x4000);
 #endif
+
 }
