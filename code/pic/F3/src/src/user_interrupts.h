@@ -6,6 +6,9 @@
 // interrupts.c because it, of course, doesn't know which
 // interrupt handlers you would like to call
 
+volatile extern int oldMotor0Ticks = 0;
+volatile extern int oldMotor1Ticks = 0;
+
 //My example program uses these two timer interrupts
 void timer0_int_handler(void);
 

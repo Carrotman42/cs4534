@@ -198,6 +198,12 @@ void main(void) {
     unsigned char msgbuffer[MSGLEN + 1];
     unsigned char to_send_buffer[MSGLEN+1];
     int data_points_count = 0;
+
+
+    // motor variables
+//   volatile *int motor0Ticks = 0;
+//   volatile *int motor1Ticks = 0;
+
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread
@@ -243,16 +249,37 @@ void main(void) {
     // set direction for PORTB to output
     TRISB = 0x0;
     LATB = 0x0;
+
+    // motor control configurations for reading encoders
+    TRISBbits.RB0 = 1;  // motor 0
+    TRISBbits.RB1 = 1;  // motor 1
+
+    // external interrupt 0, high priority by default
+    INTCONbits.INT0IE = 1;      // enables interrupts
+    INTCONbits.INT0IF = 0;      // clears int. flag
+    INTCON2bits.INTEDG0 = 1;    // interrupt on falling edge (high to low)
+
+    // external interrupt 1
+    INTCON3bits.INT1E = 1;
+    INTCON3bits.INT1IF = 0;
+    INTCON2bits.INTEDG1 = 1;
+    INTCON3bits.INT1IP = 1;     // high priority
+
+    // wont really work....
+    // set motor ticks for interrupts class
+//    setMotorTicks(motor0Ticks, motor1Ticks);
+    // Call getMotor0Ticks or getMotor1Ticks and set them to motor0Ticks
+
 #endif
 
     // how to set up PORTA for input (for the V4 board with the PIC2680)
-    /*
-            PORTA = 0x0;	// clear the port
-            LATA = 0x0;		// clear the output latch
-            ADCON1 = 0x0F;	// turn off the A2D function on these pins
+    
+//            PORTA = 0x0;	// clear the port
+//            LATA = 0x0;		// clear the output latch
+            ADCON1 = ADCON1 | 0x0F;	// turn off the A2D function on these pins, makes inputs digital
             // Only for 40-pin version of this chip CMCON = 0x07;	// turn the comparator off
-            TRISA = 0x0F;	// set RA3-RA0 to inputs
-     */
+//            TRISA = 0x0F;	// set RA3-RA0 to inputs
+     
 
     // initialize Timers
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
@@ -432,21 +459,21 @@ void main(void) {
                     // Glen_Debug = 1 ---> Master PIC
                     // Glen_Debug = 0 ---> Slave PIC
 #if GLEN_DEBUG == 1
-                    unsigned char test[5] = {'1','2','3','4','\r'};
-//                    uart_send_array(&test, 5);
-
-                    char i, count;
-                    count = 0;
-                    for (i = 0; i < length; i++) {
-                        if (msgbuffer[i] == test[i]) {
-                            count += 1;
-                        }
-                    }
-                    if (count >= 5) {
-                        PORTBbits.RB7 = 1;
-                    } else {
-                        PORTBbits.RB7 = 0;
-                    }
+//                    unsigned char test[5] = {'1','2','3','4','\r'};
+////                    uart_send_array(&test, 5);
+//
+//                    char i, count;
+//                    count = 0;
+//                    for (i = 0; i < length; i++) {
+//                        if (msgbuffer[i] == test[i]) {
+//                            count += 1;
+//                        }
+//                    }
+//                    if (count >= 5) {
+//                        PORTBbits.RB7 = 1;
+//                    } else {
+//                        PORTBbits.RB7 = 0;
+//                    }
 #else
                    //Write code to copy and resend exact message back to master
                     // This will be the test for the slave pic if implemented

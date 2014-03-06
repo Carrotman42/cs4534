@@ -8,6 +8,9 @@
 //       messages.h -- init_queues() MUST be called prior to
 //       enabling interrupts if SleepIfOkay() is called!
 
+volatile extern int motor0Ticks = 0;
+volatile extern int motor1Ticks = 0;
+
 // enable the interrupts (high and low priority)
 void enable_interrupts(void);
 // Are we calling from a high-priority interrupt?

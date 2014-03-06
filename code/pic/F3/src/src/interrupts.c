@@ -13,6 +13,37 @@
 //       priority interrupts, but this code is not setup for that and this nesting is not
 //       enabled.
 
+//int motor0Ticks = 0;
+//int motor1Ticks = 0;
+
+
+//void setMotorTicks(int tempMotor0, int tempMotor1)
+//{
+//    motor0Ticks = tempMotor0;
+//    motor1Ticks = tempMotor1;
+//}
+//
+//void incrementMotor0Ticks()
+//{
+//    motor0Ticks++;
+//}
+//
+//void incrementMotor1Ticks()
+//{
+//    motor1Ticks++;
+//}
+//
+//int getMotor0Ticks()
+//{
+//    return motor0Ticks;
+//}
+//
+//int getMotor1Ticks()
+//{
+//    return motor1Ticks;
+//}
+
+
 void enable_interrupts() {
     // Peripheral interrupts can have their priority set to high or low
     // enable high-priority interrupts and low-priority interrupts
@@ -94,11 +125,30 @@ void InterruptHandlerHigh() {
         i2c_int_handler();
     }
 
+
     // check to see if we have an interrupt on timer 0
     if (INTCONbits.TMR0IF) {
         INTCONbits.TMR0IF = 0; // clear this interrupt flag
         // call whatever handler you want (this is "user" defined)
         timer0_int_handler();
+    }
+    
+    // ------------------------ motor external interrupts ---------------------
+
+    if (INTCONbits.INT0IF )
+    {
+        INTCONbits.INT0IF = 0;  // clear flag
+        // TODO: pass motor0ticks  and increment it here
+        // incrementMotor0Ticks();       // wont work probably
+        motor0Ticks++;
+    }
+
+    if (INTCON3bits.INT1IF )
+    {
+        INTCON3bits.INT1IF  = 0;    // clear flag
+        // TODO: pass motor1ticks  and increment it here
+        // incrementMotor1Ticks();      // wont work probably
+        motor1Ticks++;
     }
 
     // here is where you would check other interrupt flags.
