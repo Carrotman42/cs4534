@@ -105,6 +105,7 @@ void uart_recv_int_handler() {
 }
 
 void init_uart_recv(uart_comm *uc) {
+    uc_ptr->status = UART_IDLE;
     uc_ptr = uc;
     uc_ptr->buflen = 0;
     payload_length = 0;
@@ -113,6 +114,11 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send_array(char* data, char length) {
+    if(uc_ptr->status != UART_IDLE){
+        ToMainLow_sendmsg(length, MSGT_UART_RX_BUSY, (void*) data);
+        return;
+    }
+    uc_ptr->status = UART_TX;
     //TODO: Create logic to prevent you from overriding the current buffer if
     //it has not yet been sent. 
     uint8_t i;
@@ -128,12 +134,18 @@ void uart_send_array(char* data, char length) {
 //Used to send multiple char. Will get called when uart_send_array is called
 //Brian says DONT DELETE! I will find you.
 void uart_send_int_handler() {
-    uart_send(uc_ptr->outBuff[uc_ptr->outIndex++]);
-    if (uc_ptr->outLength <= uc_ptr->outIndex)
+    if(uc_ptr->outLength > uc_ptr->outIndex){
+        uart_send(uc_ptr->outBuff[uc_ptr->outIndex++]);
+    }
+    else if(uc_ptr->outLength == uc_ptr->outIndex){
+        uc_ptr->outIndex++; //still need to increment
+    }
+    else //uc_ptr->outLength < uc_ptr->outIndex
     {
         // done sending message
         PIE1bits.TXIE = 0;
         PIR1bits.TXIF = 0;
+        uc_ptr->status = UART_IDLE;
 
     }
 }

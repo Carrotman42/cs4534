@@ -360,11 +360,13 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
+                    debugNum(1);
                     i2c_master_recv(msgbuffer[0]);
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
+                    debugNum(2);
                     i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
                 };
                 #endif
@@ -527,6 +529,11 @@ void main(void) {
                     debugNum(1);
                     debugNum(2);
                     break;
+                };
+                case MSGT_UART_RX_BUSY:
+                {
+                    debugNum(1);
+                    uart_send_array(msgbuffer, length);
                 };
                 default:
                 {

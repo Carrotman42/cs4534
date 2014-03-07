@@ -112,7 +112,7 @@ void timer1_int_handler() {
                 temp++;
                 break;
             case 5:
-                length = 
+                temp = 0;
                 break;
         }
 
