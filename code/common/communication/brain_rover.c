@@ -44,14 +44,14 @@ static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout,
 //returns number of bytes packed
 static uint8 packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 outlen, uint8 wifly){ //wifly = 1 if wifly comm, 0 if i2c (used for messageid)
     if(outlen < 5) return 0;
-    msg->flags = flags;
+    msg->flags = flags | ACK_FLAG;
     msg->parameters = parameters;
     msg->payloadLen = 0; //0 byte payload for ack
     if(wifly)
         msg->messageid = wifly_messageid++;
     else
         msg->messageid = i2c_messageid++;
-    msg->checksum = flags + parameters + msg->messageid;
+    msg->checksum = msg->flags + parameters + msg->messageid;
     return HEADER_MEMBERS;
 }
 
@@ -127,8 +127,8 @@ int packADData(sensorADData* data, int len, char* out, int maxout) {
 	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, SENSOR_COMMANDS, sensorADid);
 }
 
-int packEncoderData(encoderData* data, uint8 len, char* out, uint8 maxout){
-    return packReturnData((char*) data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID);
+int packEncoderData(char* data, uint8 len, char* out, uint8 maxout){
+    return packReturnData(data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID);
 }
 
 
@@ -221,6 +221,53 @@ uint8 generateGetEncoderData(char* out, uint8 buflen){
     brainmsg->checksum = MOTOR_COMMANDS + 0x05 + brainmsg->messageid + brainmsg->payloadLen;
     return HEADER_MEMBERS;
 }
+
+//payload will never be 0 unless it is not being used.
+//turn degrees will be some integer and speed will never be 0
+static uint8 generateMotorCommand(char* out, uint8 buflen, uint8 wifly, uint8 parameters, uint8 payload){
+    if(payload == 0) {
+        if (buflen < 5) return 0;
+    }
+    else{
+        if(buflen < 6) return 0;
+    }
+    Msg* brainmsg = (Msg*) out;
+    brainmsg->flags = MOTOR_COMMANDS;
+    brainmsg->parameters = parameters;
+    brainmsg->payload[0] = payload;
+    brainmsg->payloadLen = 1;
+    if(wifly)
+        brainmsg->messageid = wifly_messageid++;
+    else
+        brainmsg->messageid = i2c_messageid++;
+    brainmsg->checksum = MOTOR_COMMANDS + parameters + brainmsg->messageid + brainmsg->payloadLen + payload;
+
+    if(payload == 0){
+        return HEADER_MEMBERS;
+    }
+    return HEADER_MEMBERS + 1; //+1 for payload
+}
+
+uint8 generateStartForward(char* out, uint8 buflen, uint8 wifly, uint8 speed){
+    return generateMotorCommand(out, buflen, wifly, 0x00, speed);
+}
+
+uint8 generateStartBackward(char* out, uint8 buflen, uint8 wifly, uint8 speed){
+    return generateMotorCommand(out, buflen, wifly, 0x01, speed);
+}
+
+uint8 generateStop(char* out, uint8 buflen, uint8 wifly){
+    return generateMotorCommand(out, buflen, wifly, 0x02, 0);
+}
+
+uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
+    return generateMotorCommand(out, buflen, wifly, 0x03, degrees);
+}
+
+uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
+    return generateMotorCommand(out, buflen, wifly, 0x04, degrees);
+}
+
 
 
 BrainMsg* unpackBrainMsg(char *buf){

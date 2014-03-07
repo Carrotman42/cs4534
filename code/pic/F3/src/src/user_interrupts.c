@@ -86,10 +86,38 @@ void timer1_int_handler() {
         uart_send_array(&test, sizeof test);
         //temp = 0;
     //}
-#elif defined(MASTER_PIC)
-        char frameReq[5];
-        uint8 length = generateGetEncoderData(frameReq, sizeof frameReq);
-        i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
+#elif defined(MASTER_PIC) && defined(DEBUG_ON)
+        static uint8 temp =0;
+        char testArray[6];
+        uint8 length = 0;
+        switch(temp){
+            case 0:
+                length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
+                temp++;
+                break;
+            case 1:
+                length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
+                temp++;
+                break;
+            case 2:
+                length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                temp++;
+                break;
+            case 3:
+                length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                temp++;
+                break;
+            case 4:
+                length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                temp++;
+                break;
+            case 5:
+                length = 
+                break;
+        }
+
+        ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
+        //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         WriteTimer1(0x4000);
 #endif
 

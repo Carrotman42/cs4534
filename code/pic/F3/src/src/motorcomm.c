@@ -6,7 +6,7 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 wifly){
 
     uint8 success = 1;
     uint8 bytes_packed = 0;
-    switch(parameters){
+    switch(parameters){ 
         case 0x00:
             bytes_packed = packStartForwardAck(outbuf, sizeof outbuf, wifly);
             break;
@@ -31,15 +31,21 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 wifly){
     return success;
 }
 
+#ifdef MOTOR_PIC
 void sendEncoderData(){
-    encoderData data[4]; //will need a function to actually get the encoder data.
+    char data[4]; //will need a function to actually get the encoder data.
                          //For now, send dummy values
-    data[0].data = 0x01;
-    data[1].data = 0x02;
-    data[2].data = 0x03;
-    data[3].data = 0x04;
+//    data[0].data = 0x01;
+//    data[1].data = 0x02;
+//    data[2].data = 0x03;
+//    data[3].data = 0x04;
+
+    addEncoderData(0x01,0x02,0x03,0x04);
+    packFrame(data, sizeof data);
+
 
     char outbuf[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
     uint8 bytes_packed = packEncoderData(data, sizeof data, outbuf, sizeof outbuf);
     sendData(outbuf, bytes_packed, I2C_COMM);
 }
+#endif

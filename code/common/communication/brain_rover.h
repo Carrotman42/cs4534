@@ -30,6 +30,7 @@ typedef struct {
 #define HIGH_LEVEL_COMMANDS 0x04
 #define HIGH_PRIORITY 0x80
 #define ERROR_FLAG 0x40
+#define ACK_FLAG 0x20
 // END FLAGS
 
 // Should only use the functions prototyped out here
@@ -80,7 +81,15 @@ uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly
 uint8 generateGetSensorFrame(char* out, uint8 buflen); //
 uint8 generateGetEncoderData(char* out, uint8 buflen);
 
-int packEncoderData(encoderData* data, uint8 len, char* out, uint8 maxout);
+
+uint8 generateStartForward(char* out, uint8 buflen, uint8 wifly, uint8 speed);
+uint8 generateStartBackward(char* out, uint8 buflen, uint8 wifly, uint8 speed);
+uint8 generateStop(char* out, uint8 buflen, uint8 wifly);
+uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
+uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
+
+
+int packEncoderData(char* data, uint8 len, char* out, uint8 maxout);
 
 
 

@@ -12,11 +12,16 @@
 #include "motorcomm.h"
 #include "sensorcomm.h"
 
-void setBrainData(char* msg, uint8 uart);
-uint8 sendResponse();
+void setBrainData(char* msg);
+void setRoverData(char* msg);
+uint8 sendResponse(uint8 wifly);
 void sendData(char* outbuf, uint8 buflen, uint8 wifly);
-void handleCommand();
+void handleMessage(uint8 source, uint8 dest);
 uint8 sendFrames();
+
+#ifdef MASTER_PIC
+void handleRoverData();
+#endif
 
 #define UART_COMM 1
 #define I2C_COMM 0

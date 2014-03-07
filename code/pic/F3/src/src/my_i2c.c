@@ -42,8 +42,8 @@ void i2c_configure_master() {
 }
 
 // Sending in I2C Master mode [slave write]
-// 		returns -1 if the i2c bus is busy
-// 		return 0 otherwise
+// 		returns 0 if the i2c bus is busy
+// 		return 1 otherwise
 // Will start the sending of an i2c message -- interrupt handler will take care of
 //   completing the message send.  When the i2c message is sent (or the send has failed)
 //   the interrupt handler will send an internal_message of type MSGT_MASTER_SEND_COMPLETE if
@@ -63,9 +63,8 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
         for(i; i < length+1; i++){
             tempbuf[i] = msg[i-1];
         }
-        ToMainHigh_sendmsg(length+1, MSGT_MASTER_RECV_BUSY, tempbuf);
-        //debugNum(2);
-        return -1;
+        ToMainHigh_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
+        return 0;
     }
     ic_ptr->txnrx = 1;
     ic_ptr->addr = addr;
@@ -80,12 +79,12 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
     SSPCON2bits.SEN = 1; //send start signal
     ic_ptr->status = I2C_STARTED;
 
-    return(0);
+    return 1;
 }
 
 // Receiving in I2C Master mode [slave read]
-// 		returns -1 if the i2c bus is busy
-// 		return 0 otherwise
+// 		returns 0 if the i2c bus is busy
+// 		return 1 otherwise
 // Will start the receiving of an i2c message -- interrupt handler will take care of
 //   completing the i2c message receive.  When the receive is complete (or has failed)
 //   the interrupt handler will send an internal_message of type MSGT_MASTER_RECV_COMPLETE if
@@ -99,7 +98,7 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
 unsigned char i2c_master_recv(unsigned char addr) {
     if(ic_ptr->status != I2C_IDLE){
         ToMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
-        return -1;
+        return 1;
     }
     ic_ptr->txnrx = 0;
     ic_ptr->addr = addr;
@@ -111,7 +110,7 @@ unsigned char i2c_master_recv(unsigned char addr) {
     ic_ptr->bufind = 0;
     SSPCON2bits.SEN = 1;
     ic_ptr->status = I2C_STARTED;
-    return(0);
+    return 1;
 }
 
 //load the i2c data into the buffer.
@@ -160,7 +159,7 @@ void i2c_tx_handler(){
         case(I2C_STOPPED): //stop
             ic_ptr->status = I2C_IDLE;
             if(!ic_ptr->nack){
-                i2c_master_recv(ic_ptr->addr);
+                i2c_master_recv(ic_ptr->addr); //send a recquest for data (either ack or data)
             }
             else{
                 char error[6];
@@ -498,7 +497,7 @@ void i2c_int_handler() {
         //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         //debugNum(1);
         if(is_high_priority()){ //would pass ic_ptr->buffer but it's global so no need
-            uart_send_array(ic_ptr->buffer, ic_ptr->buflen);
+            //uart_send_array(ic_ptr->buffer, ic_ptr->buflen);
         }
         else{
             ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
