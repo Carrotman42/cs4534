@@ -17,7 +17,13 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
-    
+    debugNum(1);
+    char encoderDataReq[5];
+    //uint8 length = generateGetEncoderData(encoderDataReq, sizeof encoderDataReq);
+    uint8 length = generateGetSensorFrame(encoderDataReq, sizeof encoderDataReq);
+    //uart_send_array(encoderDataReq, length);
+    i2c_master_send(MOTOR_ADDR, length, encoderDataReq);
+    WriteTimer0(0x4000);
 #endif
 
 
@@ -92,6 +98,7 @@ void timer1_int_handler() {
         //temp = 0;
     //}
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
+        //debugNum(2);
         static uint8 temp =0;
         char testArray[6];
         uint8 length = 0;
@@ -121,7 +128,7 @@ void timer1_int_handler() {
                 break;
         }
 
-        uart_send_array(testArray, length);
+        //uart_send_array(testArray, length);
         ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         WriteTimer1(0x4000);

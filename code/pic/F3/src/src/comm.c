@@ -46,7 +46,7 @@ uint8 sendResponse(uint8 wifly){
                 sendEncoderData();
             }
             else{
-                sendMotorAckResponse(BrainMsgRecv.parameters, wifly);
+                sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
             }
             return 0;
 #else

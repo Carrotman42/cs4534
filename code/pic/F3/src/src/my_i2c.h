@@ -30,8 +30,8 @@ typedef struct __i2c_comm {
 } i2c_comm;
 
 void i2c_configure_master();
-unsigned char i2c_master_send(unsigned char, unsigned char,unsigned char *);
-unsigned char i2c_master_recv(unsigned char);
+unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg);
+unsigned char i2c_master_recv(unsigned char addr);
 unsigned char load_i2c_data();
 void handle_repeat_start();
 uint8 check_if_send_stop();
