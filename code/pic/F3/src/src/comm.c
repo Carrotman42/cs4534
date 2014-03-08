@@ -50,7 +50,7 @@ uint8 sendResponse(uint8 wifly){
             }
             return 0;
 #else
-            if(sendMotorAckResponse(BrainMsgRecv.parameters, wifly)){
+            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
                 return MOTOR_ADDR;
             }
             return 0;

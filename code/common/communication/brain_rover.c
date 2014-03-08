@@ -42,15 +42,12 @@ static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout,
 }
 
 //returns number of bytes packed
-static uint8 packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 outlen, uint8 wifly){ //wifly = 1 if wifly comm, 0 if i2c (used for messageid)
+static uint8 packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 outlen, uint8 msgid){ //wifly = 1 if wifly comm, 0 if i2c (used for messageid)
     if(outlen < 5) return 0;
     msg->flags = flags | ACK_FLAG;
     msg->parameters = parameters;
     msg->payloadLen = 0; //0 byte payload for ack
-    if(wifly)
-        msg->messageid = wifly_messageid++;
-    else
-        msg->messageid = i2c_messageid++;
+    msg->messageid = msgid;
     msg->checksum = msg->flags + parameters + msg->messageid;
     return HEADER_MEMBERS;
 }
@@ -58,64 +55,64 @@ static uint8 packAck(uint8 flags, uint8 parameters, Msg* msg, uint8 outlen, uint
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packStartForwardAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(MOTOR_COMMANDS, 0x00, (Msg*) out, outlen, wifly);
+uint8 packStartForwardAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x00, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(MOTOR_COMMANDS, 0x01, (Msg*) out, outlen, wifly);
+uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x01, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packStopAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(MOTOR_COMMANDS, 0x02, (Msg*) out, outlen, wifly);
+uint8 packStopAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x02, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packTurnCWAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(MOTOR_COMMANDS, 0x03, (Msg*) out, outlen, wifly);
+uint8 packTurnCWAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x03, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(MOTOR_COMMANDS, 0x04, (Msg*) out, outlen, wifly);
+uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x04, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
-uint8 packStartFramesAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(HIGH_LEVEL_COMMANDS, 0x00, (Msg*) out, outlen, wifly);
+uint8 packStartFramesAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x00, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
 //wifly determines the interface this message passes through
-uint8 packFrameDataAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(HIGH_LEVEL_COMMANDS, 0x01, (Msg*) out, outlen, wifly);
+uint8 packFrameDataAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x01, (Msg*) out, outlen, msgid);
 }
 
 //Out must always be (at least) 5 bytes
-uint8 packStopFramesAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(HIGH_LEVEL_COMMANDS, 0x03, (Msg*) out, outlen, wifly);
+uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x03, (Msg*) out, outlen, msgid);
 }
 
-uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(ERROR_FLAG, 0x01, (Msg*) out, outlen, wifly);
+uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(ERROR_FLAG, 0x01, (Msg*) out, outlen, msgid);
 }
 
-uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(ERROR_FLAG, 0x02, (Msg*) out, outlen, wifly);
+uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(ERROR_FLAG, 0x02, (Msg*) out, outlen, msgid);
 }
 
-uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(ERROR_FLAG, 0x03, (Msg*) out, outlen, wifly);
+uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(ERROR_FLAG, 0x03, (Msg*) out, outlen, msgid);
 }
 
-uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 wifly){
-    return packAck(ERROR_FLAG, 0x04, (Msg*) out, outlen, wifly);
+uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(ERROR_FLAG, 0x04, (Msg*) out, outlen, msgid);
 }
 
 

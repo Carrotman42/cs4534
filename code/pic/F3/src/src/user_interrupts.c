@@ -17,6 +17,11 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
+    
+#endif
+
+
+#ifdef MASTER_PIC
 #ifdef DEBUG_ON
     //WriteTimer0(0x4000);
     //debugNum(4);
@@ -116,6 +121,7 @@ void timer1_int_handler() {
                 break;
         }
 
+        uart_send_array(testArray, length);
         ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         WriteTimer1(0x4000);

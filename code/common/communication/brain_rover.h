@@ -51,18 +51,18 @@ typedef Msg RoverMsg;
 #define CHECKSUM_POS offsetof(Msg, checksum)
 
 
-uint8 packStartForwardAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packStopAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packTurnCWAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packStartFramesAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packFrameDataAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packStopFramesAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 wifly);
-uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 wifly);
+uint8 packStartForwardAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packStopAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packTurnCWAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packStartFramesAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packFrameDataAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 msgid);
 
 uint8 generateLeftWheelError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateRightWheelError(char* errorbuf, uint8 buflen, uint8 wifly);

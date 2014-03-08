@@ -1,29 +1,29 @@
 #include "motorcomm.h"
 
 //returns 1 if success, 0 if error
-uint8 sendMotorAckResponse(uint8 parameters, uint8 wifly){
+uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
     char outbuf[10];
 
     uint8 success = 1;
     uint8 bytes_packed = 0;
     switch(parameters){ 
         case 0x00:
-            bytes_packed = packStartForwardAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packStartForwardAck(outbuf, sizeof outbuf, msgid);
             break;
         case 0x01:
-            bytes_packed = packStartBackwardAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packStartBackwardAck(outbuf, sizeof outbuf, msgid);
             break;
         case 0x02:
-            bytes_packed = packStopAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packStopAck(outbuf, sizeof outbuf, msgid);
             break;
         case 0x03:
-            bytes_packed = packTurnCWAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packTurnCWAck(outbuf, sizeof outbuf, msgid);
             break;
         case 0x04:
-            bytes_packed = packTurnCCWAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packTurnCCWAck(outbuf, sizeof outbuf, msgid);
             break;
         default:
-            bytes_packed = packPICDetectErrorAck(outbuf, sizeof outbuf, wifly);
+            bytes_packed = packPICDetectErrorAck(outbuf, sizeof outbuf, msgid);
             success = 0;
             break;
     }

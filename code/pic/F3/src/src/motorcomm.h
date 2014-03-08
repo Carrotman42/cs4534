@@ -8,7 +8,7 @@
 #include "debug.h"
 #include "../../../../common/communication/frames.h"
 
-uint8 sendMotorAckResponse(uint8 parameters, uint8 wifly);
+uint8 sendMotorAckResponse(uint8 parameters, uint8 messageid, uint8 wifly);
 #ifdef MOTOR_PIC
 void sendEncoderData();
 #endif
