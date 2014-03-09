@@ -38,28 +38,71 @@ void setRoverData(char* msg){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
+//uint8 sendResponse(uint8 wifly){
+//    switch(BrainMsgRecv.flags){
+//        case MOTOR_COMMANDS:
+//#ifdef MOTOR_PIC
+//            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
+//                sendEncoderData();
+//            }
+//            else{
+//                sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+//            }
+//            return 0;
+//#else
+//            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
+//                return MOTOR_ADDR;
+//            }
+//            return 0;
+//#endif
+//        default:
+//            break;
+//    }
+//    return 0;
+//}
+
+#ifdef MASTER_PIC
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
 uint8 sendResponse(uint8 wifly){
     switch(BrainMsgRecv.flags){
         case MOTOR_COMMANDS:
-#ifdef MOTOR_PIC
+            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
+                return MOTOR_ADDR;
+            }
+            return 0;
+        default:
+            break;
+    }
+    return 0;
+}
+#elif defined(MOTOR_PIC)
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
+uint8 sendResponse(uint8 wifly){
+    switch(BrainMsgRecv.flags){
+        case MOTOR_COMMANDS:
             if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
                 sendEncoderData();
             }
             else{
                 sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
             }
-            return 0;
-#else
-            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
-                return MOTOR_ADDR;
-            }
-            return 0;
-#endif
-        default:
             break;
+        default:
+        {
+            char errorbuf[6];
+            uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+            start_i2c_slave_reply(length, errorbuf);
+            break;
+        };
     }
+
     return 0;
 }
+#endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
     if(wifly){

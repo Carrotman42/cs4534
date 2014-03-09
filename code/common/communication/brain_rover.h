@@ -76,6 +76,7 @@ uint8 generateRightEncoderError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateSensorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly);
 
 uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly);
 uint8 generateGetSensorFrame(char* out, uint8 buflen); //

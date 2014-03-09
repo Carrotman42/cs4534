@@ -116,6 +116,7 @@ uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 msgid){
 }
 
 
+
 // Usually called on a PIC
 // Returns the number of bytes that have been used of out, or 0 to
 //    signify that the buffer was too small (this should never happen, but
@@ -141,7 +142,7 @@ static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 
         errorbuf->messageid = i2c_messageid++;
     errorbuf->payload[0] = payload;
     errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen + payload;
-    return 1;
+    return HEADER_MEMBERS + errorbuf->payloadLen;
 }
 
 uint8 generateLeftWheelError(char* errorbuf, uint8 buflen, uint8 wifly){
@@ -190,6 +191,10 @@ uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
 
 uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
     return generateError((Msg*)errorbuf, buflen, 0x01, 0x03, wifly);
+}
+
+uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly){
+    return generateError((Msg*) errorbuf, buflen, 0x05, 0x01, wifly);
 }
 
 
