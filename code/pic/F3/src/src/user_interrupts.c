@@ -17,11 +17,31 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
-    char encoderDataReq[5];
-    //uint8 length = generateGetEncoderData(encoderDataReq, sizeof encoderDataReq);
-    uint8 length = generateGetSensorFrame(encoderDataReq, sizeof encoderDataReq);
+    static uint8 loop = 0;
+
+    char data[5];
+    uint8 length = 0;
+    switch(loop){
+        case 0:
+            length = generateGetSensorFrame(data, sizeof data);
+            loop++;
+            break;
+        case 1:
+            length = generateGetSensorFrame(data, sizeof data);
+            loop++;
+            break;
+        case 2:
+            length = generateGetEncoderData(data, sizeof data);
+            loop = 0;
+            break;
+        default:
+            loop = 0;
+            break;
+    }
     //uart_send_array(encoderDataReq, length);
-    i2c_master_send(SENSOR_ADDR, length, encoderDataReq);
+    if(loop != 0){
+        i2c_master_send(SENSOR_ADDR, length, data);
+    }
     WriteTimer0(0x4000);
 #endif
 
@@ -99,30 +119,40 @@ void timer1_int_handler() {
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
         //debugNum(2);
         static uint8 temp =0;
+        static uint8 start = 0;
         char testArray[6];
         uint8 length = 0;
         switch(temp){
             case 0:
-                length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
+                length = generateStartForward(testArray, sizeof testArray, UART_COMM, 0x05);
                 temp++;
                 break;
             case 1:
-                length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
+                length = generateStartBackward(testArray, sizeof testArray, UART_COMM, 0x06);
                 temp++;
                 break;
             case 2:
-                length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                length = generateStop(testArray, sizeof testArray, UART_COMM);
                 temp++;
                 break;
             case 3:
-                length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
                 temp++;
                 break;
             case 4:
-                length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                length = generateTurnCCW(testArray, sizeof testArray, UART_COMM, 0x08);
                 temp++;
                 break;
             case 5:
+                if(start == 0){
+                    length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
+                    start = 1;
+                }
+                else{
+                    length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
+                    start = 0;
+                }
+
                 temp = 0;
                 break;
         }

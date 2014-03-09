@@ -537,7 +537,7 @@ void main(void) {
                 };
                 case MSGT_UART_RX_BUSY:
                 {
-                    debugNum(1);
+                    //debugNum(1);
                     uart_send_array(msgbuffer, length);
                 };
                 default:

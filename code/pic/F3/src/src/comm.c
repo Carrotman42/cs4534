@@ -3,7 +3,8 @@
 #define payloadSize 10
 static BrainMsg BrainMsgRecv;
 static RoverMsg RoverMsgRecv;
-static char payload[payloadSize];
+static char  BrainPayload[payloadSize];
+static char  RoverPayload[payloadSize];
 static uint8 wifly;
 
 //wifly is 1 the brain msg is received via wifly, 0 through i2c
@@ -17,7 +18,7 @@ void setBrainData(char* msg){
     BrainMsgRecv.payloadLen = tempBrain->payloadLen;
     int i = 0;
     for(i; i < BrainMsgRecv.payloadLen; i++){
-        payload[i] = *(tempBrain->payload + i);
+        BrainPayload[i] = *(tempBrain->payload + i);
     }
 }
 
@@ -31,7 +32,7 @@ void setRoverData(char* msg){
     RoverMsgRecv.payloadLen = tempRover->payloadLen;
     int i = 0;
     for(i; i < RoverMsgRecv.payloadLen; i++){
-        payload[i] = *(tempRover->payload + i);
+        RoverPayload[i] = *(tempRover->payload + i);
     }
 }
 
@@ -72,6 +73,9 @@ uint8 sendResponse(uint8 wifly){
                 return MOTOR_ADDR;
             }
             return 0;
+        case HIGH_LEVEL_COMMANDS:
+            sendHighLevelAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+            break;
         default:
             break;
     }
@@ -187,7 +191,7 @@ static void propogateCommand(uint8 addr, uint8 dest){
                         //break;
                     case 0x04:
                         //length = generateTurnCCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
-                        length = repackBrainMsg(&BrainMsgRecv, command, sizeof command, dest);
+                        length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
                         break;
                     default:
                         break;
@@ -215,8 +219,7 @@ void handleRoverData(){
         case SENSOR_COMMANDS:
             switch(RoverMsgRecv.parameters){
                 case 0x01:
-                    addSensorFrame(RoverMsgRecv.payload[0], RoverMsgRecv.payload[1], RoverMsgRecv.payload[2]);
-                    debugNum(3);
+                    addSensorFrame(RoverPayload[0], RoverPayload[1], RoverPayload[2]);
                     break;
                 default:
                     //all other cases get an ack
@@ -225,8 +228,7 @@ void handleRoverData(){
         case MOTOR_COMMANDS:
             switch(RoverMsgRecv.parameters){
                 case 0x05:
-                    addEncoderData(RoverMsgRecv.payload[0], RoverMsgRecv.payload[1], RoverMsgRecv.payload[2], RoverMsgRecv.payload[3]);
-                    //debugNum(3);
+                    addEncoderData(RoverPayload[0], RoverPayload[1], RoverPayload[2], RoverPayload[3]);
                     break;
                 default:
                     //all other cases get an ack
@@ -234,9 +236,39 @@ void handleRoverData(){
             }
             break;
         case HIGH_LEVEL_COMMANDS:
+        default:
+            break;
+    }
+    //debugNum(1);
+    if(frameDataReady()){
+        sendFrameData();
+        clearFrameData();
+    }
+}
+#endif
+
+#if defined(MASTER_PIC) || defined(PICMAN)
+void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
+    char outbuf[10];
+
+    uint8 bytes_packed = 0;
+    switch(parameters){
+        case 0x00:
+            bytes_packed = packStartFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x01:
+            bytes_packed = packFrameDataAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x02:
+            break;
+        case 0x03:
+            bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x04:
             break;
         default:
             break;
     }
+    sendData(outbuf, bytes_packed, wifly);
 }
 #endif

@@ -65,9 +65,9 @@
 #define DEBUG_ON
 
 //#define PICMAN
-#define SENSOR_PIC
+//#define SENSOR_PIC
 //#define MOTOR_PIC
-//#define MASTER_PIC
+#define MASTER_PIC
 
 #ifdef MASTER_PIC
 #define I2C_MASTER

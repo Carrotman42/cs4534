@@ -21,7 +21,7 @@ void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one
 //    just in case we change the format of RoverMsg
 static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, uint8 flags, uint8 parameters, uint8 msgid) {
-    if (payloadLen + HEADER_MEMBERS >= maxout) {
+    if (payloadLen + HEADER_MEMBERS > maxout) {
         return 0;
     }
     msg->checksum = 0;
@@ -133,6 +133,9 @@ int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid)
     return packReturnData(data, len*sizeof(sensorFrameData), (RoverMsg*) out, maxout, SENSOR_COMMANDS, sensorFrameID, msgid);
 }
 
+int packFrameMessage(char* data, uint8 len, char* out, uint8 maxout){
+    return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x02, wifly_messageid++);
+}
 
 
 static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 payload, uint8 wifly){
@@ -202,7 +205,7 @@ uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly){
 }
 
 
-uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly){
+uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 buflen, uint8 wifly){
     if(buflen < brainmsg->payloadLen + HEADER_MEMBERS) return 0;
     BrainMsg* msg = (BrainMsg*) outbuf;
     msg->flags = brainmsg->flags;
@@ -217,8 +220,8 @@ uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly
     }
     msg->checksum = msg->flags + msg->parameters + msg->messageid + msg->payloadLen;
     for(i; i < brainmsg->payloadLen; i++){
-        msg->checksum += brainmsg->payload[i];
-        msg->payload[i] = brainmsg->payload[i];
+        msg->checksum += payload[i];
+        msg->payload[i] = payload[i];
     }
     return HEADER_MEMBERS + msg->payloadLen;
 }
@@ -258,7 +261,12 @@ static uint8 generateMotorCommand(char* out, uint8 buflen, uint8 wifly, uint8 pa
     brainmsg->flags = MOTOR_COMMANDS;
     brainmsg->parameters = parameters;
     brainmsg->payload[0] = payload;
-    brainmsg->payloadLen = 1;
+    if(payload == 0) {
+        brainmsg->payloadLen = 0;
+    }
+    else{
+        brainmsg->payloadLen = 1;
+    }
     if(wifly)
         brainmsg->messageid = wifly_messageid++;
     else
@@ -291,7 +299,30 @@ uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
     return generateMotorCommand(out, buflen, wifly, 0x04, degrees);
 }
 
+//payload will never be 0
+//framedata is controlled by a separate function packFrameMessage
+static uint8 generateHighLevelCommand(char* out, uint8 buflen, uint8 wifly, uint8 parameters){
+    if (buflen < HEADER_MEMBERS) return 0;
+    Msg* brainmsg = (Msg*) out;
+    brainmsg->flags = HIGH_LEVEL_COMMANDS;
+    brainmsg->parameters = parameters;
+    brainmsg->payloadLen = 0;
+    if(wifly)
+        brainmsg->messageid = wifly_messageid++;
+    else
+        brainmsg->messageid = i2c_messageid++;
+    brainmsg->checksum = HIGH_LEVEL_COMMANDS + parameters + brainmsg->messageid + brainmsg->payloadLen;
 
+    return HEADER_MEMBERS;
+}
+
+uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x00);
+}
+
+uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x03);
+}
 
 BrainMsg* unpackBrainMsg(char *buf){
     return (BrainMsg*) buf;

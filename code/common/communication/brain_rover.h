@@ -78,7 +78,7 @@ uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly);
 
-uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly);
+uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 buflen, uint8 wifly);
 uint8 generateGetSensorFrame(char* out, uint8 buflen); //
 uint8 generateGetEncoderData(char* out, uint8 buflen);
 
@@ -89,9 +89,13 @@ uint8 generateStop(char* out, uint8 buflen, uint8 wifly);
 uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 
+uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly);
+uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly);
+
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
+int packFrameMessage(char* data, uint8 len, char* out, uint8 maxout);
 
 
 
