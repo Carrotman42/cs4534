@@ -129,6 +129,10 @@ int packEncoderData(char* data, uint8 len, char* out, uint8 maxout){
     return packReturnData(data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID);
 }
 
+int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout){
+    return packReturnData(data, len*sizeof(sensorFrameData), (RoverMsg*) out, maxout, SENSOR_COMMANDS, sensorFrameID);
+}
+
 
 
 static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 payload, uint8 wifly){

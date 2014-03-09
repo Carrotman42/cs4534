@@ -102,6 +102,28 @@ uint8 sendResponse(uint8 wifly){
 
     return 0;
 }
+#elif defined(SENSOR_PIC)
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
+uint8 sendResponse(uint8 wifly){
+    switch(BrainMsgRecv.flags){
+        case SENSOR_COMMANDS:
+            if(BrainMsgRecv.parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
+               sendSensorFrame();
+            }
+            break;
+        default:
+        {
+            char errorbuf[6];
+            uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+            start_i2c_slave_reply(length, errorbuf);
+            break;
+        };
+    }
+
+    return 0;
+}
 #endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
@@ -190,6 +212,16 @@ static void propogateCommand(){
 #ifdef MASTER_PIC
 void handleRoverData(){
     switch(RoverMsgRecv.flags){
+        case SENSOR_COMMANDS:
+            switch(RoverMsgRecv.parameters){
+                case 0x01:
+                    addSensorFrame(RoverMsgRecv.payload[0], RoverMsgRecv.payload[1], RoverMsgRecv.payload[2]);
+                    debugNum(3);
+                    break;
+                default:
+                    //all other cases get an ack
+                    break;
+            }
         case MOTOR_COMMANDS:
             switch(RoverMsgRecv.parameters){
                 case 0x05:

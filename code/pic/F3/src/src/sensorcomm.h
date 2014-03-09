@@ -13,12 +13,16 @@
     sensorADData data[MAX_I2C_SENSOR_DATA_LEN];
 } sensorADaccumulator;*/
 
-void setBrainReqData(char* msg);
+/*void setBrainReqData(char* msg);
 void sendRequestedData();
-/*void sendADdata();
+void sendADdata();
 void addDataPoints(int sensorid, void* data, int len);
 void addADDataPoints(sensorADData* data, int len);
 void resetADacc();
 void resetAccumulators();*/
+
+#ifdef SENSOR_PIC
+void sendSensorFrame();
+#endif
 
 #endif	/* SENSORCOMM_H */

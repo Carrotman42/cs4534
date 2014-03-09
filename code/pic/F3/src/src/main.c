@@ -380,32 +380,37 @@ void main(void) {
                     //debugNum(16);
                     //uart_send_array(msgbuffer, length); //for now
 #elif defined(PICMAN)
-                    uart_send_array(msgbuffer, length);
-#elif defined(SENSOR_PIC)
-                    uint8 i = 0;
-                    for(i; i < length; i++){
-                        to_send_buffer[i] = msgbuffer[i];
-                    }
-                    to_send_len = length;
-#elif defined(MOTOR_PIC)
+                    uart_se)
+//                    uint8 i = 0;
+//                    for(i; i < length; i++){
+//                        to_send_buffer[i] = msgbuffer[i];
+//                    }
+//                    to_send_len = length;nd_array(msgbuffer, length);
+//#elif defined(SENSOR_PIC)
+//                    uint8 i = 0;
+//                    for(i; i < length; i++){
+//                        to_send_buffer[i] = msgbuffer[i];
+//                    }
+//                    to_send_len = length;
+#elif defined(MOTOR_PIC) || defined(SENSOR_PIC)
                     setBrainData(msgbuffer);
 #endif
                     break;
                 };
                 case MSGT_I2C_RQST:
                 {
-#ifdef SENSOR_PIC
+//#ifdef SENSOR_PIC
                     //char outbuf[5] = {1,0,0,1,0};
                     //start_i2c_slave_reply(5, outbuf);
-                    to_send_len++;
-                    debugNum(to_send_len);
-                    to_send_buffer[CHECKSUM_POS] = 4;
-                    to_send_buffer[PAYLOADLEN_POS] = 1;
-                    to_send_buffer[HEADER_MEMBERS] = 2; //first elem of payload
-                    start_i2c_slave_reply(to_send_len, to_send_buffer);
+//                    to_send_len++;
+//                    debugNum(to_send_len);
+//                    to_send_buffer[CHECKSUM_POS] = 4;
+//                    to_send_buffer[PAYLOADLEN_POS] = 1;
+//                    to_send_buffer[HEADER_MEMBERS] = 2; //first elem of payload
+//                    start_i2c_slave_reply(to_send_len, to_send_buffer);
                     //char outbuf[5] = {0x01,0,0,1,0};
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
-#elif defined(MOTOR_PIC)
+#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
                     handleMessage(I2C_COMM, I2C_COMM);
                     //char outbuf[5];
                     //start_i2c_slave_reply(sizeof outbuf, outbuf);
@@ -434,7 +439,7 @@ void main(void) {
                 case MSGT_AD:
                 {
                     #ifdef SENSOR_PIC
-                    addDataPoints(sensorADid, msgbuffer, length);
+                    //addDataPoints(sensorADid, msgbuffer, length);
                     #endif
                     break;
                 };
@@ -459,7 +464,7 @@ void main(void) {
                 case MSGT_AD:
                 {
                     #ifdef SENSOR_PIC
-                    addDataPoints(sensorADid, msgbuffer, length);
+                    //addDataPoints(sensorADid, msgbuffer, length);
                     #endif
                     break;
                 };

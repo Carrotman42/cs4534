@@ -1,6 +1,7 @@
 #include "motorcomm.h"
 
 //returns 1 if success, 0 if error
+#ifndef SENSOR_PIC //unnecessary for sensor pic
 uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
     char outbuf[10];
 
@@ -30,6 +31,7 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
     sendData(outbuf, bytes_packed, wifly);
     return success;
 }
+#endif
 
 #ifdef MOTOR_PIC
 void sendEncoderData(){

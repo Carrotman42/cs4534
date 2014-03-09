@@ -17,4 +17,8 @@ typedef struct{
     uint8 data;
 } encoderData;
 
+typedef struct{
+    uint8 data;
+} sensorFrameData;
+
 #endif
