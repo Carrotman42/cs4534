@@ -73,13 +73,21 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 }
 
 
+
 void handleMessage(uint8 source, uint8 dest){
     uint8 addr = sendResponse(source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
+#if defined(MASTER_PIC) || defined(PICMAN)
+    propogateCommand(addr, dest);
+#endif
+}
+
+
+#ifdef MASTER_PIC
+static void propogateCommand(uint8 addr, uint8 dest){
     switch(BrainMsgRecv.flags){
         case HIGH_LEVEL_COMMANDS:
-#ifdef MASTER_PIC
             switch(BrainMsgRecv.parameters){
                 case 0x00:
                     startFrames();
@@ -94,30 +102,27 @@ void handleMessage(uint8 source, uint8 dest){
                 default:
                     break;
             }
-#elif defined(PICMAN)
-        
-#endif
             break;
         case MOTOR_COMMANDS:
-#ifdef MASTER_PIC
             if(addr == MOTOR_ADDR){
                 char command[6];
                 uint8 length = 0;
                 switch(BrainMsgRecv.parameters){
                     case 0x00:
-                        length = generateStartForward(command, sizeof command, dest, BrainMsgRecv.payload[0]);
-                        break;
+                        //length = generateStartForward(command, sizeof command, dest, BrainMsgRecv.payload[0]);
+                        //break;
                     case 0x01:
-                        length = generateStartBackward(command, sizeof command, dest, BrainMsgRecv.payload[0]);
-                        break;
+                        //length = generateStartBackward(command, sizeof command, dest, BrainMsgRecv.payload[0]);
+                        //break;
                     case 0x02:
-                        length = generateStop(command, sizeof command, dest);
-                        break;
+                        //length = generateStop(command, sizeof command, dest);
+                        //break;
                     case 0x03:
-                        length = generateTurnCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
-                        break;
+                        //length = generateTurnCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
+                        //break;
                     case 0x04:
-                        length = generateTurnCCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
+                        //length = generateTurnCCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
+                        length = repackBrainMsg(&BrainMsgRecv, command, sizeof command, dest);
                         break;
                     default:
                         break;
@@ -126,11 +131,18 @@ void handleMessage(uint8 source, uint8 dest){
                     i2c_master_send(addr, length, command);
                 }
             }
-#endif
             break;
-            
+
     }
 }
+
+#elif defined(PICMAN)
+
+static void propogateCommand(){
+
+}
+#endif
+
 
 #ifdef MASTER_PIC
 void handleRoverData(){

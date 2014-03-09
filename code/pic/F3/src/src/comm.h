@@ -19,6 +19,10 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly);
 void handleMessage(uint8 source, uint8 dest);
 uint8 sendFrames();
 
+#if defined(MASTER_PIC) || defined(PICMAN)
+static void propogateCommand(uint8 addr, uint8 dest);
+#endif
+
 #ifdef MASTER_PIC
 void handleRoverData();
 #endif

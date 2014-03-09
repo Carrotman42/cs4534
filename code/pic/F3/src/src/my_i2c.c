@@ -138,7 +138,6 @@ void send_stop(){
 }
 
 void i2c_tx_handler(){
-
     switch(ic_ptr->status){
         case(I2C_STARTED):
             load_i2c_data(); //start handled same way as sending data - address should already be loaded.
@@ -335,7 +334,6 @@ void handle_start(unsigned char data_read) {
 
 void i2c_int_handler() {
 
-    //debugNum(2);
     unsigned char i2c_data;
     unsigned char data_read = 0;
     unsigned char data_written = 0;

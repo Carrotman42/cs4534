@@ -17,10 +17,9 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
-    debugNum(1);
     char encoderDataReq[5];
-    //uint8 length = generateGetEncoderData(encoderDataReq, sizeof encoderDataReq);
-    uint8 length = generateGetSensorFrame(encoderDataReq, sizeof encoderDataReq);
+    uint8 length = generateGetEncoderData(encoderDataReq, sizeof encoderDataReq);
+    //uint8 length = generateGetSensorFrame(encoderDataReq, sizeof encoderDataReq);
     //uart_send_array(encoderDataReq, length);
     i2c_master_send(MOTOR_ADDR, length, encoderDataReq);
     WriteTimer0(0x4000);

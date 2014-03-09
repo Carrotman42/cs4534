@@ -194,7 +194,24 @@ uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly)
 
 
 uint8 repackBrainMsg(BrainMsg* brainmsg, char* outbuf, uint8 buflen, uint8 wifly){
-    return 0;
+    if(buflen < brainmsg->payloadLen + HEADER_MEMBERS) return 0;
+    BrainMsg* msg = (BrainMsg*) outbuf;
+    msg->flags = brainmsg->flags;
+    msg->parameters = brainmsg->parameters;
+    msg->payloadLen = brainmsg->payloadLen;
+    int i = 0;
+    if(wifly){
+        msg->messageid = wifly_messageid++;
+    }
+    else{
+        msg->messageid = i2c_messageid++;
+    }
+    msg->checksum = msg->flags + msg->parameters + msg->messageid + msg->payloadLen;
+    for(i; i < brainmsg->payloadLen; i++){
+        msg->checksum += brainmsg->payload[i];
+        msg->payload[i] = brainmsg->payload[i];
+    }
+    return HEADER_MEMBERS + msg->payloadLen;
 }
 
 uint8 generateGetSensorFrame(char* out, uint8 buflen){
