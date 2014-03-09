@@ -20,7 +20,7 @@ void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask) {
 
 // Used in this file only to generically make a RoverMsg. each "pack[SENSOR]Data" should call this one
 //    just in case we change the format of RoverMsg
-static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, uint8 flags, uint8 parameters) {
+static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout, uint8 flags, uint8 parameters, uint8 msgid) {
     if (payloadLen + HEADER_MEMBERS >= maxout) {
         return 0;
     }
@@ -29,7 +29,7 @@ static int packReturnData(char* data, int payloadLen, RoverMsg* msg, int maxout,
     msg->flags = flags;
     msg->parameters = parameters;
     msg->payloadLen = payloadLen;
-    msg->messageid = i2c_messageid++;
+    msg->messageid = msgid;
 
     char* dest = msg->payload;
     char* end = dest + payloadLen;
@@ -121,16 +121,16 @@ uint8 packChecksumErrorAck(char* out, uint8 outlen, uint8 msgid){
 // Returns the number of bytes that have been used of out, or 0 to
 //    signify that the buffer was too small (this should never happen, but
 //    during development we should be carely to make sure this doesn't happen)
-int packADData(sensorADData* data, int len, char* out, int maxout) {
-	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, SENSOR_COMMANDS, sensorADid);
+//int packADData(sensorADData* data, int len, char* out, int maxout) {
+//	return packReturnData((char*)data, len*sizeof(sensorADData), (RoverMsg*)out, maxout, SENSOR_COMMANDS, sensorADid);
+//}
+
+int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid){
+    return packReturnData(data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID, msgid);
 }
 
-int packEncoderData(char* data, uint8 len, char* out, uint8 maxout){
-    return packReturnData(data, len*sizeof(encoderData), (RoverMsg*) out, maxout, MOTOR_COMMANDS, encoderID);
-}
-
-int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout){
-    return packReturnData(data, len*sizeof(sensorFrameData), (RoverMsg*) out, maxout, SENSOR_COMMANDS, sensorFrameID);
+int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid){
+    return packReturnData(data, len*sizeof(sensorFrameData), (RoverMsg*) out, maxout, SENSOR_COMMANDS, sensorFrameID, msgid);
 }
 
 

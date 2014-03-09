@@ -162,19 +162,11 @@ void i2c_tx_handler(){
             }
             else{
                 char error[6];
-                error[0] = 0x40; //error flag
-                error[2] = 0x00; //msg id
-                if(ic_ptr->addr == 0x10){ //sensor pic
-                    error[1] = 0x01; //param
-                    error[3] = 0x43; //checksum
-                    error[4] = 0x01; //payload len
-                    error[5] = 0x01; //payload
+                if(ic_ptr->addr == SENSOR_ADDR){ //sensor pic
+                    generateSensorPICDetectionError(error, sizeof error, UART_COMM);
                 }
-                else{
-                    error[1] = 0x01; //param
-                    error[3] = 0x44; //checksum
-                    error[4] = 0x01; //payload len
-                    error[5] = 0x02; //payload
+                else{//motor pic
+                    generateMotorPICDetectionError(error, sizeof error, UART_COMM);
                 }
                 ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_SEND_FAILED, error);
             }

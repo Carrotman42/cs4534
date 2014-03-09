@@ -75,7 +75,7 @@ void resetAccumulators(){
 */
 
 #ifdef SENSOR_PIC
-void sendSensorFrame(){
+void sendSensorFrame(uint8 msgid){
     char data[3]; 
 
     addSensorFrame(0x05,0x06,0x07);//will need a function to actually get the sensor data.
@@ -84,7 +84,7 @@ void sendSensorFrame(){
 
 
     char outbuf[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
-    uint8 bytes_packed = packSensorFrame(data, sizeof data, outbuf, sizeof outbuf);
+    uint8 bytes_packed = packSensorFrame(data, sizeof data, outbuf, sizeof outbuf, msgid);
     sendData(outbuf, bytes_packed, I2C_COMM);
 }
 #endif

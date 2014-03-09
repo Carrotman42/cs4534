@@ -85,7 +85,7 @@ uint8 sendResponse(uint8 wifly){
     switch(BrainMsgRecv.flags){
         case MOTOR_COMMANDS:
             if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
-                sendEncoderData();
+                sendEncoderData(BrainMsgRecv.messageid);
             }
             else{
                 sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
@@ -110,7 +110,7 @@ uint8 sendResponse(uint8 wifly){
     switch(BrainMsgRecv.flags){
         case SENSOR_COMMANDS:
             if(BrainMsgRecv.parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
-               sendSensorFrame();
+               sendSensorFrame(BrainMsgRecv.messageid);
             }
             break;
         default:

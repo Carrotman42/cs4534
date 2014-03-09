@@ -22,7 +22,7 @@ void resetADacc();
 void resetAccumulators();*/
 
 #ifdef SENSOR_PIC
-void sendSensorFrame();
+void sendSensorFrame(uint8 msgid);
 #endif
 
 #endif	/* SENSORCOMM_H */

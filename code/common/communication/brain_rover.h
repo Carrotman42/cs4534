@@ -90,8 +90,8 @@ uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 
 
-int packEncoderData(char* data, uint8 len, char* out, uint8 maxout);
-int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout);
+int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
+int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 
 
 

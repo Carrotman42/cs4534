@@ -34,7 +34,7 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
 #endif
 
 #ifdef MOTOR_PIC
-void sendEncoderData(){
+void sendEncoderData(uint8 msgid){
     char data[4]; //will need a function to actually get the encoder data.
                          //For now, send dummy values
 //    data[0].data = 0x01;
@@ -47,7 +47,7 @@ void sendEncoderData(){
 
 
     char outbuf[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
-    uint8 bytes_packed = packEncoderData(data, sizeof data, outbuf, sizeof outbuf);
+    uint8 bytes_packed = packEncoderData(data, sizeof data, outbuf, sizeof outbuf, msgid);
     sendData(outbuf, bytes_packed, I2C_COMM);
 }
 #endif

@@ -12,7 +12,7 @@
 uint8 sendMotorAckResponse(uint8 parameters, uint8 messageid, uint8 wifly);
 #endif
 #ifdef MOTOR_PIC
-void sendEncoderData();
+void sendEncoderData(uint8 msgid);
 #endif
 
 #endif	/* MOTORCOMM_H */
