@@ -22,11 +22,9 @@ uint8 sendFrames();
 #if defined(MASTER_PIC) || defined(PICMAN)
 static void propogateCommand(uint8 addr, uint8 dest);
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly);
-#endif
-
-#ifdef MASTER_PIC
 void handleRoverData();
 #endif
+
 
 #define UART_COMM 1
 #define I2C_COMM 0

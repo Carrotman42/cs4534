@@ -451,15 +451,10 @@ void main(void) {
 //                    break;
                 case MSGT_UART_DATA:
                 {
-//#ifdef PICMAN
-//                    debugNum(1);
-//                    debugNum(1);
-//                    debugNum(length);
-//                    debugNum(1);
-//                    debugNum(1);
-//                    debugNum(msgbuffer[5]);
-//                    start_i2c_slave_reply(length, msgbuffer);
-#if defined(MASTER_PIC)
+#ifdef PICMAN
+                    setRoverData(msgbuffer);
+                    handleRoverData();
+#elif defined(MASTER_PIC)
                     //unsigned char test[7] = {1,0,0,18,2,7,8};
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);

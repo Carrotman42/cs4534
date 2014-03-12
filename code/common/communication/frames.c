@@ -64,7 +64,7 @@ void sendFrameData(){
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
     char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS];
-    int length = packFrameMessage(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
+    int length = packFrameData(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
     uart_send_array(packedFrameMessage, length);
 }
 
@@ -82,7 +82,7 @@ void sendFrameData(){
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
     char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS];
-    int length = packFrameMessage(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
+    int length = packReadFrame(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
     //only way this will get called is if it's an i2c response (from arm)
 
     start_i2c_slave_reply(length, packedFrameMessage);

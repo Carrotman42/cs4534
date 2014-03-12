@@ -265,7 +265,7 @@ static void propogateCommand(uint8 addr, uint8 dest){
 #endif
 
 
-#ifdef MASTER_PIC
+#if defined(MASTER_PIC)
 void handleRoverData(){
     switch(RoverMsgRecv.flags){
         case SENSOR_COMMANDS:
@@ -297,9 +297,7 @@ void handleRoverData(){
         clearFrameData();
     }
 }
-#endif
 
-#if defined(MASTER_PIC)
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     char outbuf[10];
 
@@ -320,6 +318,21 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     sendData(outbuf, bytes_packed, wifly);
 }
 #elif defined(PICMAN)
+void handleRoverData(){
+    switch(RoverMsgRecv.flags){
+        case HIGH_LEVEL_COMMANDS:
+            switch(RoverMsgRecv.parameters){
+                case 0x00:
+                    break;
+                    
+                default:
+                    break;
+            }
+        default:
+            break;
+    }
+}
+
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     char outbuf[10];
 

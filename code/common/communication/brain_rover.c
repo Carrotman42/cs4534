@@ -142,7 +142,11 @@ int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid)
     return packReturnData(data, len*sizeof(sensorFrameData), (RoverMsg*) out, maxout, SENSOR_COMMANDS, sensorFrameID, msgid);
 }
 
-int packFrameMessage(char* data, uint8 len, char* out, uint8 maxout){
+int packFrameData(char* data, uint8 len, char* out, uint8 maxout){
+    return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x01, wifly_messageid++);
+}
+
+int packReadFrame(char* data, uint8 len, char* out, uint8 maxout){
     return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x02, wifly_messageid++);
 }
 

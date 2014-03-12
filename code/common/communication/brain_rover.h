@@ -99,7 +99,8 @@ uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly);
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
-int packFrameMessage(char* data, uint8 len, char* out, uint8 maxout);
+int packFrameData(char* data, uint8 len, char* out, uint8 maxout);
+int packReadFrame(char* data, uint8 len, char* out, uint8 maxout);
 
 
 

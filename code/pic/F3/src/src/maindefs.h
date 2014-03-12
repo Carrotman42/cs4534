@@ -65,10 +65,10 @@
 #define DEBUG_ON
 
 //#define ARM_EMU
-#define PICMAN
+//#define PICMAN
 //#define SENSOR_PIC
 //#define MOTOR_PIC
-//#define MASTER_PIC
+#define MASTER_PIC
 
 
 #if defined(MASTER_PIC) || defined(ARM_EMU)
