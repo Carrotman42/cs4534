@@ -30,8 +30,8 @@ typedef struct {
 
 #if defined(MOTOR_PIC)
 typedef struct {
-    uint8 encoderLeft[2];
     uint8 encoderRight[2];
+    uint8 encoderLeft[2];
 } Frame;
 #define FRAME_MEMBERS 4
 #endif

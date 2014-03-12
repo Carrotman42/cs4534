@@ -55,7 +55,7 @@ void stopFrames(){
 //returns 1 if both datas have been set, frame is full AND start frames has been sent
 //0 if either hasnt been set yet
 uint8 frameDataReady(){
-    return framesRequested && sensorDataSet /*&& encoderDataSet*/;
+    return framesRequested && sensorDataSet && encoderDataSet;
 }
 
 //sends the data over uart

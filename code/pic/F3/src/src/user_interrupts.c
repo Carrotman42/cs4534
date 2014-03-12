@@ -21,27 +21,29 @@ void timer0_int_handler() {
 
     char data[5];
     uint8 length = 0;
+    uint8 addr;
     switch(loop){
         case 0:
             length = generateGetSensorFrame(data, sizeof data);
             loop++;
+            addr = SENSOR_ADDR;
             break;
         case 1:
             length = generateGetSensorFrame(data, sizeof data);
             loop++;
+            addr = SENSOR_ADDR;
             break;
         case 2:
             length = generateGetEncoderData(data, sizeof data);
             loop = 0;
+            addr = MOTOR_ADDR;
             break;
         default:
             loop = 0;
             break;
     }
     //uart_send_array(encoderDataReq, length);
-    if(loop != 0){
-        i2c_master_send(SENSOR_ADDR, length, data);
-    }
+    i2c_master_send(addr, length, data);
     WriteTimer0(0x4000);
 #endif
 
