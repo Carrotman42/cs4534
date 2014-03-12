@@ -225,9 +225,42 @@ static void propogateCommand(uint8 addr, uint8 dest){
 }
 
 #elif defined(PICMAN)
-
+//the picman doesn't care about the address
+//it sends most commands across uart.
+//only command it won't propogate is read frames
 static void propogateCommand(uint8 addr, uint8 dest){
-
+    char command[6];
+    uint8 length = 0;
+    switch(BrainMsgRecv.flags){
+        case HIGH_LEVEL_COMMANDS:
+            switch(BrainMsgRecv.parameters){
+                case 0x00:
+                case 0x03://start and stop frames are just packaged up and sent to master pic
+                    length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case MOTOR_COMMANDS:
+            if(addr == MOTOR_ADDR){
+                switch(BrainMsgRecv.parameters){
+                    case 0x00:
+                    case 0x01:
+                    case 0x02:
+                    case 0x03:
+                    case 0x04:
+                        length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+    }
+    if(length != 0){
+        uart_send_array(command, length);
+    }
 }
 #endif
 
