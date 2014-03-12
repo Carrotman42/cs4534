@@ -158,7 +158,7 @@ void i2c_tx_handler(){
         case(I2C_STOPPED): //stop
             ic_ptr->status = I2C_IDLE;
             if(!ic_ptr->nack){
-                i2c_master_recv(ic_ptr->addr); //send a recquest for data (either ack or data)
+                i2c_master_recv(ic_ptr->addr); //send a request for data (either ack or data)
             }
             else{
                 char error[6];

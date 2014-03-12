@@ -64,12 +64,14 @@
 
 #define DEBUG_ON
 
-//#define PICMAN
+//#define ARM_EMU
+#define PICMAN
 //#define SENSOR_PIC
-#define MOTOR_PIC
+//#define MOTOR_PIC
 //#define MASTER_PIC
 
-#ifdef MASTER_PIC
+
+#if defined(MASTER_PIC) || defined(ARM_EMU)
 #define I2C_MASTER
 #else
 #define I2C_SLAVE

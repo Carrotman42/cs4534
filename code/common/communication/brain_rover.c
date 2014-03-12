@@ -99,6 +99,15 @@ uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(HIGH_LEVEL_COMMANDS, 0x03, (Msg*) out, outlen, msgid);
 }
 
+uint8 packColorSensedAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x04, (Msg*) out, outlen, msgid);
+}
+
+uint8 packTurningCompleteAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x05, (Msg*) out, outlen, msgid);
+}
+
+
 uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(ERROR_FLAG, 0x01, (Msg*) out, outlen, msgid);
 }
@@ -322,6 +331,10 @@ uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly){
 
 uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly){
     return generateHighLevelCommand(out, buflen, wifly, 0x03);
+}
+
+uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x02);
 }
 
 BrainMsg* unpackBrainMsg(char *buf){

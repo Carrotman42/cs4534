@@ -128,6 +128,25 @@ uint8 sendResponse(uint8 wifly){
 
     return 0;
 }
+#elif defined(PICMAN)
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
+uint8 sendResponse(uint8 wifly){
+    switch(BrainMsgRecv.flags){
+        case MOTOR_COMMANDS:
+            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
+                return MOTOR_ADDR;
+            }
+            return 0;
+        case HIGH_LEVEL_COMMANDS:
+            sendHighLevelAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
 #endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
@@ -135,7 +154,7 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
         uart_send_array(outbuf, buflen);
     }
     else{
-#ifndef MASTER_PIC
+#ifndef I2C_MASTER
         start_i2c_slave_reply(buflen, outbuf);
 #endif
     }
@@ -207,7 +226,7 @@ static void propogateCommand(uint8 addr, uint8 dest){
 
 #elif defined(PICMAN)
 
-static void propogateCommand(){
+static void propogateCommand(uint8 addr, uint8 dest){
 
 }
 #endif
@@ -247,7 +266,7 @@ void handleRoverData(){
 }
 #endif
 
-#if defined(MASTER_PIC) || defined(PICMAN)
+#if defined(MASTER_PIC)
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     char outbuf[10];
 
@@ -259,16 +278,48 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
         case 0x01:
             bytes_packed = packFrameDataAck(outbuf, sizeof outbuf, messageid);
             break;
-        case 0x02:
-            break;
         case 0x03:
             bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
-            break;
-        case 0x04:
             break;
         default:
             break;
     }
     sendData(outbuf, bytes_packed, wifly);
+}
+#elif defined(PICMAN)
+void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
+    char outbuf[10];
+
+    uint8 bytes_packed = 0;
+    uint8 ack = 1;
+    switch(parameters){
+        case 0x00:
+            bytes_packed = packStartFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x01:
+            bytes_packed = packFrameDataAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x02:
+#ifdef DEBUG_ON
+            fillDummyFrame();
+#endif
+            ack = 0;
+            sendFrameData();
+            break;
+        case 0x03:
+            bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x04:
+            bytes_packed = packColorSensedAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x05:
+            bytes_packed = packTurningCompleteAck(outbuf, sizeof outbuf, messageid);
+            break;
+        default:
+            break;
+    }
+    if(ack){
+        sendData(outbuf, bytes_packed, wifly);
+    }
 }
 #endif

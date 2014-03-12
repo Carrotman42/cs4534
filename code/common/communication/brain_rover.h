@@ -59,6 +59,9 @@ uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStartFramesAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packFrameDataAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packColorSensedAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packTurningCompleteAck(char* out, uint8 outlen, uint8 msgid);
+
 uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packWheelErrorAck(char* out, uint8 outlen, uint8 msgid);
@@ -91,6 +94,7 @@ uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 
 uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly);
 uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly);
+uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly);
 
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);

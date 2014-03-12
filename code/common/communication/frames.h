@@ -6,9 +6,10 @@
 #include "brain_rover.h"
 #include "../../pic/F3/src/src/my_uart.h"
 #include "../../pic/F3/src/src/debug.h"
+#include "../../pic/F3/src/src/my_i2c.h"
 
 //every pic has its own definition of a frame
-#if defined(PICMAN) || defined(MASTER_PIC)
+#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU)
 typedef struct {
     uint8 ultrasonic;
     uint8 IR1;
@@ -49,6 +50,13 @@ void stopFrames();
 uint8 frameDataReady();
 void sendFrameData();
 void clearFrameData();
+#endif
+
+#ifdef PICMAN
+void sendFrameData();
+#ifdef DEBUG_ON
+void fillDummyFrame();
+#endif
 #endif
 
 #endif	/* FRAMES_H */

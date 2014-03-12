@@ -75,3 +75,27 @@ void clearFrameData(){
     encoderDataSet = 0;
 }
 #endif
+
+#ifdef PICMAN
+void sendFrameData(){
+    char packedFrame[FRAME_MEMBERS];
+    uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
+    if(bytes_packed == 0) return;
+    char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS];
+    int length = packFrameMessage(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
+    //only way this will get called is if it's an i2c response (from arm)
+
+    start_i2c_slave_reply(length, packedFrameMessage);
+}
+#ifdef DEBUG_ON
+void fillDummyFrame(){
+    frame.ultrasonic = 0x05;
+    frame.IR1 = 0x06;
+    frame.IR2 = 0x07;
+    frame.encoderRight[0] = 0x01;
+    frame.encoderRight[1] = 0x02;
+    frame.encoderLeft[0] = 0x03;
+    frame.encoderLeft[1] = 0x04;
+}
+#endif
+#endif

@@ -77,47 +77,52 @@ void timer1_int_handler() {
     //debugNum(4);
     //uart_send((char) 0x55);
 //    result = ReadTimer1();
-    /* Test UART send, send one correct sequence and one incorrect
-     The end device will test based on the correct sequence and turn a led on
-     or off based on what was recieved*/
-    #if GLEN_DEBUG == 1
-    static char temp = 0;
-//    if (temp++ == 0) {
-//        unsigned char test[5] = {'1','2','3','4','\r'};
-        unsigned char test[5] = {1,0,0,1,0};
-        uart_send_array(&test, 5);
-        
-//    } else {
-//        unsigned char test[5] = {'1','3','2','4','\r'};
-//        uart_send_array(&test, 5);
-//        temp = 0;
-//    }
-#endif
-    //unsigned char test[5] = {0x01,0x0,0x0,0x01,0x0};
-    //ToMainLow_sendmsg(5, MSGT_UART_DATA, (void*) test);
 
-    // reset the timer
-    //WriteTimer1(0xFFFF-3750);
-#if defined(MASTER_PIC) && defined(DEBUG_ON)
-    WriteTimer1(0x4000);
-    //i2c_master_recv(0x10);
-#endif
+#if defined(ARM_EMU) && defined(DEBUG_ON)
+        static uint8 temp =0;
+        static uint8 start = 0;
+        char testArray[6];
+        uint8 length = 0;
+        switch(temp){
+            case 0:
+                length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
+                temp++;
+                break;
+            case 1:
+                length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
+                temp++;
+                break;
+            case 2:
+                length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                temp++;
+                break;
+            case 3:
+                length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                temp++;
+                break;
+            case 4:
+                length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                temp++;
+                break;
+            case 5:
+                if(start == 0){
+                    length = generateStartFrames(testArray, sizeof testArray, I2C_COMM);
+                    start++;
+                }
+                else if(start == 1){
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                    start++;
+                }
+                else{
+                    length = generateStopFrames(testArray, sizeof testArray, I2C_COMM);
+                    start = 0;
+                }
 
-#if defined(PICMAN) && defined(DEBUG_ON)
-    WriteTimer1(0x4000);
-    //i2c_master_recv(0x10);
-
-    /*static char temp = 0;
-    if (temp++ == 0) {
-        unsigned char test[5] = {0x01,0x0,0x0,0x0,0x01};
-        uart_send_array(test, 5);
-    //ToMainHigh_sendmsg(5, MSGT_I2C_DATA, (void *) test);
-    }else {*/
-        unsigned char test[7] = {0x02, 0x4, 0x0, 0x02, 0x9, 0x1, 0x0};
-        //unsigned char test[5] = {0x02, 0x5, 0x0, 0x00, 0x7};
-        uart_send_array(&test, sizeof test);
-        //temp = 0;
-    //}
+                temp = 0;
+                break;
+        }
+        i2c_master_send(PICMAN_ADDR, length, (char *) testArray);
+        WriteTimer1(0x4000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
         //debugNum(2);
         static uint8 temp =0;
