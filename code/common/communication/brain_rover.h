@@ -95,12 +95,15 @@ uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly);
 uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly);
 uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly);
-
+uint8 generateTurnCompleteReq(char* out, uint8 buflen, uint8 wifly);
+uint8 generateTurnCompleteAck(char* out, uint8 buflen, uint8 msgid);
+uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid);
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packFrameData(char* data, uint8 len, char* out, uint8 maxout);
 int packReadFrame(char* data, uint8 len, char* out, uint8 maxout);
+
 
 
 

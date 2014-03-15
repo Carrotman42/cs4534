@@ -95,6 +95,23 @@ uint8 sendResponse(uint8 wifly){
                 sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
             }
             break;
+        case HIGH_LEVEL_COMMANDS:
+            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
+                static uint8 ack = 0;
+                if(!ack){
+                    char command[6];
+                    uint8 length = generateTurnCompleteNack(command, sizeof command, BrainMsgRecv.messageid);
+                    start_i2c_slave_reply(length, command);
+                    ack = 1;
+                }
+                else{
+                    char command[6];
+                    uint8 length = generateTurnCompleteAck(command, sizeof command, BrainMsgRecv.messageid);
+                    start_i2c_slave_reply(length, command);
+                    ack = 0;
+                }
+            }
+            break;
         default:
         {
             char errorbuf[6];
@@ -288,6 +305,40 @@ void handleRoverData(){
             }
             break;
         case HIGH_LEVEL_COMMANDS:
+            switch(RoverMsgRecv.parameters){
+                case 0x05://ack or nack back from turn complete
+                    if(RoverPayload[0] == 0){ //nack
+                        char command[5];
+                        uint8 length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                        i2c_master_send(MOTOR_ADDR, length, command);
+                        WriteTimer1(0x4000); //for now, we want to just wait for the turn complete before sending another command
+                    }
+                    else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
+                        //for now, just tell picman that the turn is complete.
+                        char command[5];
+                        uint8 length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        uart_send_array(command, length);
+                    }
+                    break;
+                default:
+                    //all other cases get an ack
+                    break;
+            }
+            break;
+        case (ACK_FLAG | MOTOR_COMMANDS):
+            switch(RoverMsgRecv.parameters){
+                case 0x03: //one of the turns has been ack'd
+                case 0x04:{
+                    debugNum(1);
+                    char command[5];
+                    uint8 length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                    i2c_master_send(MOTOR_ADDR, length, command);
+                    break;
+                };
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }

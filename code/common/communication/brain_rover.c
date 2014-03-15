@@ -312,6 +312,7 @@ uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
     return generateMotorCommand(out, buflen, wifly, 0x04, degrees);
 }
 
+
 //payload will never be 0
 //framedata is controlled by a separate function packFrameMessage
 static uint8 generateHighLevelCommand(char* out, uint8 buflen, uint8 wifly, uint8 parameters){
@@ -339,6 +340,20 @@ uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly){
 
 uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly){
     return generateHighLevelCommand(out, buflen, wifly, 0x02);
+}
+
+uint8 generateTurnCompleteReq(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x05);
+}
+
+uint8 generateTurnCompleteAck(char* out, uint8 buflen, uint8 msgid){
+    char payload[1] = {1};
+    return packReturnData(payload, 1, (RoverMsg*) out, buflen, HIGH_LEVEL_COMMANDS, 0x05, msgid);
+}
+
+uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid){
+    char payload[1] = {0};
+    return packReturnData(payload, 1, (RoverMsg*) out, buflen, HIGH_LEVEL_COMMANDS, 0x05, msgid);
 }
 
 BrainMsg* unpackBrainMsg(char *buf){
