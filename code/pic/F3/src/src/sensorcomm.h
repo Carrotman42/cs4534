@@ -23,6 +23,10 @@ void resetAccumulators();*/
 
 #ifdef SENSOR_PIC
 void sendSensorFrame(uint8 msgid);
+
+#elif defined(PICMAN) || defined(ARM_EMU)
+void colorSensorTriggered();
+uint8 isColorSensorTriggered();
 #endif
 
 #endif	/* SENSORCOMM_H */

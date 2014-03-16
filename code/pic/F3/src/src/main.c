@@ -376,7 +376,7 @@ void main(void) {
                 #endif
                 case MSGT_I2C_DATA:
                 {
-#if defined(MASTER_PIC)
+#if defined(MASTER_PIC) || defined(ARM_EMU)
                     //debugNum(16);
                     //handle whatever data will come through via i2c
                     //msgbuffer can hold real data - error codes will be returned through the error cases

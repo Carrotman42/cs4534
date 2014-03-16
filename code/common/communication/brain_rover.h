@@ -98,6 +98,7 @@ uint8 generateReadFrames(char* out, uint8 buflen, uint8 wifly);
 uint8 generateTurnCompleteReq(char* out, uint8 buflen, uint8 wifly);
 uint8 generateTurnCompleteAck(char* out, uint8 buflen, uint8 msgid);
 uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid);
+uint8 generateColorSensorSensed(char* out, uint8 buflen, uint8 wifly);
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);

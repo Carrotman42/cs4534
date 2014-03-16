@@ -78,19 +78,30 @@ void timer1_int_handler() {
 //    result = ReadTimer1();
 #if defined(ROVER_EMU) && defined(DEBUG_ON)
         //the only thing the rover does on its own is send data
+    static uint8 colorSensorCounter = 0;
+    if(colorSensorCounter == 50){
+        debugNum(2);
+        colorSensorCounter++;
+        char command[5];
+        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
+        uart_send_array(command, length);
+    }
+    else if(colorSensorCounter < 50){
+        debugNum(1);
         fillDummyFrame();
         if(frameDataReady()){ //used for checking the framesrequested flag
             sendFrameData();
             clearFrameData();
         }
-        
-        WriteTimer1(0x2000);
+        colorSensorCounter++;
+    }
+
+    WriteTimer1(0x0000);
 
 #elif defined(ARM_EMU) && defined(DEBUG_ON)
         static uint8 temp =0;
         static uint8 start = 0;
-        debugNum(1);
-        if(isTurnComplete()){
+        if(isTurnComplete() && !isColorSensorTriggered() ){
             char testArray[6];
             uint8 length = 0;
             switch(temp){

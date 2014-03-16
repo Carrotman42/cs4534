@@ -87,4 +87,12 @@ void sendSensorFrame(uint8 msgid){
     uint8 bytes_packed = packSensorFrame(data, sizeof data, outbuf, sizeof outbuf, msgid);
     sendData(outbuf, bytes_packed, I2C_COMM);
 }
+#elif defined(PICMAN) || defined(ARM_EMU)
+static uint8 colorSensorStatus = 0;
+void colorSensorTriggered(){
+    colorSensorStatus = 1;
+}
+uint8 isColorSensorTriggered(){
+    return colorSensorStatus; 
+}
 #endif

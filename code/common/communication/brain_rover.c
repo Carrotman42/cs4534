@@ -356,6 +356,10 @@ uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid){
     return packReturnData(payload, 1, (RoverMsg*) out, buflen, HIGH_LEVEL_COMMANDS, 0x05, msgid);
 }
 
+uint8 generateColorSensorSensed(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x04);
+}
+
 BrainMsg* unpackBrainMsg(char *buf){
     return (BrainMsg*) buf;
 }

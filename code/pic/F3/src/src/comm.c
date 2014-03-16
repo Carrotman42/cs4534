@@ -42,32 +42,6 @@ void setRoverDataLP(char* msg){
 }
 
 
-//the return value dictates whether or not the information needs to be passed to the slave PICs
-//0 is "no information needs to be passed"
-//Otherwise, the addres is returned
-//uint8 sendResponse(uint8 wifly){
-//    switch(BrainMsgRecv.flags){
-//        case MOTOR_COMMANDS:
-//#ifdef MOTOR_PIC
-//            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
-//                sendEncoderData();
-//            }
-//            else{
-//                sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
-//            }
-//            return 0;
-//#else
-//            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
-//                return MOTOR_ADDR;
-//            }
-//            return 0;
-//#endif
-//        default:
-//            break;
-//    }
-//    return 0;
-//}
-
 #ifdef MASTER_PIC
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
@@ -153,50 +127,6 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 
     return 0;
 }
-#elif defined(PICMAN)
-//the return value dictates whether or not the information needs to be passed to the slave PICs
-//0 is "no information needs to be passed"
-//Otherwise, the addres is returned
-uint8 sendResponse(BrainMsg* brain, uint8 wifly){
-    switch(brain->flags){
-        case MOTOR_COMMANDS:
-            if(sendMotorAckResponse(brain->parameters, brain->messageid, wifly)){
-                return MOTOR_ADDR;
-            }
-            return 0;
-        case HIGH_LEVEL_COMMANDS:
-            switch(brain->parameters){
-                case 0x02:
-                    if(!frameDataReady()){
-                        addSensorFrame(0,0,0);
-                        addEncoderData(0,0,0,0); //send all 0's if the frame isn't ready
-                        clearFrameData(); //resets flags for frame data ready
-                    }
-                    sendFrameData();
-                    break;
-                case 0x05:{
-                    char command[6];
-                    uint8 length = 0;
-                    if(!isTurnComplete()){
-                        length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
-                    }
-                    else{
-                        length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
-                    }
-                    makeHighPriority(command);
-                    start_i2c_slave_reply(length, command);
-                    break;
-                };
-                default:
-                    sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-    return 0;
-}
 #endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
@@ -214,7 +144,6 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 
 
 static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 dest){
-    //debugNum(1);
     uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
@@ -351,44 +280,6 @@ void handleRoverDataHP(){
 void handleRoverDataLP(){
 }
 
-#elif defined(PICMAN)
-//the picman doesn't care about the address
-//it sends most commands across uart.
-//only command it won't propogate is read frames
-static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
-    char command[6];
-    uint8 length = 0;
-    switch(brain->flags){
-        case HIGH_LEVEL_COMMANDS:
-            switch(brain->parameters){
-                case 0x00:
-                case 0x03://start and stop frames are just packaged up and sent to master pic
-                    length = repackBrainMsg(brain, payload, command, sizeof command, dest);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case MOTOR_COMMANDS:
-            if(addr == MOTOR_ADDR){
-                switch(brain->parameters){
-                    case 0x00:
-                    case 0x01:
-                    case 0x02:
-                    case 0x03:
-                    case 0x04:
-                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            break;
-    }
-    if(length != 0){
-        uart_send_array(command, length);
-    }
-}
 #endif
 
 
@@ -497,9 +388,13 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 }
 
 static void handleRoverData(RoverMsg* rover, char* payload){
+    debugNum(1);
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){
+                case 0x04:
+                    colorSensorTriggered();
+                    break;
                 case 0x05:{//ack or nack back from turn complete
                     char command[HEADER_MEMBERS] = "";
                     uint8 length = 0;
@@ -550,6 +445,97 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     return; //no acks for armu emu
 }
 #elif defined(PICMAN)
+//the return value dictates whether or not the information needs to be passed to the slave PICs
+//0 is "no information needs to be passed"
+//Otherwise, the addres is returned
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    if(isColorSensorTriggered()){
+        char command[5];
+        uint8 length = generateColorSensorSensed(command, sizeof command, I2C_COMM);
+        sendData(command, length, I2C_COMM); //just send the color sensor sensed no matter what command was sent to the rover, we won't care
+        return 0;
+    }
+    switch(brain->flags){
+        case MOTOR_COMMANDS:
+            if(sendMotorAckResponse(brain->parameters, brain->messageid, wifly)){
+                return MOTOR_ADDR;
+            }
+            return 0;
+        case HIGH_LEVEL_COMMANDS:
+            switch(brain->parameters){
+                case 0x02:
+                    if(!frameDataReady()){
+                        addSensorFrame(0,0,0);
+                        addEncoderData(0,0,0,0); //send all 0's if the frame isn't ready
+                        clearFrameData(); //resets flags for frame data ready
+                    }
+                    sendFrameData();
+                    break;
+                case 0x05:{
+                    char command[6];
+                    uint8 length = 0;
+                    if(!isTurnComplete()){
+                        length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
+                    }
+                    else{
+                        length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
+                    }
+                    makeHighPriority(command);
+                    start_i2c_slave_reply(length, command);
+                    break;
+                };
+                default:
+                    sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+//the picman doesn't care about the address
+//it sends most commands across uart.
+//only command it won't propogate is read frames
+static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
+    if(isColorSensorTriggered()){
+        return; //don't care about propogating any commands
+    }
+    char command[6];
+    uint8 length = 0;
+    switch(brain->flags){
+        case HIGH_LEVEL_COMMANDS:
+            switch(brain->parameters){
+                case 0x00:
+                case 0x03://start and stop frames are just packaged up and sent to master pic
+                    length = repackBrainMsg(brain, payload, command, sizeof command, dest);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case MOTOR_COMMANDS:
+            if(addr == MOTOR_ADDR){
+                switch(brain->parameters){
+                    case 0x00:
+                    case 0x01:
+                    case 0x02:
+                    case 0x03:
+                    case 0x04:
+                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+    }
+    if(length != 0){
+        uart_send_array(command, length);
+    }
+}
+
 static void handleRoverData(RoverMsg* rover, char* payload){
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -557,6 +543,14 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                 case 0x01:
                     addSensorFrame(payload[0], payload[1], payload[2]);
                     addEncoderData(payload[3], payload[4], payload[5], payload[6]);
+                    break;
+                case 0x04:
+                    colorSensorTriggered();
+                    char command[5];
+                    uint8 length = generateStop(command, sizeof command, UART_COMM);
+                    sendData(command, length, UART_COMM); //send stop to stop the rover (more important than frames)
+                    length = generateStopFrames(command, sizeof command, UART_COMM);
+                    sendData(command, length, UART_COMM); //want to send stop frames because the arm no longer cares about the data
                     break;
                 case 0x05:
                     turnCompleted();
