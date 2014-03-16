@@ -13,7 +13,7 @@ void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2){
     frame.ultrasonic = ultrasonic;
     frame.IR1 = IR1;
     frame.IR2 = IR2;
-#ifndef MOTOR_PIC
+#ifndef SENSOR_PIC
     sensorDataSet = 1;
 #endif
 }
