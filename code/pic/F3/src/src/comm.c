@@ -111,16 +111,21 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
     switch(brain->flags){
-        case SENSOR_COMMANDS:
+        case SENSOR_COMMANDS:{
             if(brain->parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
                sendSensorFrame(brain->messageid);
             }
+            else{
+                char errorbuf[6];
+                uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+                sendData(errorbuf, length, wifly);
+            }
             break;
-        default:
-        {
+        };
+        default:{
             char errorbuf[6];
             uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
-            start_i2c_slave_reply(length, errorbuf);
+            sendData(errorbuf, length, wifly);
             break;
         };
     }

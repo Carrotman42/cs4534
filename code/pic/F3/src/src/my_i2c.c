@@ -99,7 +99,7 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
 unsigned char i2c_master_recv(unsigned char addr) {
     if(ic_ptr->status != I2C_IDLE){
         ToMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
-        return 1;
+        return 0;
     }
     ic_ptr->txnrx = 0;
     ic_ptr->addr = addr;
@@ -211,15 +211,16 @@ uint8 receive_data(){
 }
 
 void i2c_rx_handler(){
-    //debugNum(2);
-    int i = 0;
-    for(i; i < 100; i++); //need something to stall or everything falls to shit.
-                          //no idea what's going wrong but this has worked without incident
+    //debugNum(2); 
     switch(ic_ptr->status){
-        case(I2C_STARTED):
+        case(I2C_STARTED):{
+            int i = 0;
+            for(i; i < 100; i++);//need something to stall or everything falls to shit.
+                                 //no idea what's going wrong but this has worked without incident
             ic_ptr->checksum_failed = 0;
             load_i2c_data();
             break;
+        };
         case(I2C_MASTER_SEND): //sent the addr
             ic_ptr->nack = SSPCON2bits.ACKSTAT;
             if(SSPCON2bits.ACKSTAT == 1){ //ack not received
@@ -233,7 +234,6 @@ void i2c_rx_handler(){
         case(I2C_RCV_DATA):
             if(receive_data() == 1){ //receive is finished
                 ic_ptr->status = I2C_NACK;
-                //debugNum(4);
             }
             //debugNum(8);
             break;
@@ -278,6 +278,7 @@ void i2c_rx_handler(){
         default:
             break;
     }
+    //debugNum(4);
 }
 
 
