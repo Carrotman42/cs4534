@@ -60,10 +60,10 @@ uint8 frameDataReady(){
 
 //sends the data over uart
 void sendFrameData(){
-    char packedFrame[FRAME_MEMBERS];
+    char packedFrame[FRAME_MEMBERS] = "";
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
-    char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS];
+    char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS] = "";
     int length = packFrameData(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
     uart_send_array(packedFrameMessage, length);
 }

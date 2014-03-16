@@ -258,7 +258,11 @@ void main(void) {
      */
 
     // initialize Timers
+#ifndef MASTER_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
+#else
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+#endif
     
 #ifdef __USE18F26J50
     // MTJ added second argument for OpenTimer1()
@@ -360,34 +364,35 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(1);
+                    debugNum(8);
                     i2c_master_recv(msgbuffer[0]);
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-                    //debugNum(2);
+                    debugNum(16);
                     i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
                 };
                 #endif
                 case MSGT_I2C_DATA:
                 {
 #ifdef MASTER_PIC
+                    //debugNum(16);
                     //handle whatever data will come through via i2c
                     //msgbuffer can hold real data - error codes will be returned through the error cases
-                    setRoverData(msgbuffer);
-                    handleRoverData();
+                    setRoverDataLP(msgbuffer);
+                    handleRoverDataLP();
 #else
-                    setBrainData(msgbuffer);
+                    setBrainDataLP(msgbuffer);
 #endif
                     break;
                 };
                 case MSGT_I2C_RQST:
                 {
 #if defined(MOTOR_PIC) || defined(SENSOR_PIC)
-                    handleMessage(I2C_COMM, I2C_COMM);
+                    handleMessageLP(I2C_COMM, I2C_COMM);
 #elif defined(PICMAN)
-                    handleMessage(I2C_COMM, UART_COMM);
+                    handleMessageLP(I2C_COMM, UART_COMM);
 #endif
                     break;
                 };
@@ -459,8 +464,8 @@ void main(void) {
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
                     //send ack
-                    setBrainData(msgbuffer);//pass data received and tell will pass over i2c
-                    handleMessage(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
 
                     /*unsigned char addr;
                     if(msgbuffer[0] == 0x01)

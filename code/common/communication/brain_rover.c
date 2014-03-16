@@ -386,3 +386,23 @@ int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
 		return -1;
 	}
 }
+
+void makeHighPriority(char* buf){
+    if(isHighPriority(buf))
+        return;
+    Msg* m = (Msg*)buf;
+    m->flags  |= HIGH_PRIORITY;
+    m->checksum += HIGH_PRIORITY;
+}
+uint8 isHighPriority(char* buf){
+    Msg* m = (Msg*) buf;
+    return (m->flags & HIGH_PRIORITY) == HIGH_PRIORITY;
+}
+
+void clearHighPriority(char* buf){
+    if(!isHighPriority(buf))
+        return;
+    Msg* m = (Msg*) buf;
+    m->flags &= ~HIGH_PRIORITY; //mask flags with 0x7f
+    m->checksum -= HIGH_PRIORITY;
+}

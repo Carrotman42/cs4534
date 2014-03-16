@@ -17,6 +17,7 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
+    //debugNum(2);
     static uint8 loop = 0;
 
     char data[5];
@@ -29,11 +30,6 @@ void timer0_int_handler() {
             addr = SENSOR_ADDR;
             break;
         case 1:
-            length = generateGetSensorFrame(data, sizeof data);
-            loop++;
-            addr = SENSOR_ADDR;
-            break;
-        case 2:
             length = generateGetEncoderData(data, sizeof data);
             loop = 0;
             addr = MOTOR_ADDR;
@@ -44,7 +40,7 @@ void timer0_int_handler() {
     }
     //uart_send_array(encoderDataReq, length);
     i2c_master_send(addr, length, data);
-    WriteTimer0(0x4000);
+    WriteTimer0(0x2000);
 #endif
 
 
@@ -124,50 +120,53 @@ void timer1_int_handler() {
         i2c_master_send(PICMAN_ADDR, length, (char *) testArray);
         WriteTimer1(0x4000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
-        //debugNum(2);
+        //debugNum(1);
         static uint8 temp =0;
         static uint8 start = 0;
         char testArray[6];
         uint8 length = 0;
-        switch(temp){
-            case 0:
-                length = generateStartForward(testArray, sizeof testArray, UART_COMM, 0x05);
-                temp++;
-                break;
-            case 1:
-                length = generateStartBackward(testArray, sizeof testArray, UART_COMM, 0x06);
-                temp++;
-                break;
-            case 2:
-                length = generateStop(testArray, sizeof testArray, UART_COMM);
-                temp++;
-                break;
-            case 3:
-                length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
-                temp++;
-                break;
-            case 4:
-                length = generateTurnCCW(testArray, sizeof testArray, UART_COMM, 0x08);
-                temp++;
-                break;
-            case 5:
-                if(start == 0){
-                    length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
-                    start = 1;
-                }
-                else{
-                    length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
-                    start = 0;
-                }
+        if(isTurnComplete()){ //make sure rover is not turning
+            switch(temp){
+                case 0:
+                    length = generateStartForward(testArray, sizeof testArray, UART_COMM, 0x05);
+                    temp++;
+                    break;
+                case 1:
+                    length = generateStartBackward(testArray, sizeof testArray, UART_COMM, 0x06);
+                    temp++;
+                    break;
+                case 2:
+                    length = generateStop(testArray, sizeof testArray, UART_COMM);
+                    temp++;
+                    break;
+                case 3:
+                    length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
+                    temp++;
+                    break;
+                case 4:
+                    length = generateTurnCCW(testArray, sizeof testArray, UART_COMM, 0x08);
+                    temp++;
+                    break;
+                case 5:
+                    if(start == 0){
+                        length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
+                        start = 1;
+                    }
+                    else{
+                        length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
+                        start = 0;
+                    }
 
-                temp = 0;
-                break;
+                    temp = 0;
+                    break;
+            }
+
+
+            //uart_send_array(testArray, length);
+            ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
         }
-
-        //uart_send_array(testArray, length);
-        ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
-        WriteTimer1(0x4000);
+        //WriteTimer1(0x4000);
 #endif
 
 }

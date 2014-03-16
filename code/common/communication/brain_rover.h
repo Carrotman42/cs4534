@@ -104,7 +104,9 @@ int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid)
 int packFrameData(char* data, uint8 len, char* out, uint8 maxout);
 int packReadFrame(char* data, uint8 len, char* out, uint8 maxout);
 
-
+void makeHighPriority(char* buf);
+uint8 isHighPriority(char* buf);
+void clearHighPriority(char* buf);
 
 
 

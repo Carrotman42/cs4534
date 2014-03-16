@@ -55,6 +55,7 @@ void i2c_configure_master() {
 
 //addr is the actual address.  It will be shifted here
 unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg) {
+    //debugNum(4);
     if(ic_ptr->status != I2C_IDLE){
         //copy addr and msg into a single array
         char tempbuf[MAX_I2C_SENSOR_DATA_LEN +1];
@@ -76,8 +77,8 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
     }
     ic_ptr->outbuflen = length + 1; //char length + addr byte
     ic_ptr->outbufind = 0; //start at 0th pos.  addr will be written in after S int happens
-    SSPCON2bits.SEN = 1; //send start signal
     ic_ptr->status = I2C_STARTED;
+    SSPCON2bits.SEN = 1; //send start signal
 
     return 1;
 }
@@ -108,8 +109,8 @@ unsigned char i2c_master_recv(unsigned char addr) {
     ic_ptr->outbufind = 0; //set for addr
     ic_ptr->buflen = HEADER_MEMBERS; //reset the buffer, we'll at LEAST read 5 bytes
     ic_ptr->bufind = 0;
-    SSPCON2bits.SEN = 1;
     ic_ptr->status = I2C_STARTED;
+    SSPCON2bits.SEN = 1;
     return 1;
 }
 
@@ -138,6 +139,7 @@ void send_stop(){
 }
 
 void i2c_tx_handler(){
+    //debugNum(1);
     switch(ic_ptr->status){
         case(I2C_STARTED):
             load_i2c_data(); //start handled same way as sending data - address should already be loaded.
@@ -209,6 +211,10 @@ uint8 receive_data(){
 }
 
 void i2c_rx_handler(){
+    //debugNum(2);
+    int i = 0;
+    for(i; i < 100; i++); //need something to stall or everything falls to shit.
+                          //no idea what's going wrong but this has worked without incident
     switch(ic_ptr->status){
         case(I2C_STARTED):
             ic_ptr->checksum_failed = 0;
@@ -227,7 +233,9 @@ void i2c_rx_handler(){
         case(I2C_RCV_DATA):
             if(receive_data() == 1){ //receive is finished
                 ic_ptr->status = I2C_NACK;
+                //debugNum(4);
             }
+            //debugNum(8);
             break;
         case(I2C_ACK):
             ic_ptr->status = I2C_RCV_DATA;
@@ -241,7 +249,13 @@ void i2c_rx_handler(){
             ic_ptr->checksum = 0;
             if(!ic_ptr->nack){
                 if(!ic_ptr->checksum_failed){
-                    ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
+                    if(isHighPriority(ic_ptr->buffer)){
+                        setRoverDataHP(ic_ptr->buffer);
+                        handleRoverDataHP();
+                    }
+                    else{
+                        ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
+                    }
                 }
                 else{
                     char error[6];
@@ -274,6 +288,7 @@ void i2c_int_handler(){
     else
         i2c_rx_handler();
 }
+
 
 
 #else
@@ -325,7 +340,6 @@ void handle_start(unsigned char data_read) {
 //    master code should be in a subroutine called "i2c_master_handler()"
 
 void i2c_int_handler() {
-
     unsigned char i2c_data;
     unsigned char data_read = 0;
     unsigned char data_written = 0;

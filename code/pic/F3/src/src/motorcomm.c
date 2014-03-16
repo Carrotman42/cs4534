@@ -19,15 +19,20 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
             break;
         case 0x03:
             bytes_packed = packTurnCWAck(outbuf, sizeof outbuf, msgid);
+            if(!wifly)
+                makeHighPriority(outbuf);
             break;
         case 0x04:
             bytes_packed = packTurnCCWAck(outbuf, sizeof outbuf, msgid);
+            if(!wifly)
+                makeHighPriority(outbuf);
             break;
         default:
             bytes_packed = packPICDetectErrorAck(outbuf, sizeof outbuf, msgid);
             success = 0;
             break;
     }
+    //debugNum(1);
     sendData(outbuf, bytes_packed, wifly);
     return success;
 }
@@ -49,5 +54,18 @@ void sendEncoderData(uint8 msgid){
     char outbuf[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
     uint8 bytes_packed = packEncoderData(data, sizeof data, outbuf, sizeof outbuf, msgid);
     sendData(outbuf, bytes_packed, I2C_COMM);
+}
+#endif
+
+#ifdef MASTER_PIC
+static uint8 turnDone = 1;
+void turnStarted(){
+    turnDone = 0;
+}
+void turnCompleted(){
+    turnDone = 1;
+}
+uint8 isTurnComplete(){
+    return turnDone;
 }
 #endif

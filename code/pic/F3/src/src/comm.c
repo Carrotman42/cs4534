@@ -1,40 +1,46 @@
 #include "comm.h"
 
 #define payloadSize 10
-static BrainMsg BrainMsgRecv;
-static RoverMsg RoverMsgRecv;
-static char  BrainPayload[payloadSize];
-static char  RoverPayload[payloadSize];
+static BrainMsg LPBrainMsgRecv;
+static RoverMsg LPRoverMsgRecv;
+static char  LPBrainPayload[payloadSize];
+static char  LPRoverPayload[payloadSize];
+static BrainMsg HPBrainMsgRecv;
+static RoverMsg HPRoverMsgRecv;
+static char  HPBrainPayload[payloadSize];
+static char  HPRoverPayload[payloadSize];
 static uint8 wifly;
 
+static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
+    clearHighPriority(incomingMsg);
+    BrainMsg* msg = unpackBrainMsg(incomingMsg); //just a cast but this adds clarification
+    staticMsg->flags = msg->flags;
+    staticMsg->parameters = msg->parameters;
+    staticMsg->messageid = msg->messageid;
+    staticMsg->checksum = msg->checksum;
+    staticMsg->payloadLen = msg->payloadLen;
+    int i = 0;
+    for(i; i < staticMsg->payloadLen; i++){
+        payload[i] = *(msg->payload + i);
+    }
+}
 //wifly is 1 the brain msg is received via wifly, 0 through i2c
-void setBrainData(char* msg){
-    BrainMsg* tempBrain = unpackBrainMsg(msg); //just a cast but this adds clarification
-
-    BrainMsgRecv.flags = tempBrain->flags;
-    BrainMsgRecv.parameters = tempBrain->parameters;
-    BrainMsgRecv.messageid = tempBrain->messageid;
-    BrainMsgRecv.checksum = tempBrain->checksum;
-    BrainMsgRecv.payloadLen = tempBrain->payloadLen;
-    int i = 0;
-    for(i; i < BrainMsgRecv.payloadLen; i++){
-        BrainPayload[i] = *(tempBrain->payload + i);
-    }
+void setBrainDataHP(char* msg){
+    setData(&HPBrainMsgRecv, &HPBrainPayload, msg);
 }
 
-void setRoverData(char* msg){
-    BrainMsg* tempRover = unpackBrainMsg(msg); //just a cast but this adds clarification
-                                               //BrainMsg is the Same as RoverMsg
-    RoverMsgRecv.flags = tempRover->flags;
-    RoverMsgRecv.parameters = tempRover->parameters;
-    RoverMsgRecv.messageid = tempRover->messageid;
-    RoverMsgRecv.checksum = tempRover->checksum;
-    RoverMsgRecv.payloadLen = tempRover->payloadLen;
-    int i = 0;
-    for(i; i < RoverMsgRecv.payloadLen; i++){
-        RoverPayload[i] = *(tempRover->payload + i);
-    }
+void setBrainDataLP(char* msg){
+    setData(&LPBrainMsgRecv, &LPBrainPayload, msg);
 }
+
+void setRoverDataHP(char* msg){
+    setData(&HPRoverMsgRecv, &HPRoverPayload, msg);
+}
+
+void setRoverDataLP(char* msg){
+    setData(&LPRoverMsgRecv, &LPRoverPayload, msg);
+}
+
 
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
@@ -66,15 +72,15 @@ void setRoverData(char* msg){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
-uint8 sendResponse(uint8 wifly){
-    switch(BrainMsgRecv.flags){
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    switch(brain->flags){
         case MOTOR_COMMANDS:
-            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
+            if(sendMotorAckResponse(brain->parameters, brain->messageid, wifly)){
                 return MOTOR_ADDR;
             }
             return 0;
         case HIGH_LEVEL_COMMANDS:
-            sendHighLevelAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+            sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
             break;
         default:
             break;
@@ -85,28 +91,30 @@ uint8 sendResponse(uint8 wifly){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
-uint8 sendResponse(uint8 wifly){
-    switch(BrainMsgRecv.flags){
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    switch(brain->flags){
         case MOTOR_COMMANDS:
-            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
-                sendEncoderData(BrainMsgRecv.messageid);
+            if(brain->parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
+                sendEncoderData(brain->messageid);
             }
             else{
-                sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+                sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
             }
             break;
         case HIGH_LEVEL_COMMANDS:
-            if(BrainMsgRecv.parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
+            if(brain->parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
                 static uint8 ack = 0;
                 if(!ack){
                     char command[6];
-                    uint8 length = generateTurnCompleteNack(command, sizeof command, BrainMsgRecv.messageid);
+                    uint8 length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
+                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
                     ack = 1;
                 }
                 else{
                     char command[6];
-                    uint8 length = generateTurnCompleteAck(command, sizeof command, BrainMsgRecv.messageid);
+                    uint8 length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
+                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
                     ack = 0;
                 }
@@ -127,11 +135,11 @@ uint8 sendResponse(uint8 wifly){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
-uint8 sendResponse(uint8 wifly){
-    switch(BrainMsgRecv.flags){
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    switch(brain->flags){
         case SENSOR_COMMANDS:
-            if(BrainMsgRecv.parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
-               sendSensorFrame(BrainMsgRecv.messageid);
+            if(brain->parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
+               sendSensorFrame(brain->messageid);
             }
             break;
         default:
@@ -149,15 +157,15 @@ uint8 sendResponse(uint8 wifly){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
-uint8 sendResponse(uint8 wifly){
-    switch(BrainMsgRecv.flags){
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    switch(brain->flags){
         case MOTOR_COMMANDS:
-            if(sendMotorAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly)){
+            if(sendMotorAckResponse(brain->parameters, brain->messageid, wifly)){
                 return MOTOR_ADDR;
             }
             return 0;
         case HIGH_LEVEL_COMMANDS:
-            sendHighLevelAckResponse(BrainMsgRecv.parameters, BrainMsgRecv.messageid, wifly);
+            sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
             break;
         default:
             break;
@@ -167,6 +175,7 @@ uint8 sendResponse(uint8 wifly){
 #endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
+    uart_send_array(outbuf, buflen);
     if(wifly){
         uart_send_array(outbuf, buflen);
     }
@@ -179,21 +188,30 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 
 
 
-void handleMessage(uint8 source, uint8 dest){
-    uint8 addr = sendResponse(source); //either sends ack or data
+static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 dest){
+    //debugNum(1);
+    uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
 #if defined(MASTER_PIC) || defined(PICMAN)
-    propogateCommand(addr, dest);
+    propogateCommand(brain, payload, addr, dest);
 #endif
+}
+
+void handleMessageHP(uint8 source, uint8 dest){
+    handleMessage(&HPBrainMsgRecv, HPBrainPayload, source, dest);
+}
+
+void handleMessageLP(uint8 source, uint8 dest){
+    handleMessage(&LPBrainMsgRecv, LPBrainPayload, source, dest);
 }
 
 
 #ifdef MASTER_PIC
-static void propogateCommand(uint8 addr, uint8 dest){
-    switch(BrainMsgRecv.flags){
+static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
+    switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
-            switch(BrainMsgRecv.parameters){
+            switch(brain->parameters){
                 case 0x00:
                     startFrames();
                     break;
@@ -212,7 +230,7 @@ static void propogateCommand(uint8 addr, uint8 dest){
             if(addr == MOTOR_ADDR){
                 char command[6];
                 uint8 length = 0;
-                switch(BrainMsgRecv.parameters){
+                switch(brain->parameters){
                     case 0x00:
                         //length = generateStartForward(command, sizeof command, dest, BrainMsgRecv.payload[0]);
                         //break;
@@ -227,7 +245,7 @@ static void propogateCommand(uint8 addr, uint8 dest){
                         //break;
                     case 0x04:
                         //length = generateTurnCCW(command, sizeof command, dest, BrainMsgRecv.payload[0]);
-                        length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
+                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
                     default:
                         break;
@@ -245,15 +263,15 @@ static void propogateCommand(uint8 addr, uint8 dest){
 //the picman doesn't care about the address
 //it sends most commands across uart.
 //only command it won't propogate is read frames
-static void propogateCommand(uint8 addr, uint8 dest){
+static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
     char command[6];
     uint8 length = 0;
-    switch(BrainMsgRecv.flags){
+    switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
-            switch(BrainMsgRecv.parameters){
+            switch(brain->parameters){
                 case 0x00:
                 case 0x03://start and stop frames are just packaged up and sent to master pic
-                    length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
+                    length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                     break;
                 default:
                     break;
@@ -261,13 +279,13 @@ static void propogateCommand(uint8 addr, uint8 dest){
             break;
         case MOTOR_COMMANDS:
             if(addr == MOTOR_ADDR){
-                switch(BrainMsgRecv.parameters){
+                switch(brain->parameters){
                     case 0x00:
                     case 0x01:
                     case 0x02:
                     case 0x03:
                     case 0x04:
-                        length = repackBrainMsg(&BrainMsgRecv, BrainPayload, command, sizeof command, dest);
+                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
                     default:
                         break;
@@ -283,21 +301,21 @@ static void propogateCommand(uint8 addr, uint8 dest){
 
 
 #if defined(MASTER_PIC)
-void handleRoverData(){
-    switch(RoverMsgRecv.flags){
+static void handleRoverData(RoverMsg* rover, char* payload){
+    switch(rover->flags){
         case SENSOR_COMMANDS:
-            switch(RoverMsgRecv.parameters){
+            switch(rover->parameters){
                 case 0x01:
-                    addSensorFrame(RoverPayload[0], RoverPayload[1], RoverPayload[2]);
+                    addSensorFrame(payload[0], payload[1], payload[2]);
                     break;
                 default:
                     //all other cases get an ack
                     break;
             }
         case MOTOR_COMMANDS:
-            switch(RoverMsgRecv.parameters){
+            switch(rover->parameters){
                 case 0x05:
-                    addEncoderData(RoverPayload[0], RoverPayload[1], RoverPayload[2], RoverPayload[3]);
+                    addEncoderData(payload[0], payload[1], payload[2], payload[3]);
                     break;
                 default:
                     //all other cases get an ack
@@ -305,33 +323,36 @@ void handleRoverData(){
             }
             break;
         case HIGH_LEVEL_COMMANDS:
-            switch(RoverMsgRecv.parameters){
-                case 0x05://ack or nack back from turn complete
-                    if(RoverPayload[0] == 0){ //nack
-                        char command[5];
-                        uint8 length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+            switch(rover->parameters){
+                case 0x05:{//ack or nack back from turn complete
+                    char command[HEADER_MEMBERS] = "";
+                    uint8 length = 0;
+                    if(payload[0] == 0){ //nack
+                        length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                         i2c_master_send(MOTOR_ADDR, length, command);
-                        WriteTimer1(0x4000); //for now, we want to just wait for the turn complete before sending another command
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
-                        char command[5];
-                        uint8 length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
                         uart_send_array(command, length);
+                        turnCompleted();
                     }
                     break;
                 default:
                     //all other cases get an ack
                     break;
+                };
             }
             break;
         case (ACK_FLAG | MOTOR_COMMANDS):
-            switch(RoverMsgRecv.parameters){
+            switch(rover->parameters){
                 case 0x03: //one of the turns has been ack'd
                 case 0x04:{
-                    debugNum(1);
-                    char command[5];
-                    uint8 length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                    turnStarted();
+                    char command[HEADER_MEMBERS] = "";
+                    uint8 length = 0;
+                    length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                    //uart_send_array(command, length);
                     i2c_master_send(MOTOR_ADDR, length, command);
                     break;
                 };
@@ -347,6 +368,14 @@ void handleRoverData(){
         sendFrameData();
         clearFrameData();
     }
+}
+
+void handleRoverDataHP(){
+    handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
+}
+
+void handleRoverDataLP(){
+    handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
@@ -369,10 +398,10 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     sendData(outbuf, bytes_packed, wifly);
 }
 #elif defined(PICMAN)
-void handleRoverData(){
-    switch(RoverMsgRecv.flags){
+static void handleRoverData(RoverMsg* rover){
+    switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
-            switch(RoverMsgRecv.parameters){
+            switch(rover->parameters){
                 case 0x00:
                     break;
                     
@@ -382,6 +411,14 @@ void handleRoverData(){
         default:
             break;
     }
+}
+
+void handleRoverDataHP(){
+    handleRoverData(&HPRoverMsgRecv);
+}
+
+void handleRoverDataLP(){
+    handleRoverData(&LPRoverMsgRecv);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
