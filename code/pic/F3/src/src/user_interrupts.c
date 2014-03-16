@@ -148,6 +148,7 @@ void timer1_int_handler() {
                     temp++;
                     break;
                 case 5:
+                    debugNum(1);
                     if(start == 0){
                         length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
                         start = 1;

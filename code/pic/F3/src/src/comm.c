@@ -20,7 +20,7 @@ static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
     staticMsg->checksum = msg->checksum;
     staticMsg->payloadLen = msg->payloadLen;
     int i = 0;
-    for(i; i < staticMsg->payloadLen; i++){
+    for(i; (i < staticMsg->payloadLen) && (i < payloadSize) ; i++){
         payload[i] = *(msg->payload + i);
     }
 }
@@ -175,7 +175,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 #endif
 
 void sendData(char* outbuf, uint8 buflen, uint8 wifly){
-    uart_send_array(outbuf, buflen);
+    //uart_send_array(outbuf, buflen);
     if(wifly){
         uart_send_array(outbuf, buflen);
     }
@@ -307,6 +307,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x01:
                     addSensorFrame(payload[0], payload[1], payload[2]);
+                    //debugNum(8);
                     break;
                 default:
                     //all other cases get an ack
@@ -316,6 +317,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x05:
                     addEncoderData(payload[0], payload[1], payload[2], payload[3]);
+                    //debugNum(8);
                     break;
                 default:
                     //all other cases get an ack

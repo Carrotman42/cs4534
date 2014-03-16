@@ -10,7 +10,6 @@ static Frame frame;
 
 #if defined(SENSOR_PIC) || defined(MASTER_PIC)
 void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2){
-
     frame.ultrasonic = ultrasonic;
     frame.IR1 = IR1;
     frame.IR2 = IR2;
@@ -60,6 +59,7 @@ uint8 frameDataReady(){
 
 //sends the data over uart
 void sendFrameData(){
+    debugNum(2);
     char packedFrame[FRAME_MEMBERS] = "";
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
