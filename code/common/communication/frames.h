@@ -9,7 +9,7 @@
 #include "../../pic/F3/src/src/my_i2c.h"
 
 //every pic has its own definition of a frame
-#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU)
+#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU)
 typedef struct {
     uint8 ultrasonic;
     uint8 IR1;
@@ -37,14 +37,14 @@ typedef struct {
 #define FRAME_MEMBERS 4
 #endif
 
-#if defined(SENSOR_PIC) || defined(MASTER_PIC)
+#if defined(SENSOR_PIC) || defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
 void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2);
 #endif
-#if defined(MOTOR_PIC) || defined(MASTER_PIC)
+#if defined(MOTOR_PIC) || defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
 void addEncoderData(uint8 encoderRightHB, uint8 encoderRightLB, uint8 encoderLeftHB, uint8 encoderLeftLB);
 #endif
 uint8 packFrame(char* out, uint8 maxout);
-#ifdef MASTER_PIC
+#if defined(MASTER_PIC) || defined(ROVER_EMU)
 void startFrames();
 void stopFrames();
 uint8 frameDataReady();
@@ -54,9 +54,12 @@ void clearFrameData();
 
 #ifdef PICMAN
 void sendFrameData();
-#ifdef DEBUG_ON
-void fillDummyFrame();
+uint8 frameDataReady();
+void clearFrameData();
 #endif
+
+#if defined(ROVER_EMU) && defined(DEBUG_ON)
+void fillDummyFrame();
 #endif
 
 #endif	/* FRAMES_H */

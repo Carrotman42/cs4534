@@ -22,7 +22,7 @@ void handleMessageHP(uint8 source, uint8 dest);
 void handleMessageLP(uint8 source, uint8 dest);
 uint8 sendFrames();
 
-#if defined(MASTER_PIC) || defined(PICMAN)
+#if defined(MASTER_PIC) || defined(PICMAN) || defined(ARM_EMU) || defined(ROVER_EMU)
 static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest);
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly);
 void handleRoverDataHP();

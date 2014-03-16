@@ -10,6 +10,9 @@
 #include "user_interrupts.h"
 #include "messages.h"
 #include "debug.h"
+#ifdef ROVER_EMU
+#include "../../../../common/communication/frames.h"
+#endif
 
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
@@ -73,52 +76,64 @@ void timer1_int_handler() {
     //debugNum(4);
     //uart_send((char) 0x55);
 //    result = ReadTimer1();
+#if defined(ROVER_EMU) && defined(DEBUG_ON)
+        //the only thing the rover does on its own is send data
+        fillDummyFrame();
+        if(frameDataReady()){ //used for checking the framesrequested flag
+            sendFrameData();
+            clearFrameData();
+        }
+        
+        WriteTimer1(0x2000);
 
-#if defined(ARM_EMU) && defined(DEBUG_ON)
+#elif defined(ARM_EMU) && defined(DEBUG_ON)
         static uint8 temp =0;
         static uint8 start = 0;
-        char testArray[6];
-        uint8 length = 0;
-        switch(temp){
-            case 0:
-                length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
-                temp++;
-                break;
-            case 1:
-                length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
-                temp++;
-                break;
-            case 2:
-                length = generateStop(testArray, sizeof testArray, I2C_COMM);
-                temp++;
-                break;
-            case 3:
-                length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
-                temp++;
-                break;
-            case 4:
-                length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
-                temp++;
-                break;
-            case 5:
-                if(start == 0){
-                    length = generateStartFrames(testArray, sizeof testArray, I2C_COMM);
-                    start++;
-                }
-                else if(start == 1){
-                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
-                    start++;
-                }
-                else{
-                    length = generateStopFrames(testArray, sizeof testArray, I2C_COMM);
-                    start = 0;
-                }
+        debugNum(1);
+        if(isTurnComplete()){
+            char testArray[6];
+            uint8 length = 0;
+            switch(temp){
+                case 0:
+                    length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
+                    temp++;
+                    break;
+                case 1:
+                    length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
+                    temp++;
+                    break;
+                case 2:
+                    length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 3:
+                    length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                    temp++;
+                    break;
+                case 4:
+                    length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                    temp++;
+                    break;
+                case 5:
+                    if(start == 0){
+                        length = generateStartFrames(testArray, sizeof testArray, I2C_COMM);
+                        start++;
+                    }
+                    else if(start == 1){
+                        length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                        start++;
+                    }
+                    else{
+                        length = generateStopFrames(testArray, sizeof testArray, I2C_COMM);
+                        start = 0;
+                    }
 
-                temp = 0;
-                break;
+                    temp = 0;
+                    break;
+            }
+            i2c_master_send(PICMAN_ADDR, length, (char *) testArray);
         }
-        i2c_master_send(PICMAN_ADDR, length, (char *) testArray);
-        WriteTimer1(0x4000);
+        WriteTimer1(0x2000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
         //debugNum(1);
         static uint8 temp =0;

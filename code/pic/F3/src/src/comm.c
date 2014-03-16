@@ -12,7 +12,7 @@ static char  HPRoverPayload[payloadSize];
 static uint8 wifly;
 
 static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
-    clearHighPriority(incomingMsg);
+    clearHighPriority(incomingMsg); //at this point, hp is useless since the hp functions are already getting called
     BrainMsg* msg = unpackBrainMsg(incomingMsg); //just a cast but this adds clarification
     staticMsg->flags = msg->flags;
     staticMsg->parameters = msg->parameters;
@@ -165,7 +165,32 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
             }
             return 0;
         case HIGH_LEVEL_COMMANDS:
-            sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
+            switch(brain->parameters){
+                case 0x02:
+                    if(!frameDataReady()){
+                        addSensorFrame(0,0,0);
+                        addEncoderData(0,0,0,0); //send all 0's if the frame isn't ready
+                        clearFrameData(); //resets flags for frame data ready
+                    }
+                    sendFrameData();
+                    break;
+                case 0x05:{
+                    char command[6];
+                    uint8 length = 0;
+                    if(!isTurnComplete()){
+                        length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
+                    }
+                    else{
+                        length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
+                    }
+                    makeHighPriority(command);
+                    start_i2c_slave_reply(length, command);
+                    break;
+                };
+                default:
+                    sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
+                    break;
+            }
             break;
         default:
             break;
@@ -193,7 +218,7 @@ static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 de
     uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
-#if defined(MASTER_PIC) || defined(PICMAN)
+#if defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
     propogateCommand(brain, payload, addr, dest);
 #endif
 }
@@ -257,6 +282,73 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
             break;
 
     }
+}
+#elif defined(ROVER_EMU)
+static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
+    switch(brain->flags){
+        case HIGH_LEVEL_COMMANDS:
+            switch(brain->parameters){
+                case 0x00:
+                    startFrames();
+                    break;
+                case 0x03:
+                    stopFrames();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case MOTOR_COMMANDS:
+            if((brain->parameters == 0x03) || (brain->parameters == 0x04)){
+                char command[6];
+                uint8 length = 0;
+                length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                uart_send_array(command, length);
+            }
+            break;
+        default:
+            break;
+
+    }
+}
+
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    switch(brain->flags){
+        case MOTOR_COMMANDS:
+            if(sendMotorAckResponse(brain->parameters, brain->messageid, wifly)){
+                return MOTOR_ADDR;
+            }
+            return 0;
+        case HIGH_LEVEL_COMMANDS:
+            sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
+            break;
+        default:
+            break;
+    }
+    return 0;
+
+}
+void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
+    char outbuf[10];
+
+    uint8 bytes_packed = 0;
+    switch(parameters){
+        case 0x00:
+            bytes_packed = packStartFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        case 0x03:
+            bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
+            break;
+        default:
+            break;
+    }
+    sendData(outbuf, bytes_packed, wifly);
+}
+
+void handleRoverDataHP(){
+}
+
+void handleRoverDataLP(){
 }
 
 #elif defined(PICMAN)
@@ -399,14 +491,76 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
     }
     sendData(outbuf, bytes_packed, wifly);
 }
-#elif defined(PICMAN)
-static void handleRoverData(RoverMsg* rover){
+#elif defined(ARM_EMU)
+uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    return 0; //arm emu doesn't send repsonses
+}
+
+static void handleRoverData(RoverMsg* rover, char* payload){
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){
-                case 0x00:
+                case 0x05:{//ack or nack back from turn complete
+                    char command[HEADER_MEMBERS] = "";
+                    uint8 length = 0;
+                    if(payload[0] == 0){ //nack
+                        length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                        i2c_master_send(PICMAN_ADDR, length, command);
+                    }
+                    else{
+                        turnCompleted();
+                    }
                     break;
-                    
+                default:
+                    //all other cases get an ack
+                    break;
+                };
+            }
+            break;
+        case (ACK_FLAG | MOTOR_COMMANDS):
+            switch(rover->parameters){
+                case 0x03: //one of the turns has been ack'd
+                case 0x04:{
+                    turnStarted();
+                    char command[HEADER_MEMBERS] = "";
+                    uint8 length = 0;
+                    length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                    //uart_send_array(command, length);
+                    i2c_master_send(PICMAN_ADDR, length, command);
+                    break;
+                };
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void handleRoverDataHP(){
+    handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
+}
+
+void handleRoverDataLP(){
+    handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
+}
+
+void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
+    return; //no acks for armu emu
+}
+#elif defined(PICMAN)
+static void handleRoverData(RoverMsg* rover, char* payload){
+    switch(rover->flags){
+        case HIGH_LEVEL_COMMANDS:
+            switch(rover->parameters){
+                case 0x01:
+                    addSensorFrame(payload[0], payload[1], payload[2]);
+                    addEncoderData(payload[3], payload[4], payload[5], payload[6]);
+                    break;
+                case 0x05:
+                    turnCompleted();
+                    break;
                 default:
                     break;
             }
@@ -416,11 +570,11 @@ static void handleRoverData(RoverMsg* rover){
 }
 
 void handleRoverDataHP(){
-    handleRoverData(&HPRoverMsgRecv);
+    handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
 }
 
 void handleRoverDataLP(){
-    handleRoverData(&LPRoverMsgRecv);
+    handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
@@ -435,23 +589,14 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
         case 0x01:
             bytes_packed = packFrameDataAck(outbuf, sizeof outbuf, messageid);
             break;
-        case 0x02:
-#ifdef DEBUG_ON
-            fillDummyFrame();
-#endif
-            ack = 0;
-            sendFrameData();
-            break;
         case 0x03:
             bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
             break;
         case 0x04:
             bytes_packed = packColorSensedAck(outbuf, sizeof outbuf, messageid);
             break;
-        case 0x05:
-            bytes_packed = packTurningCompleteAck(outbuf, sizeof outbuf, messageid);
-            break;
         default:
+            ack = 0;
             break;
     }
     if(ack){

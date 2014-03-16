@@ -57,7 +57,7 @@ void sendEncoderData(uint8 msgid){
 }
 #endif
 
-#ifdef MASTER_PIC
+#if defined(MASTER_PIC) || defined(ARM_EMU) || defined(PICMAN)
 static uint8 turnDone = 1;
 void turnStarted(){
     turnDone = 0;
