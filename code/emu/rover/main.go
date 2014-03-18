@@ -24,14 +24,14 @@ func (NullProt) ReadCmd() common.InCmd {
 func (NullProt) WriteFrameData(common.FrameData){}
 
 func main() {
-	//fmt.Println("Started, waiting for telnet...")
-	tel := ListenTCP("1123")
+	fmt.Println("Started, waiting for arm connection...")
+	tel := ConnectEthernet("192.168.3.20", "80")
+	//tel := ListenTCP("1123")
 	//tel := NullProt{}
-	
 	win := gui.MakeGui()
 	
 	rov := NewRover(tel, win)
-	rov.X, rov.Y = 30*common.ArmUnitsPerTile, common.CourseSize/2*common.ArmUnitsPerTile
+	rov.X, rov.Y = 30*common.ArmUnitsPerTile, (common.CourseSize-20)*common.ArmUnitsPerTile
 	
 	win.SetMap(rov.Map)
 	
