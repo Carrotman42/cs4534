@@ -65,11 +65,11 @@
 
 #define DEBUG_ON
 
-//#define ARM_EMU //arm emulator (really simple, just sends commands on a timer)
+#define ARM_EMU //arm emulator (really simple, just sends commands on a timer)
 //#define ROVER_EMU //rover emulator (really simple, just sends dummy values back over uart and sends back frame data on a timer)
 
 //#define PICMAN
-#define SENSOR_PIC
+//#define SENSOR_PIC
 //#define MOTOR_PIC
 //#define MASTER_PIC
 
