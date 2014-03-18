@@ -3,15 +3,58 @@ package common
 import "fmt"
 
 type FrameData struct {
-	Ultrasonic, IR1, IR2, REnc, LEnc uint8
+	Ultrasonic, IR1, IR2 uint8
+	REnc, LEnc uint16
 }
 func (f FrameData) String() string {
 	return fmt.Sprintf("Ultrasonic: %v, IR1: %v, IR2: %v, REnc: %v, LEnc: %v\r\n", f.Ultrasonic, f.IR1, f.IR2, f.REnc, f.LEnc)
+}
+func (f FrameData) ToBytes() []byte {
+	return []byte{f.Ultrasonic, f.IR1, f.IR2, byte(f.REnc>>8), byte(f.REnc&0xFF), byte(f.LEnc>>8), byte(f.LEnc&0xFF)}
+}
+
+type ErrorKind uint8
+const (
+	SensorPIC ErrorKind = iota
+	MotorPIC
+	MasterPIC
+	Ultrasonic
+	IR1
+	IR2
+	Color
+	LeftEnc
+	RightEnc
+	LeftWheel
+	RightWheel
+	Checksum
+)
+
+func (e ErrorKind) String() string {
+	switch e {
+	case SensorPIC: return "SensorPIC"
+	case MotorPIC: return "MotorPIC"
+	case MasterPIC: return "MasterPIC"
+	case Ultrasonic: return "Ultrasonic"
+	case IR1: return "IR1"
+	case IR2: return "IR2"
+	case Color: return "Color"
+	case LeftEnc: return "LeftEnc"
+	case RightEnc: return "RightEnc"
+	case LeftWheel: return "LeftWheel"
+	case RightWheel: return "RightWheel"
+	case Checksum: return "Checksum"
+	default: panic("Unknown errkind")
+	}
+}	
+
+func (e ErrorKind) Error() string {
+	return e.String() + " error"
 }
 
 type Protocol interface {
 	ReadCmd() InCmd
 	WriteFrameData(f FrameData)
+	//WriteError(f ErrorKind)
 }
 
 // Abstract definition of an incoming message
