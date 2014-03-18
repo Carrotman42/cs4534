@@ -31,6 +31,18 @@ void SendTurnLeft() {
 	
 	SEND(toEmu, d);
 }	 
+void SendTurnRight() {
+	emuMsgBuf d;
+	char* buf = &d.data[0];
+	buf[0] = 2;
+	buf[1] = 3;
+	buf[2] = 0;
+	buf[3] = 1;
+	buf[4] = 2+3+1+90;
+	buf[5] = 90;
+	
+	SEND(toEmu, d);
+}	 
 void ReadFrames() {
 	emuMsgBuf d;
 	char* buf = &d.data[0];
@@ -71,6 +83,7 @@ void ReportMsg(int len, char*in) {
 TASK_FUNC_NOARG(EtherEmu) {
 	static int cc = 0;
 	LCDwriteLn(1, "Started");
+	int justTurnedRight = 0;
 	for(;;) {
 		emuMsgBuf d;
 		RECV(fromEmu, d);
@@ -90,7 +103,11 @@ TASK_FUNC_NOARG(EtherEmu) {
 			if (d.data[3] > 0) {
 				if (d.data[5] < 100) {
 					SendTurnLeft();
+				} else if (justTurnedRight == 0 && d.data[6] > 200 && d.data[7] > 200) {
+					//SendTurnRight();
+					justTurnedRight = 10;
 				}
+				//if (justTurnedRight) justTurnedRight--;
 			}
 			ReadFrames();
 		} else {
