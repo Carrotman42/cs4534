@@ -1,15 +1,16 @@
-#include "../../pic/F3/src/src/maindefs.h"
+//#include "../../pic/F3/src/src/maindefs.h"
 
 #ifndef FRAMES_H
 #define	FRAMES_H
 #include "../sensor_types.h"
 #include "brain_rover.h"
+/*
 #include "../../pic/F3/src/src/my_uart.h"
 #include "../../pic/F3/src/src/debug.h"
 #include "../../pic/F3/src/src/my_i2c.h"
-
+*/
 //every pic has its own definition of a frame
-#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU)
+#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)
 typedef struct {
     uint8 ultrasonic;
     uint8 IR1;

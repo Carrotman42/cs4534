@@ -27,4 +27,10 @@ TASK_PROTOTYPE(FromI2C, vtI2CStruct, 2000, tskIDLE_PRIORITY);
 //TASK_PROTOTYPE(ToI2C, 200, vtI2CStruct*, tskIDLE_PRIORITY+2);
 #endif
 
+#ifdef SENSORPROC_TASKS
+
+TASK_PROTOTYPE_NOARG(ProcessEvents, 2000, tskIDLE_PRIORITY);
+
+#endif
+
 #endif

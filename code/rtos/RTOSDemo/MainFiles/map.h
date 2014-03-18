@@ -2,13 +2,13 @@
 #ifndef MAP_H_INC
 #define MAP_H_INC
 
-// Defines the "ticks" per map "tile" for use of discretization.
+// Defines the "armunits" per map "tile" for use of discretization.
 //   It's a guess right now, but we need to choose a value that allows us
 //   to have a good balance of precision and memory/processing required.
 #define MAP_RESOLUTION 10
-#define MAP_WIDTH 50
+#define MAP_WIDTH 48
 
-//All values in "ticks"
+//All values in "armunits"
 typedef struct {
 	// Best guess at location
 	int X, Y;
@@ -16,20 +16,21 @@ typedef struct {
 	// The last values for each sensor.
 	int Forward;
 	int Right1, Right2;
-} SensorSnapshot;
+} Memory;
 
-// NOTE: Every one of these methods wants its value in mapticks, which are going to be
-//   different for every sensor. This is not the place for calibration; that place is
-//   in the sensor processing file. Keeping it separate helps us make the map
-//   a more higher level construct free of physical concerns.
+#include "frames.h"
+void mapRecordFrames(int len, Frame* frame);
 
-// Sets the value of the front sensor in ticks
-void mapSetForward(int val);
-// Sets the value of the front right sensor in ticks
-void mapSetRight1(int val);
-// Sets the value of the back right sensor in ticks
-void mapSetRight2(int val);
+void initMap();
 
-SensorSnapshot mapGetSnapshot();
+typedef struct {
+	uint8_t data[MAP_WIDTH*MAP_WIDTH / 8];
+} Map;
+
+void mapGetMap(Map*dest);
+void mapGetMemory(Memory*dest);
+
 
 #endif
+
+

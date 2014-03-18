@@ -3,6 +3,7 @@
 #ifndef COMMON_H_INC
 #define COMMON_H_INC
 
+#define ARM
 // Define this for debug checks that double-check the programmer. Will be disabled for final run once testing is over.
 #define CHECKS
 
