@@ -351,6 +351,9 @@ func (p SerialProtocol) writePacket(cmd uint, param uint8, payload []byte) {
 		check += v
 		buf[5+i] = v
 	}
+	if check == 0xFF {
+		check = 0xFE
+	}
 	buf[4] = check
 	buf[len(buf)-1] = 0xFF
 	
