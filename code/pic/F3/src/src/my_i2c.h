@@ -86,9 +86,6 @@ void i2c_configure_slave(unsigned char);
 void init_i2c(i2c_comm *);
 void i2c_int_handler(void);
 
-#if defined(PICMAN) ||defined(MOTOR_PIC)
-uint8 is_high_priority();
-#endif
 
 
 #endif

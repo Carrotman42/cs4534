@@ -79,14 +79,14 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
             if(brain->parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
                 static uint8 ack = 0;
                 if(!ack){
-                    char command[6];
+                    char command[6] = {0};
                     uint8 length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
                     makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
                     ack = 1;
                 }
                 else{
-                    char command[6];
+                    char command[6] = {0};
                     uint8 length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
                     makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
@@ -96,7 +96,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
             break;
         default:
         {
-            char errorbuf[6];
+            char errorbuf[6] = {0};
             uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
             start_i2c_slave_reply(length, errorbuf);
             break;
@@ -315,7 +315,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){
                 case 0x05:{//ack or nack back from turn complete
-                    char command[HEADER_MEMBERS] = "";
+                    char command[HEADER_MEMBERS] = {0};
                     uint8 length = 0;
                     if(payload[0] == 0){ //nack
                         length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
@@ -339,7 +339,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                 case 0x03: //one of the turns has been ack'd
                 case 0x04:{
                     turnStarted();
-                    char command[HEADER_MEMBERS] = "";
+                    char command[HEADER_MEMBERS] = {0};
                     uint8 length = 0;
                     length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                     //uart_send_array(command, length);
@@ -355,6 +355,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
     }
     //debugNum(1);
     if(frameDataReady()){
+        debugNum(2);
         sendFrameData();
         clearFrameData();
     }
@@ -401,7 +402,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     colorSensorTriggered();
                     break;
                 case 0x05:{//ack or nack back from turn complete
-                    char command[HEADER_MEMBERS] = "";
+                    char command[HEADER_MEMBERS] = {0};
                     uint8 length = 0;
                     if(payload[0] == 0){ //nack
                         length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
@@ -422,7 +423,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                 case 0x03: //one of the turns has been ack'd
                 case 0x04:{
                     turnStarted();
-                    char command[HEADER_MEMBERS] = "";
+                    char command[HEADER_MEMBERS] = {0};
                     uint8 length = 0;
                     length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                     //uart_send_array(command, length);

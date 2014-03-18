@@ -31,7 +31,7 @@ func main() {
 	win := gui.MakeGui()
 	
 	rov := NewRover(tel, win)
-	rov.X, rov.Y = 30*common.ArmUnitsPerTile, common.CourseSize/2*common.ArmUnitsPerTile
+	rov.X, rov.Y = 30*common.ArmUnitsPerTile, (common.CourseSize-20)*common.ArmUnitsPerTile
 	
 	win.SetMap(rov.Map)
 	

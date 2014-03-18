@@ -494,20 +494,20 @@ void i2c_int_handler() {
 
     if (msg_ready) {
 
-        #ifdef SENSOR_PIC
+        //#ifdef SENSOR_PIC
         //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         //setBrainReqData(ic_ptr->buffer);
-        ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
-        #elif defined(PICMAN) || defined(MOTOR_PIC)
+        //ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+        //#elif defined(PICMAN) || defined(MOTOR_PIC)
         //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
         //debugNum(1);
-        if(is_high_priority()){ //would pass ic_ptr->buffer but it's global so no need
-            //uart_send_array(ic_ptr->buffer, ic_ptr->buflen);
+        //#endif
+        if(isHighPriority(ic_ptr->buffer)){
+            setBrainDataHP(ic_ptr->buffer);
         }
         else{
             ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         }
-        #endif
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
         error_buf[0] = ic_ptr->error_count;
@@ -523,7 +523,16 @@ void i2c_int_handler() {
 
         //char outbuf[5] = {1,0,0,1,0};
         //start_i2c_slave_reply(5, outbuf);
-        ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) 0);
+        if(isHighPriority(ic_ptr->buffer)){
+#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
+                    handleMessageHP(I2C_COMM, I2C_COMM);
+#elif defined(PICMAN)
+                    handleMessageHP(I2C_COMM, UART_COMM);
+#endif
+        }
+        else{
+            ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) 0);
+        }
 
         //sendRequestedData();
         msg_to_send = 0;
@@ -587,15 +596,6 @@ void i2c_configure_slave(unsigned char addr) {
     // end of i2c configure
 }
 
-#if defined(PICMAN) || defined(MOTOR_PIC)
-//return 1 if high priority,0 otherwise
-uint8 is_high_priority(){
-    if((ic_ptr->buffer[0] & HIGH_PRIORITY) == HIGH_PRIORITY){
-        return 1;
-    }
-    return 0;
-}
-#endif
 
 
 #endif //I2C_MASTER
