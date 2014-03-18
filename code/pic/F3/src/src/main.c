@@ -199,11 +199,6 @@ void main(void) {
     unsigned char to_send_buffer[MSGLEN+1];
     int data_points_count = 0;
 
-
-    // motor variables
-//   volatile *int motor0Ticks = 0;
-//   volatile *int motor1Ticks = 0;
-
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread

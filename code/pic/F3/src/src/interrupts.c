@@ -4,6 +4,7 @@
 #include "messages.h"
 #include "my_adc.h"
 #include "debug.h"
+#include "motor.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -140,7 +141,8 @@ void InterruptHandlerHigh() {
         INTCONbits.INT0IF = 0;  // clear flag
         // TODO: pass motor0ticks  and increment it here
         // incrementMotor0Ticks();       // wont work probably
-        motor0Ticks++;
+        //motor0Ticks++;
+        motor0_int_handler();
     }
 
     if (INTCON3bits.INT1IF )
@@ -148,7 +150,9 @@ void InterruptHandlerHigh() {
         INTCON3bits.INT1IF  = 0;    // clear flag
         // TODO: pass motor1ticks  and increment it here
         // incrementMotor1Ticks();      // wont work probably
-        motor1Ticks++;
+        //motor1Ticks++;
+        motor1_int_handler();
+    
     }
 
     // here is where you would check other interrupt flags.

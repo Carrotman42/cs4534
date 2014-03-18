@@ -67,43 +67,49 @@ void timer1_int_handler() {
 //        temp = 0;
 //    }
 
-    //  test for dry run
-    counter++;
-    // 6 seconds of forwards
-    if (counter < 50)
-    {
-        forward();
-    }
-    // 6 seconds of reverse
-    else if ( (counter > 50) && (counter < 100) )
-    {
-        reverse();
-    }
-    // 6 seconds motor 1 forwards, motor 2 stops
-    else if ( (counter > 100) && (counter < 150) )
+//    //  test for dry run
+//    counter++;
+//    // 6 seconds of forwards
+//    if (counter < 12)
+//    {
+////        forward();
+//        forwardMotor1();
+//    }
+//    else {
+//        stop();
+//    }
+//    // 6 seconds of reverse
+//    else if ( (counter > 50) && (counter < 100) )
+//    {
+//        reverse();
+//    }
+//    // 6 seconds motor 1 forwards, motor 2 stops
+//    else if ( (counter > 100) && (counter < 150) )
+//    {
+//        forwardMotor1();
+//    }
+//    // 6 seconds motor 2 forwards, motor 1 stops
+//    else if ( (counter > 150) && (counter < 200) )
+//    {
+//        forwardMotor2();
+//    }
+//    // stop both motors
+//    else
+//    {
+//        stop();
+//    }
+
+    // test for motor ticks
+//    if (motor1Ticks < 2500)
+    if (motor1Ticks < 2800)
     {
         forwardMotor1();
     }
-    // 6 seconds motor 2 forwards, motor 1 stops
-    else if ( (counter > 150) && (counter < 200) )
-    {
-        forwardMotor2();
-    }
-    // stop both motors
     else
     {
         stop();
     }
 
-
-    // pass motor ticks from main
-    // TODO: oldMotor0Ticks = &passedMotor0Ticks;
-    // TODO: oldMotor1Ticks = &passedMotor1Ticks;
-   // TODO: passedMotorTicks = 0;   // reset motor ticks for the new updates later
-    oldMotor0Ticks = motor0Ticks;
-    oldMotor1Ticks = motor1Ticks;
-    motor0Ticks = 0;
-    motor1Ticks = 0;
 
 
     //ToMainLow_sendmsg(0, MSGT_UART_DATA, (void*) 0);
