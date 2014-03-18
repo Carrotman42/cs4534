@@ -145,4 +145,14 @@
 
 #define aPrint(name, line) LCDwriteLn(line, name##name);
 
+#define ETHER_EMU 1
+#if ETHER_EMU==1
+void initEtherEmu();
+
+typedef struct {
+	char data[100];
+} emuMsgBuf;
+#endif
+
+
 #endif

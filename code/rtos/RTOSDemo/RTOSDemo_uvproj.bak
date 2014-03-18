@@ -332,11 +332,6 @@
               <FilePath>.\MainFiles/main.c</FilePath>
             </File>
             <File>
-              <FileName>i2cTemp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MainFiles/i2cTemp.c</FilePath>
-            </File>
-            <File>
               <FileName>vtUtilities.c</FileName>
               <FileType>1</FileType>
               <FilePath>../vtCode/vtUtilities.c</FilePath>
@@ -355,11 +350,6 @@
               <FileName>klcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/klcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>sensors.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MainFiles/sensors.c</FilePath>
             </File>
             <File>
               <FileName>kdbg.c</FileName>

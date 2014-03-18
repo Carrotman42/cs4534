@@ -356,6 +356,11 @@
               <FileType>1</FileType>
               <FilePath>.\MainFiles/kdbg.c</FilePath>
             </File>
+            <File>
+              <FileName>etheremu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/etheremu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

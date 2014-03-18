@@ -138,7 +138,8 @@ int ms2Msg(sensorADData* data, int len) {
 	aPrint(b, 5);
 
 	// Then just pass the data to try and plot it
-	return handleAD(data, len);
+	//return handleAD(data, len);
+	return 0;
 }
 
 RoverMsgRouter Conductor = {
