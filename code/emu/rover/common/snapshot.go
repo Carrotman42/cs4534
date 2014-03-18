@@ -27,11 +27,11 @@ func (m*Map) Init() {
 		m.Course[CourseSize - 10][i] = true
 	}
 	
-	for i := 10; i < 30; i++ {
+	/*for i := 10; i < 30; i++ {
 		m.Course[i][20] = true
 		m.Course[30][i+10] = true
 		m.Course[i][40] = true
-	}
+	}*/
 }
 
 const (

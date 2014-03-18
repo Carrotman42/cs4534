@@ -78,6 +78,7 @@ func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 }
 
 func (r*Rover) FrameLoop() {
+	r.Vel = 3
 	for {
 		time.Sleep(time.Second/25)
 		
@@ -97,6 +98,7 @@ func (r*Rover) FrameLoop() {
 }
 
 func (r*Rover) HandleFrameCmd(start bool) {
+	fmt.Println("START:", start)
 	r.Lock()
 	r.SendFrames = start
 	r.Unlock()
@@ -105,8 +107,9 @@ func (r*Rover) HandleFrameCmd(start bool) {
 func (r*Rover) Loop() {
 	for {
 		cmd := r.ReadCmd()
-		
-		if start, stop := cmd.CheckFrameCmd(); start || stop {
+		if err := cmd.Error(); err != nil {
+			fmt.Println("Error:", err)
+		} else if start, stop := cmd.CheckFrameCmd(); start || stop {
 			r.HandleFrameCmd(start)
 		} else if speed, ok := cmd.CheckStartCmd(); ok {
 			r.Vel = speed
@@ -114,8 +117,8 @@ func (r*Rover) Loop() {
 			r.Vel = 0
 		} else if val, ok := cmd.CheckTurnCmd(); ok {
 			r.Dir += val
-		} else if err := cmd.Error(); err != nil {
-			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("UNKNOWN CMD:", cmd)
 		}
 	}
 }
@@ -134,6 +137,7 @@ func ListenTCP(port string) common.Protocol {
 	}
 }
 
+// Connects to the ARM on the given serial port
 func ConnectSerial(port string, baud int) common.Protocol {
 	c := &serial.Config{Name: port, Baud: baud}
 	if s, err := serial.OpenPort(c); err != nil {
@@ -161,6 +165,9 @@ func (t*TelnetProtocol) ReadCmd() common.InCmd {
 		t.lastSpeed = 0
 	}
 	return ret
+}
+func (t TelnetProtocol) Error(f common.ErrorKind) {
+	fmt.Fprint(t.d, f.Error())
 }
 func (t TelnetProtocol) WriteFrameData(f common.FrameData) {
 	fmt.Fprint(t.d, f.String())
@@ -231,7 +238,7 @@ func SerialErr(str string, cmd, param, mId, ll, check byte, payload []byte) Seri
 	}
 }
 
-func (s SerialProtocol) ReadCmd() common.InCmd {
+func (s SerialProtocol) ReadCmd() (ret common.InCmd) {
 	cmd := s.ReadByte()
 	param := s.ReadByte()
 	mId := s.ReadByte()
@@ -239,9 +246,15 @@ func (s SerialProtocol) ReadCmd() common.InCmd {
 	check := s.ReadByte()
 
 	buf := make([]byte, ll)
-	if _,err := s.Read(buf); err != nil {
-		return SerialErr("Could not read payload: " + err.Error(), cmd,param,mId,ll,check,buf)
+	if ll > 0 {
+		if _,err := s.Read(buf); err != nil {
+			return SerialErr("Could not read payload: " + err.Error(), cmd,param,mId,ll,check,buf)
+		}
 	}
+	fmt.Println("Got packet:", cmd, param, mId, ll, check)
+	defer func() {
+		//fmt.Printf("%T: %v\n", ret, ret)
+	}()
 	
 	// Calc checksum:
 	tot := cmd + param + mId + ll
@@ -282,27 +295,112 @@ func (s SerialProtocol) ReadCmd() common.InCmd {
 	}
 }
 
-type SerialCommand uint8
-const (
-	FrameDataCmd SerialCommand = 0x01 // TODO: Loop this up
-)
-func (p SerialProtocol) writePacket(cmd SerialCommand, param uint8, payload []byte) {
+func (s SerialProtocol) WriteFrameData(f common.FrameData) {
+	//TODO!
+}
+func (t SerialProtocol) Error(f common.ErrorKind) {
+	var p, l byte
+	switch f {
+	case common.SensorPIC:
+		p, l = 1,1
+	case common.MotorPIC:
+		p, l = 1,2
+	case common.MasterPIC: 
+		p, l = 1,3
+	case common.Ultrasonic: 
+		p, l = 2,1
+	case common.IR1: 
+		p, l = 2,2
+	case common.IR2: 
+		p, l = 2,3
+	case common.Color: 
+		p, l = 2,4
+	case common.LeftEnc: 
+		p, l = 2,5
+	case common.RightEnc: 
+		p, l = 2,6
+	case common.LeftWheel: 
+		p, l = 3,1
+	case common.RightWheel: 
+		p, l = 3,2
+	case common.Checksum: 
+		p, l = 4,1
+	default: panic("Unknown errkind")
+	}
+	
+	_,_ = p,l
+	//s.writePacket(0x40, 
+}
+
+// TODO: FIX THE AWFUL 0xFF hack!
+func (p SerialProtocol) writePacket(cmd uint, param uint8, payload []byte) {
 	if len(payload) > 255 {
 		panic("Payload was too long for the protocol!")
 	}
-	buf := make([]byte, 5 + len(payload))
+	buf := make([]byte, 5 + len(payload) + 1)
 	buf[0] = uint8(cmd)
 	buf[1] = param
 	buf[2] = 0
-	buf[3] = 0
-	buf[4] = byte(len(payload))
-	copy(buf[5:], payload)
+	buf[3] = byte(len(payload))
 	
+	check := buf[0] + buf[1] + buf[2] + buf[3]
+	for i,v := range payload {
+		if v == 0xFF {
+			v = 0xFE
+		}
+		check += v
+		buf[5+i] = v
+	}
+	buf[4] = check
+	buf[len(buf)-1] = 0xFF
+	
+	fmt.Println("Writing packet:", buf)
 	if _, err := p.Write(buf); err != nil {
 		panic(err)
 	}
 }
 
-func (t SerialProtocol) WriteFrameData(f common.FrameData) {
-	t.writePacket(FrameDataCmd, 0, []byte{f.Ultrasonic, f.IR1, f.IR2, f.REnc, f.LEnc})
+
+// Connects to the ARM on the given ethernet address
+func ConnectEthernet(addr string, port string) common.Protocol {
+	if conn, err := net.Dial("tcp", addr + ":" + port); err != nil {
+		panic(err)
+	} else {
+		return &PicmanProtocol{Arm: SerialProtocol{conn}}
+	}
 }
+// Pretends we're the picman
+type PicmanProtocol struct {
+	Arm SerialProtocol
+	last common.FrameData
+	lastOk bool
+}
+
+func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
+	for {
+		ret = s.Arm.ReadCmd()
+		if r, ok := ret.(SerialErrCmd); ok {
+			if r.cmd == 4 && r.param == 2 {
+				// Report the last frame data we got
+				var payload []byte
+				if s.lastOk {
+					s.lastOk = false
+					payload = s.last.ToBytes()
+				}
+				s.Arm.writePacket(4, 2, payload)
+				continue
+			}
+		}
+		return ret
+	}
+}
+func (s *PicmanProtocol) WriteFrameData(f common.FrameData) {
+	s.last = f
+	s.lastOk = true
+}
+func (t PicmanProtocol) Error(f common.ErrorKind) {
+	fmt.Println("ERROR:", f)
+}
+
+
+
