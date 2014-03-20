@@ -59,8 +59,12 @@ void timer0_int_handler() {
 #endif
 
 #ifdef SENSOR_PIC
-    //ADCON0bits.GO = 1;
-    //WriteTimer0(0xFFFF-375);
+    ADCON0bits.GO = 1;
+#ifdef SENSORMS3
+    WriteTimer0(0xFFFF-3750);
+#else
+    WriteTimer0(0xFFFF-375);
+#endif
 #endif //SENSOR_PIC
 }
 

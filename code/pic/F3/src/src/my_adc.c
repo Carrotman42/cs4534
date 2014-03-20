@@ -8,6 +8,10 @@
 #include "messages.h"
 #include "debug.h"
 
+#ifdef SENSORMS3
+#include "my_uart.h"
+static char dataArray[2];
+#endif
 
 static char ADCBuffer[5];
 static char count = 0;
@@ -22,7 +26,8 @@ void init_adc(){
             ADC_CH1 & ADC_INT_ON & ADC_VREFPLUS_EXT & ADC_VREFMINUS_EXT,
             0xC);
 
-    //Setting AN1 as input
+    //Setting AN0, AN1 as input
+    TRISAbits.TRISA0 = 1;
     TRISAbits.TRISA1 = 1;
     TRISAbits.TRISA2 = 1;
     /*
@@ -46,6 +51,9 @@ void adc_int_handler() {
     data = ReadADC();
     data >>= 2;
 
+#ifdef SENSORMS3
+    uart_send((char) data);
+#else
     //if(data != 0xFF){
         //debugNum(2);
         addBuffer((char) data);
@@ -54,4 +62,5 @@ void adc_int_handler() {
             count = 0;
         }
     //}
+#endif
 }
