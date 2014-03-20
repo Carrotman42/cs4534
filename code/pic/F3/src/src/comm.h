@@ -3,9 +3,9 @@
 #ifndef COMM_H
 #define	COMM_H
 
-#include "../../../../common/common.h"
-#include "../../../../common/sensor_types.h"
-#include "../../../../common/communication/brain_rover.h"
+#include "common.h"
+#include "sensor_types.h"
+#include "brain_rover.h"
 #include "messages.h"
 #include "my_i2c.h"
 #include "my_uart.h"

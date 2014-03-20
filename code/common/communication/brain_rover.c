@@ -1,7 +1,7 @@
 
-#include "../common.h"
+#include "common.h"
 #include "brain_rover.h"
-#include "../../pic/F3/src/src/debug.h"
+#include "debug.h"
 
 static uint8 i2c_messageid = 0;
 static uint8 wifly_messageid = 0;

@@ -3,8 +3,8 @@
 #ifndef SENSORCOMM_H
 #define	SENSORCOMM_H
 
-#include "../../../../common/common.h"
-#include "../../../../common/communication/brain_rover.h"
+#include "common.h"
+#include "brain_rover.h"
 #include "messages.h"
 #include "my_i2c.h"
 

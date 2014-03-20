@@ -2,9 +2,7 @@
 #ifndef BRAIN_ROVER_H_INC
 #define BRAIN_ROVER_H_INC
 
-#include "../sensor_types.h"
-//#include "../../pic/F3/src/src/my_i2c.h"
-
+#include "sensor_types.h"
 
 typedef struct {
     uint8 flags;

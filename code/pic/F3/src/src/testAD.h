@@ -1,8 +1,8 @@
-#include "../../../../common/common.h"
+#include "common.h"
 #ifndef TESTAD_H
 #define	TESTAD_H
 
-#include "../../../../common/sensor_types.h"
+#include "sensor_types.h"
 
 void reqADData();
 

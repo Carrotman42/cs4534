@@ -1,7 +1,7 @@
 #include "sensorcomm.h"
 
-#include "../../../../common/sensor_types.h"
-#include "../../../../common/common.h"
+#include "sensor_types.h"
+#include "common.h"
 #include "testAD.h"
 #include "debug.h"
 #include "my_i2c.h"
