@@ -361,6 +361,11 @@
               <FileType>1</FileType>
               <FilePath>.\MainFiles/etheremu.c</FilePath>
             </File>
+            <File>
+              <FileName>map.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/map.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

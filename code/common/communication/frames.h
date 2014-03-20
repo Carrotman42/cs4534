@@ -4,9 +4,8 @@
 #define	FRAMES_H
 #include "sensor_types.h"
 #include "brain_rover.h"
-
 //every pic has its own definition of a frame
-#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU)
+#if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)
 typedef struct {
     uint8 ultrasonic;
     uint8 IR1;
