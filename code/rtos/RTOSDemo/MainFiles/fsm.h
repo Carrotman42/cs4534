@@ -19,6 +19,7 @@ void stop();
 void startTimer();
 void stopTimer();
 void getMemory(Memory* mem);
+void registerTickListener(int x);
 #endif
 
 #endif //FSM_H_INC

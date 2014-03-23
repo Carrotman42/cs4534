@@ -15,7 +15,7 @@
 #define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
 #define TURN_STALL 3
-#define START_TICKS 4
+#define WAIT_TICKS 4
 #define END 7 //picman handles stop frame data and stop moving
 
 
@@ -40,7 +40,7 @@ void pathFindingFSM(){
 		sleep(1);
 		#endif
 		int event = RECV();
-		debug(10, "Got event");
+		debug(event, "Got event");
 		switch(currentstate){
 			case WAIT_EVENT:
 				switch(event){
@@ -48,11 +48,11 @@ void pathFindingFSM(){
 						getMemory(&mem);
 						if(mem.Forward <= 10){
 							turnCCW();
-							currentstate = TURN_CCW;
+							currentstate = TURN_STALL;
 						}
-						else if((mem.Right1 <= 5) && (mem.Right2 <= 5)){
-							turnCW();
-							currentstate = START_TICKS;
+						else if((mem.Right1 > 10) && (mem.Right2 > 10)){
+							registerTickListener(400);
+							currentstate = WAIT_TICKS;
 						}
 						break;
 					case TURN_COMPLETE:
@@ -80,6 +80,7 @@ void pathFindingFSM(){
 					case NEW_SENSOR_DATA:
 						break;
 					case TURN_COMPLETE:
+						moveForward();
 						currentstate = WAIT_EVENT;
 						break;
 					case TICK_COUNTING_DONE:
@@ -91,44 +92,15 @@ void pathFindingFSM(){
 						break;
 				}
 				break;
-			case START_TICKS:
+			case WAIT_TICKS:
 				switch(event){
 					case NEW_SENSOR_DATA:
 						break;
 					case TURN_COMPLETE:
 						break;
 					case TICK_COUNTING_DONE:
-						currentstate = WAIT_EVENT;
-						break;
-					case COLOR_SENSOR_TRIGGERED:
-						break;
-					default:
-						debug(1, "event error");
-						break;
-				}
-				break;
-			case TURN_CW:
-				switch(event){
-					case NEW_SENSOR_DATA:
-						break;
-					case TURN_COMPLETE:
-						break;
-					case TICK_COUNTING_DONE:
-						break;
-					case COLOR_SENSOR_TRIGGERED:
-						break;
-					default:
-						debug(1, "event error");
-						break;
-				}
-				break;
-			case STALL:
-				switch(event){
-					case NEW_SENSOR_DATA:
-						break;
-					case TURN_COMPLETE:
-						break;
-					case TICK_COUNTING_DONE:
+						turnCW();
+						currentstate = TURN_STALL;
 						break;
 					case COLOR_SENSOR_TRIGGERED:
 						break;
@@ -138,6 +110,7 @@ void pathFindingFSM(){
 				}
 				break;
 			case END:
+				debug(0, "in end");
 				switch(event){
 					case NEW_SENSOR_DATA:
 						break;
@@ -228,7 +201,6 @@ int RECV(){
 			event = NEW_SENSOR_DATA;
 			break;
 		case 17: //start crossed
-			debug(1, "asked for memory incorrectly");
 			event = COLOR_SENSOR_TRIGGERED;
 			break;
 		default:
@@ -239,27 +211,33 @@ int RECV(){
 }
 
 void moveForward(){
-	printf("moving forward");
+	debug(5, "moving forward");
 }
 
 void turnCCW(){
-	printf("turning ccw (left)");
+	stop();
+	debug(5, "turning ccw (left)");
 }
 
 void turnCW(){
-	printf("turning cw (right)");
+	stop();
+	debug(5, "turning cw (right)");
 }
 
 void stop(){
-	printf("stopping rover");
+	debug(5, "stopping rover");
 }
 
 void startTimer(){
-	printf("starting timer");
+	debug(5, "starting timer");
 }
 
 void stopTimer(){
-	printf("stopping timer");
+	debug(5, "stopping timer");
+}
+
+void registerTickListener(int x){
+	debug(x, "waiting for ticks");
 }
 
 void getMemory(Memory* mem){
@@ -368,7 +346,7 @@ void getMemory(Memory* mem){
 }
 
 int main(){
-	printf("hi");
+	printf("starting...\n");
 	pathFindingFSM();
 	return 0;
 }
