@@ -456,7 +456,7 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
     if(isColorSensorTriggered()){
-        char command[5];
+        char command[5] = "";
         uint8 length = generateColorSensorSensed(command, sizeof command, I2C_COMM);
         sendData(command, length, I2C_COMM); //just send the color sensor sensed no matter what command was sent to the rover, we won't care
         return 0;
@@ -478,7 +478,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     sendFrameData();
                     break;
                 case 0x05:{
-                    char command[6];
+                    char command[6] = "";
                     uint8 length = 0;
                     if(!isTurnComplete()){
                         length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
@@ -508,7 +508,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
     if(isColorSensorTriggered()){
         return; //don't care about propogating any commands
     }
-    char command[6];
+    char command[6] = "";
     uint8 length = 0;
     switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -578,7 +578,7 @@ void handleRoverDataLP(){
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
-    char outbuf[10];
+    char outbuf[10] = "";
 
     uint8 bytes_packed = 0;
     uint8 ack = 1;

@@ -196,4 +196,10 @@ void timer1_int_handler() {
         //WriteTimer1(0x4000);
 #endif
 
+#if defined(PICMAN) && defined(DEBUG_ON)
+        char command[6];
+        uint8 length = generateStartForward(command, sizeof command, UART_COMM, 0x10);
+        //uart_send_array(command, length);
+#endif
+
 }

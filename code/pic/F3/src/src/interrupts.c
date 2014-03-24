@@ -4,6 +4,7 @@
 #include "messages.h"
 #include "my_adc.h"
 #include "debug.h"
+#include "my_uart.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -138,7 +139,13 @@ void InterruptHandlerLow() {
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
-        uart_recv_int_handler();
+        debugNum(1);
+        if(wifly_setup){
+            uart_recv_int_handler();
+        }
+        else{
+            uart_recv_wifly_debug_handler();
+        }
     }
     if (PIR1bits.TXIF && PIE1bits.TXIE)
     {

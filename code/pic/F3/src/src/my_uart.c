@@ -15,6 +15,32 @@ static uart_comm *uc_ptr;
 static unsigned char payload_length;
 static unsigned char checksum_recv_value;
 static unsigned char checksum_calc_value;
+const char endmsg[] = "*HELLO*";
+unsigned char wifly_setup = 0;
+
+void uart_recv_wifly_debug_handler(){
+    debugNum(1);
+
+#ifdef __USE18F46J50
+    if (DataRdy1USART()) {
+        unsigned char last = Read1USART();
+#else
+    if (DataRdyUSART()) {
+        unsigned char last = ReadUSART();
+#endif
+        static uint8  cur = 0;
+        if (last == endmsg[cur]) {
+            cur++;
+            if(cur > 7) {
+                debugNum(2);
+                wifly_setup = 1;
+            }
+            else{
+                cur = 0;
+            }
+        }
+    }
+}
 
 void uart_recv_int_handler() {
 #ifdef __USE18F26J50
@@ -23,16 +49,15 @@ void uart_recv_int_handler() {
 #else
 #ifdef __USE18F46J50
     if (DataRdy1USART()) {
-        uc_ptr->buffer[uc_ptr->buflen] = Read1USART();
+        unsigned char recv = Read1USART();
 #else
+    if (DataRdyUSART()) {
+        unsigned char recv = ReadUSART();
 
 #endif
 #endif
 
     //debugNum(1);
-    if (DataRdyUSART()) {
-
-        unsigned char recv = ReadUSART();
         //debugNum(recv);
         int pos = uc_ptr->buflen++;
 
@@ -70,7 +95,11 @@ void uart_recv_int_handler() {
             payload_length = 0;
             checksum_recv_value = 0;
             checksum_calc_value = 0;
-            ReadUSART();    // clears buffer and returns value to nothing
+#ifdef __USE18F46J50
+            Read1USART();    // clears buffer and returns value to nothing
+#else
+            ReadUSART();
+#endif
         }
         // portion of the bytes were received or there was a corrupt byte or there was 
         // an overflow transmitted to the buffer
@@ -99,7 +128,11 @@ void uart_recv_int_handler() {
         RCSTAbits.CREN = 1;
         ToMainLow_sendmsg(0, MSGT_OVERRUN, (void *) 0);
     }
+#ifdef __USE18F46J50
+    if (USART1_Status.FRAME_ERROR) {
+#else 
     if (USART_Status.FRAME_ERROR) {
+#endif
         init_uart_recv(uc_ptr);
     }
 }
@@ -114,6 +147,7 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send_array(char* data, char length) {
+    if(!wifly_setup) return; //just return
     if(uc_ptr->status != UART_IDLE){
         ToMainLow_sendmsg(length, MSGT_UART_RX_BUSY, (void*) data);
         return;
@@ -127,7 +161,11 @@ void uart_send_array(char* data, char length) {
     }
     uc_ptr->outLength = length;
     uc_ptr->outIndex = 1;
+#ifdef __USE18F46J50
+    Write1USART(uc_ptr->outBuff[0]);
+#else
     WriteUSART(uc_ptr->outBuff[0]);
+#endif
     PIR1bits.TXIF = 0;
     PIE1bits.TXIE = 1;
 }
@@ -153,6 +191,10 @@ void uart_send_int_handler() {
 void uart_send(char data){
     //TODO possibly create logic to (without using a while) prevent writing if the buffer is not
     //clear
+#ifdef __USE18F46J50
+    Write1USART(data);
+#else
     WriteUSART(data);
+#endif
 //    debugNum(data);
 }
