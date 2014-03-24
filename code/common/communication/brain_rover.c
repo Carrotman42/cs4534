@@ -224,7 +224,6 @@ uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 bufl
     msg->flags = brainmsg->flags;
     msg->parameters = brainmsg->parameters;
     msg->payloadLen = brainmsg->payloadLen;
-    int i = 0;
     if(wifly){
         msg->messageid = wifly_messageid++;
     }
@@ -232,7 +231,8 @@ uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 bufl
         msg->messageid = i2c_messageid++;
     }
     msg->checksum = msg->flags + msg->parameters + msg->messageid + msg->payloadLen;
-    for(i; i < brainmsg->payloadLen; i++){
+	int i;
+    for(i = 0; i < brainmsg->payloadLen; i++){
         msg->checksum += payload[i];
         msg->payload[i] = payload[i];
     }
