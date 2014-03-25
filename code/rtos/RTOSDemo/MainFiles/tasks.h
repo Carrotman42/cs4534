@@ -28,7 +28,14 @@ TASK_PROTOTYPE_NOARG(EtherEmu, 2000, tskIDLE_PRIORITY);
 #endif
 
 #ifdef I2C_TASKS
+#define mainI2CMONITOR_TASK_PRIORITY		( tskIDLE_PRIORITY)
+#define I2C_Stack 100000
+#endif
 
+#ifdef FSM_TASKS
+TASK_PROTOTYPE_NOARG(PathFindingFSM, 2000, tskIDLE_PRIORITY);
 #endif
 
 #endif
+
+

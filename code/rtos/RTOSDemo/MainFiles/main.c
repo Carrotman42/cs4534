@@ -132,7 +132,6 @@ tick hook). */
 #define mainLCD_TASK_PRIORITY				( tskIDLE_PRIORITY)
 #define mainI2CTEMP_TASK_PRIORITY			( tskIDLE_PRIORITY)
 #define mainUSB_TASK_PRIORITY				( tskIDLE_PRIORITY)
-#define mainI2CMONITOR_TASK_PRIORITY		( tskIDLE_PRIORITY)
 #define mainCONDUCTOR_TASK_PRIORITY			( tskIDLE_PRIORITY)
 
 /* The WEB server has a larger stack as it utilises stack hungry string
@@ -186,19 +185,13 @@ static vtLCDStruct vtLCDdata;
 #include "klcd.h"
 #include "kdbg.h"
 			  
-
-// all milestone-specific code for milestone 2. Will just be tasks starting and whatnot.
-/*void StartMilestone2() {														   
-	StartLCD();
-
-	StartProcessingTasks(&vtI2C0);
-}*/
-
 #include "comm.h"
+#include "map.h"
 
-void StartMilestone3() {														   
+void Start() {														   
 	StartLCD();
 	InitComm();
+	InitMind();
 }
 
 
@@ -219,7 +212,7 @@ int main( void )
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();
 	
-	StartMilestone3();
+	Start();
 
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );

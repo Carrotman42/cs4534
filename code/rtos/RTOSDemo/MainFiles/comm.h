@@ -39,6 +39,7 @@ void InitComm();
 inline void gotData(RoverAction act, char* outBuf, char* inBuf);
 
 inline RoverAction nextCommand(int* len, char* outBuf);
+void registerTickListener(int x);
 
 #define CMD_FUNC(name, cmd) inline void name(char param) { asyncWrite(cmd, param); }
 #define CMD_FUNC_NOARG(name, cmd) inline void name() { asyncWrite(cmd, 0); }
@@ -47,6 +48,5 @@ CMD_FUNC(moveForward, Forward);
 CMD_FUNC(turnCCW, TurnCCW);
 CMD_FUNC(turnCW, TurnCW);
 CMD_FUNC_NOARG(stop, Stop);
-
 
 #endif

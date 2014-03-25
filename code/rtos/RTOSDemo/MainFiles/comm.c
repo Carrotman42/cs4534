@@ -114,6 +114,7 @@ int writeByte(RoverCmd cmd, int byteIndex, char* dest) {
 #else
 #define I2C_TASKS
 
+#include "vti2c.h"
 static vtI2CStruct vtI2C0;
 #endif
 
@@ -125,7 +126,7 @@ void InitComm() {
 #if ETHER_EMU==1
 	StartEtherEmu();
 #else
-	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,100000) != vtI2CInitSuccess);
+	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,I2C_Stack) != vtI2CInitSuccess);
 #endif
 }
 
@@ -134,6 +135,7 @@ void InitComm() {
 
 // Keep track of how many times we've seen an invalid ReadFrames response
 static int invalid = 0;
+#include "klcd.h"
 // outBuf was the message written to the picman
 // inBuf is the message that was just read from the picman
 inline void gotData(RoverAction last, char* outBuf, char* inBuf) {
@@ -143,10 +145,15 @@ inline void gotData(RoverAction last, char* outBuf, char* inBuf) {
 	}
 
 	if (last == ReadFrames) {
+		aBuf(b, 100);
+		aStr(b, "First byte: ");
+		aByte(b, inBuf[0]);
+		aStr(b, "; invalid: ");
+		aByte(b, invalid);
+		aChar(b, 0);
+		aPrint(b, 6);
 		if (inBuf[0] & FRAME_NOT_VALID) {
-			if (++invalid == 10) {
-				invalid = 0;
-			}
+			invalid++;
 		} else {
 			invalid = 0;
 			mapReportNewFrame(&inBuf[HEADER_MEMBERS]);
@@ -156,10 +163,12 @@ inline void gotData(RoverAction last, char* outBuf, char* inBuf) {
 
 inline RoverAction nextCommand(int* len, char* outBuf) {
 	RoverCmd cmd;
+	//SLEEP(1000);
 	if (!TRY_RECV(toRover, cmd)) {
 		if (invalid > 10) {
 			invalid = 0;
 			cmd.act = StartFrames;
+			LCDwriteLn(4, "Send StartFrames");
 		} else {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
@@ -176,5 +185,17 @@ inline void asyncWrite(RoverAction act, char param) {
 	cmd.param = param;
 	SEND(toRover, cmd);
 }
+
+void registerTickListener(int x) {
+	aBuf(b, 100);
+	aStr(b, "Tick listener: ")
+	aByte(b, x);
+	aChar(b, 0);
+	aPrint(b, 14);
+}
+
+
+
+
 
 

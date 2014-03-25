@@ -216,7 +216,7 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		RoverAction act = nextCommand((int*)&tx.tx_length, outBuf);
 		
 		int len;
-runCmd:	len = copyToBuf(cmd, outBuf);
+		len = copyToBuf(cmd, outBuf);
 		tx.tx_length = len;
 		tx.tx_data = (unsigned char*)outBuf;
 		
