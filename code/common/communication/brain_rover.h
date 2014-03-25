@@ -29,6 +29,8 @@ typedef struct {
 #define HIGH_PRIORITY 0x80
 #define ERROR_FLAG 0x40
 #define ACK_FLAG 0x20
+#define COLOR_SENSED 0x10
+#define FRAME_NOT_VALID 0x08
 // END FLAGS
 
 // Should only use the functions prototyped out here
