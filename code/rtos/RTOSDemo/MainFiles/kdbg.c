@@ -18,3 +18,15 @@ void DBGbit(unsigned value, int on) {
 		GPIO_ClearValue(0, 1<<value);
 	}
 }
+
+#include "klcd.h"
+void ReportDroppedMsg(int len, char* msg) {
+	aBuf(b, 100);
+	LCDwriteLn(14, "DROPPED MSG!!");
+}
+
+void ReportInvalidResponse( char* orig, char* resp) {
+	LCDwriteLn(14, "Invalid Response!!");
+}
+
+

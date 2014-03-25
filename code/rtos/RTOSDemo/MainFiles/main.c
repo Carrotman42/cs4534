@@ -186,19 +186,19 @@ static vtLCDStruct vtLCDdata;
 #include "klcd.h"
 #include "kdbg.h"
 			  
-static vtI2CStruct vtI2C0;
 
 // all milestone-specific code for milestone 2. Will just be tasks starting and whatnot.
 /*void StartMilestone2() {														   
 	StartLCD();
 
-	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,100000) != vtI2CInitSuccess);
 	StartProcessingTasks(&vtI2C0);
 }*/
 
+#include "comm.h"
+
 void StartMilestone3() {														   
 	StartLCD();
-	initEtherEmu();
+	InitComm();
 }
 
 
@@ -225,10 +225,6 @@ int main( void )
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );
 	
 	xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) NULL, mainUIP_TASK_PRIORITY, NULL );
-
-	#if ETHER_EMU==1
-	initEtherEmu();
-	#endif
 	
 	/* Start the scheduler. */
 	vTaskStartScheduler(); // noreturn

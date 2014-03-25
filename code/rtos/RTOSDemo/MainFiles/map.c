@@ -2,6 +2,7 @@
 #include "armcommon.h"
 
 #include "map.h"
+#include "frames.h"
 
 static Map map;
 static Memory mem;
@@ -18,6 +19,7 @@ inline void mapGetMemory(Memory* dest){
 inline void mapGetMap(Map* dest) {
 	*dest = map;
 }
-/*void recordFrames(int len, Frame* frame) {
-	
-}*/
+#include "klcd.h"
+void mapReportNewFrame(char* frame) {
+	LCDwriteLn(7, "Got new frame");
+}

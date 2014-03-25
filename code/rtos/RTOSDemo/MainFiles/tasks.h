@@ -19,17 +19,15 @@ TASK_PROTOTYPE_NOARG(TestSignalTask, 200, tskIDLE_PRIORITY);
 TASK_PROTOTYPE_NOARG(PeriodicTask, 500, tskIDLE_PRIORITY);
 #endif
 
-#ifdef COMM_TASKS
-
-// Deals with processing incoming sensor data, so it should have a large-ish stack
-TASK_PROTOTYPE(FromI2C, vtI2CStruct, 2000, tskIDLE_PRIORITY);
-// Deals with sending data to the rover. Not complex, but important:
-//TASK_PROTOTYPE(ToI2C, 200, vtI2CStruct*, tskIDLE_PRIORITY+2);
+#ifdef SENSORPROC_TASKS
+TASK_PROTOTYPE_NOARG(ProcessEvents, 2000, tskIDLE_PRIORITY);
 #endif
 
-#ifdef SENSORPROC_TASKS
+#ifdef ETHER_TASKS
+TASK_PROTOTYPE_NOARG(EtherEmu, 2000, tskIDLE_PRIORITY);
+#endif
 
-TASK_PROTOTYPE_NOARG(ProcessEvents, 2000, tskIDLE_PRIORITY);
+#ifdef I2C_TASKS
 
 #endif
 

@@ -311,27 +311,30 @@ static void f(int row, char* desc, int* d) {
 void ReportMsg(int len, char*in);
 void LCDwriteLn(int, char*);
 
-#if ETHER_EMU==1
+#if ETHER_EMU==1  
+#include "comm.h"
 static
-PT_THREAD(handle_emu_in(struct httpd_state *s)) {
+PT_THREAD(handle_emu_in(struct httpd_state *s, RoverAction last)) {
 	static int c = 0;
 	PSOCK_BEGIN(&s->sin);
 	
 	f(8, "Input______________ ", &c);
 	PSOCK_READTO(&s->sin, 0xFF);
 	f(8, "Input ", &c);
-	ReportMsg(PSOCK_DATALEN(&s->sin)-1, s->inputbuf);
+	//int len = PSOCK_DATALEN(&s->sin)-1;
+	// Report the data we got
+	gotData(last, s->outputbuf, s->inputbuf);
 	s->state = STATE_WAITING;
 	
 	PSOCK_END(&s->sin);
 }
 
-static PT_THREAD(SendData(struct httpd_state *s, emuMsgBuf* b)) {
+static PT_THREAD(SendData(struct httpd_state *s, int len, char* b)) {
 	static int c = 0;
 	
 	PSOCK_BEGIN(&s->sout);
 	f(7, "SendData___________________ ", &c);
-	PSOCK_SEND(&s->sout, &b->data[0], b->data[3] + 5);
+	PSOCK_SEND(&s->sout, b, len);
 	f(7, "SendData ", &c);
 	
 	if (s->state == STATE_OUTPUT) {
@@ -342,22 +345,24 @@ static PT_THREAD(SendData(struct httpd_state *s, emuMsgBuf* b)) {
 	PSOCK_END(&s->sout);
 }
 
-extern xQueueHandle toEmu;
-
 static void handle_connection(struct httpd_state *s) {
-	static emuMsgBuf b;
+	static char buf[15]; // TODO: See if this has to be static
+	static int len;
+	static RoverAction lastAct; // Has to be static
+nextCmd:
 	if (s->state == STATE_WAITING) {
-		RECV(toEmu, b);
-		s->state = STATE_OUTPUT;
-		if (b.data[0] == 4 && b.data[1] == 2) {
-			s->state = STATE_OUTPUT_READBACK;
-		}
+		lastAct = nextCommand(&len, buf);
+		// Always expect a readback (at least for the ack)
+		s->state = STATE_OUTPUT_READBACK;
 	}
-	if (s->state == STATE_OUTPUT || s->state == STATE_OUTPUT_READBACK) {
-		SendData(s, &b);
+	if (s->state == STATE_OUTPUT_READBACK) {
+		SendData(s, len, buf);
 	}
 	if (s->state == STATE_READBACK) {
-		handle_emu_in(s);
+		handle_emu_in(s, lastAct);
+		// Don't wait until next poll if we know this transfer has finished
+		if (s->state == STATE_WAITING)
+			goto nextCmd;
 	}
 }
 

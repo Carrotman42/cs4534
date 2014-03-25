@@ -366,6 +366,11 @@
               <FileType>1</FileType>
               <FilePath>.\MainFiles/map.c</FilePath>
             </File>
+            <File>
+              <FileName>comm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/comm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

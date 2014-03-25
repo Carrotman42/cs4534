@@ -18,9 +18,7 @@ typedef struct {
 	int Right1, Right2;
 } Memory;
 
-#include "frames.h"
-void mapRecordFrames(int len, Frame* frame);
-
+void mapReportNewFrame(char* frame);
 void initMap();
 
 typedef struct {
