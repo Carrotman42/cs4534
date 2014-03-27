@@ -15,11 +15,10 @@ static uart_comm *uc_ptr;
 static unsigned char payload_length;
 static unsigned char checksum_recv_value;
 static unsigned char checksum_calc_value;
-const char endmsg[] = "*HELLO*";
+const char endmsg[] = "**HELLO*";
 unsigned char wifly_setup = 0;
 
 void uart_recv_wifly_debug_handler(){
-    debugNum(1);
 
 #ifdef __USE18F46J50
     if (DataRdy1USART()) {
@@ -28,16 +27,15 @@ void uart_recv_wifly_debug_handler(){
     if (DataRdyUSART()) {
         unsigned char last = ReadUSART();
 #endif
-        static uint8  cur = 0;
+        static unsigned char cur = 0;
         if (last == endmsg[cur]) {
             cur++;
-            if(cur > 7) {
-                debugNum(2);
+            if(cur >= sizeof endmsg - 1) { //-1 for null terminated
                 wifly_setup = 1;
             }
-            else{
-                cur = 0;
-            }
+        }
+        else{
+            cur = 0;
         }
     }
 }
@@ -81,7 +79,6 @@ void uart_recv_int_handler() {
             checksum_calc_value += recv;
         }
         // check if a message should be sent
-//        if (uc_ptr->buffer[uc_ptr->buflen-1] == '\r') {
         if (pos == payload_length+HEADER_MEMBERS-1){
             pos++;
             if(checksum_calc_value == checksum_recv_value){

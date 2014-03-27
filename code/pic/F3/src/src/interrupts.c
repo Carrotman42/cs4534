@@ -139,7 +139,6 @@ void InterruptHandlerLow() {
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
-        debugNum(1);
         if(wifly_setup){
             uart_recv_int_handler();
         }

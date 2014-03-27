@@ -147,7 +147,7 @@ void timer1_int_handler() {
         WriteTimer1(0x2000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
         //debugNum(1);
-        static uint8 temp =0;
+/*        static uint8 temp =0;
         static uint8 start = 0;
         char testArray[6];
         uint8 length = 0;
@@ -194,12 +194,13 @@ void timer1_int_handler() {
         }
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         //WriteTimer1(0x4000);
+ * */
 #endif
 
 #if defined(PICMAN) && defined(DEBUG_ON)
         char command[6];
         uint8 length = generateStartForward(command, sizeof command, UART_COMM, 0x10);
-        //uart_send_array(command, length);
+        uart_send_array(command, length);
 #endif
 
 }
