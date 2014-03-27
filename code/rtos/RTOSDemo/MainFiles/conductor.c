@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 
-/* Scheduler include files. */
+/*
 #include "FreeRTOS.h"
 #include "task.h"
 #include "projdefs.h"
@@ -11,7 +11,6 @@
 #include "timers.h"
 				
 #include "armcommon.h"
-/* include files. */
 #include "vtUtilities.h"
 #include "vtI2C.h"
 #include "I2CTaskMsgTypes.h"
@@ -67,7 +66,7 @@ void copyToLCD() {
 
 int handleAD(sensorADData* data, int len) {
 	
-	/* COPY/WRAP code
+	/ * COPY/WRAP code
 	{
 		sensorADData* in = data;
 		sensorADData* end = in+len;
@@ -75,7 +74,7 @@ int handleAD(sensorADData* data, int len) {
 			saved[savedPos] = (char)((*in++).data);
 			savedPos = (savedPos + 1) % SAVED_SIZE;
 		}
-	}// */
+	}// * /
 	
 	// Attempt at trigger noticing
 	static int waiting = 1;
@@ -110,7 +109,7 @@ int handleAD(sensorADData* data, int len) {
 				break;
 			}
 		}
-	} // */
+	} // * /
 	
 
 #ifndef LCD_REFRESH_RATE
@@ -208,7 +207,7 @@ TASK_FUNC(FromI2C, vtI2CStruct, from) {
 } ENDTASK
 
 
-
+								  */
 
 
 

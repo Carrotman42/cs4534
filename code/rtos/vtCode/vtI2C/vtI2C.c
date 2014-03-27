@@ -194,32 +194,48 @@ void vtI2C2Isr(void) {
 	vtI2CIsr(devStaticPtr[2]->devAddr,&(devStaticPtr[2]->binSemaphore));
 }
 
+#include "comm.h"
 
 // This is the actual task that is run
+//   We expect only one to be run the entire time, ie we only support one I2C connection.
 static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 {
+	
 	// Get the i2c structure for this task/device
 	vtI2CStruct *devPtr = (vtI2CStruct *) pvParameters;
-	vtI2CMsg msgBuffer;
-	I2C_M_SETUP_Type transferMCfg;
+	I2C_M_SETUP_Type tx;
 
+	RoverCmd cmd;
+	char outBuf[MAX_OUT_SIZE];
+	// All the space we need for header + frame size
+	char inBuf[15];
+
+	// Counts how many times it gets an invalid frame response so that it can request StartFrames
+	//    after a long gap of correct frames.
 	for (;;) {
-		RECV(devPtr->inQ, msgBuffer);
+		RoverAction act = nextCommand((int*)&tx.tx_length, outBuf);
 		
-		// process the messsage and perform the I2C transaction
-		transferMCfg.sl_addr7bit = msgBuffer.slvAddr;
-		transferMCfg.tx_data = (uint8_t*)(&msgBuffer.data);
-		transferMCfg.tx_length = sizeof msgBuffer.data;
-		transferMCfg.rx_data = msgBuffer.dest;
-		transferMCfg.rx_length = msgBuffer.destLen;
-		transferMCfg.retransmissions_max = 3;
-		transferMCfg.retransmissions_count = 0;	 // this *should* be initialized in the LPC code, but is not for interrupt mode
-		msgBuffer.status = I2C_MasterTransferData(devPtr->devAddr, &transferMCfg, I2C_TRANSFER_INTERRUPT);
+		int len;
+		len = copyToBuf(cmd, outBuf);
+		tx.tx_length = len;
+		tx.tx_data = (unsigned char*)outBuf;
+		
+		// TODO: See which ones of these I can hoist above the for loop
+		tx.sl_addr7bit = PICMAN_I2C_ADDR;
+		tx.rx_data = (unsigned char*)inBuf;
+		tx.rx_length = sizeof inBuf;
+		tx.retransmissions_max = 3;
+		tx.retransmissions_count = 0;	 // this *should* be initialized in the LPC code, but is not for interrupt mode
+		int ret = I2C_MasterTransferData(devPtr->devAddr, &tx, I2C_TRANSFER_INTERRUPT);
 		// Block until the I2C operation is complete -- we *cannot* overlap operations on the I2C bus...
 		FAILIF(xSemaphoreTake(devPtr->binSemaphore,portMAX_DELAY) != pdTRUE);
 		
-		msgBuffer.destLen = transferMCfg.rx_count;
+		if (ret) {
+		 	// TODO: Check this value too?
+		}
 		
-		SEND(devPtr->outQ, msgBuffer);
+		gotData(act, outBuf, inBuf);
 	}
 }
+
+

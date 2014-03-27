@@ -45,11 +45,12 @@ func (r*Rover) StartLoops() {
 	go r.Loop()
 }
 
+const SPEED_SCALE = 1./25
 func (r*Rover) Tick() {
 	ang := float64(r.Dir)*math.Pi/180
-	newx, newy := r.X + int(float64(r.Vel) * math.Cos(ang)), r.Y + int(float64(r.Vel) * math.Sin(ang))
+	newx, newy := r.X + r.Vel * SPEED_SCALE * math.Cos(ang), r.Y + r.Vel * SPEED_SCALE * math.Sin(ang)
 
-	if !r.Map.Outside(newx, newy, r.Dir) {
+	if !r.Map.Outside(int(newx), int(newy), r.Dir) {
 		// Didn't hit the wall
 		r.X, r.Y = newx, newy
 	}
@@ -64,13 +65,17 @@ func (r*Rover) Tick() {
 func multAdd(x, i int, v float64) int {
 	return x + int(float64(i) * v)
 }
+func mAdd(x float64, i int, v float64) int {
+	return int(x + float64(i) * v)
+}
 
 // TODO: Calculate the real offsets of the sensors from the centroid
 func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 	sin, cos := math.Sincos(float64(r.Dir) / 180 * math.Pi)
 	
-	x,y := multAdd(r.X, offx, cos), multAdd(r.Y, offy, sin)
+	x,y := mAdd(r.X, offx, cos), mAdd(r.Y, offy, sin)
 	v, ok := r.Map.DistToWall(x, y, offdir + r.Dir)
+	v /= 10
 	if v > 255 || !ok {
 		v = 255
 	}
@@ -78,9 +83,9 @@ func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 }
 
 func (r*Rover) FrameLoop() {
-	r.Vel = 3
+	//r.Vel = 3
 	for {
-		time.Sleep(time.Second/25)
+		time.Sleep(time.Second/10)
 		
 		r.Lock()
 		
@@ -112,7 +117,7 @@ func (r*Rover) Loop() {
 		} else if start, stop := cmd.CheckFrameCmd(); start || stop {
 			r.HandleFrameCmd(start)
 		} else if speed, ok := cmd.CheckStartCmd(); ok {
-			r.Vel = speed
+			r.Vel = float64(speed)
 		} else if cmd.CheckStopCmd() {
 			r.Vel = 0
 		} else if val, ok := cmd.CheckTurnCmd(); ok {
@@ -253,7 +258,10 @@ func (s SerialProtocol) ReadCmd() (ret common.InCmd) {
 	}
 	fmt.Println("Got packet:", cmd, param, mId, ll, check)
 	defer func() {
-		//fmt.Printf("%T: %v\n", ret, ret)
+		if ret.Error() == nil {
+			// If there was no error make sure to ack the message (there are no synchronous commands expected)
+			s.writePacket(uint(cmd) | 0x20, param, nil)
+		}
 	}()
 	
 	// Calc checksum:
@@ -296,6 +304,7 @@ func (s SerialProtocol) ReadCmd() (ret common.InCmd) {
 }
 
 func (s SerialProtocol) WriteFrameData(f common.FrameData) {
+	fmt.Println("Implement me please!")
 	//TODO!
 }
 func (t SerialProtocol) Error(f common.ErrorKind) {
@@ -385,14 +394,18 @@ func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 		if r, ok := ret.(SerialErrCmd); ok {
 			if r.cmd == 4 && r.param == 2 {
 				// Report the last frame data we got
-				var payload []byte
+				payload := s.last.ToBytes()
+				cmd := uint(r.cmd)
 				if s.lastOk {
 					s.lastOk = false
-					payload = s.last.ToBytes()
+				} else {
+					cmd |= 0x08
 				}
-				s.Arm.writePacket(4, 2, payload)
+				s.Arm.writePacket(cmd, 2, payload)
 				continue
 			}
+		} else {
+			s.Arm.writePacket(uint(r.cmd) | 0x20, r.param, nil)
 		}
 		return ret
 	}

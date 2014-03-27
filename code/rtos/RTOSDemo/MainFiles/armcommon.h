@@ -3,9 +3,11 @@
 #ifndef COMMON_H_INC
 #define COMMON_H_INC
 
+#define PICMAN_I2C_ADDR 0x10
 #define ARM
 // Define this for debug checks that double-check the programmer. Will be disabled for final run once testing is over.
 #define CHECKS
+#define ETHER_EMU 1
 
 // Common includes:
 #include "FreeRTOS.h"
@@ -57,6 +59,7 @@
 // These macros have to do with queues and are relatively straightforward.
 #define MAKE_Q(dest, type, len) if (((dest) = xQueueCreate(len, sizeof(type))) == NULL) FATAL(0);
 #define RECV(chan, dest) if(xQueueReceive(chan,(void *)&(dest),portMAX_DELAY) != pdTRUE) FATAL(0);
+#define TRY_RECV(chan, dest) (xQueueReceive(chan,(void *)&(dest), 0) == pdTRUE)
 #define SEND(chan, src)  if(xQueueSend(chan, &src, portMAX_DELAY) != pdTRUE) FATAL(0);
 
 // Helper defines, used internally in this common.h. They are considered private and should not
@@ -143,17 +146,7 @@
 	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
 
 #define aChar(dest, ch) *dest++ = (ch)
-
 #define aPrint(name, line) LCDwriteLn(line, name##name);
-
-#define ETHER_EMU 1
-#if ETHER_EMU==1
-void initEtherEmu();
-
-typedef struct {
-	char data[100];
-} emuMsgBuf;
-#endif
 
 
 #endif

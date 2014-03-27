@@ -132,7 +132,6 @@ tick hook). */
 #define mainLCD_TASK_PRIORITY				( tskIDLE_PRIORITY)
 #define mainI2CTEMP_TASK_PRIORITY			( tskIDLE_PRIORITY)
 #define mainUSB_TASK_PRIORITY				( tskIDLE_PRIORITY)
-#define mainI2CMONITOR_TASK_PRIORITY		( tskIDLE_PRIORITY)
 #define mainCONDUCTOR_TASK_PRIORITY			( tskIDLE_PRIORITY)
 
 /* The WEB server has a larger stack as it utilises stack hungry string
@@ -186,19 +185,13 @@ static vtLCDStruct vtLCDdata;
 #include "klcd.h"
 #include "kdbg.h"
 			  
-static vtI2CStruct vtI2C0;
+#include "comm.h"
+#include "map.h"
 
-// all milestone-specific code for milestone 2. Will just be tasks starting and whatnot.
-/*void StartMilestone2() {														   
+void Start() {														   
 	StartLCD();
-
-	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,100000) != vtI2CInitSuccess);
-	StartProcessingTasks(&vtI2C0);
-}*/
-
-void StartMilestone3() {														   
-	StartLCD();
-	initEtherEmu();
+	InitComm();
+	InitMind();
 }
 
 
@@ -219,16 +212,12 @@ int main( void )
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();
 	
-	StartMilestone3();
+	Start();
 
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );
 	
 	xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) NULL, mainUIP_TASK_PRIORITY, NULL );
-
-	#if ETHER_EMU==1
-	initEtherEmu();
-	#endif
 	
 	/* Start the scheduler. */
 	vTaskStartScheduler(); // noreturn

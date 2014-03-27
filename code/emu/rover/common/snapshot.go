@@ -6,13 +6,13 @@ type RoverSnapshot struct {
 	FrameData
 	
 	// In ArmUnits
-	X, Y int
+	X, Y float64
 	
 	// In degrees
 	Dir int
 	
 	// In ArmUnits/ArmTime
-	Vel int
+	Vel float64
 	
 	// In SendFrames mode
 	SendFrames bool

@@ -401,6 +401,20 @@
       <PathWithFileName>.\MainFiles/etheremu.c</PathWithFileName>
       <FilenameWithoutPath>etheremu.c</FilenameWithoutPath>
     </File>
+    <File>
+      <GroupNumber>2</GroupNumber>
+      <FileNumber>0</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <ColumnNumber>0</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\MainFiles/map.c</PathWithFileName>
+      <FilenameWithoutPath>map.c</FilenameWithoutPath>
+    </File>
   </Group>
 
   <Group>

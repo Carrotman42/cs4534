@@ -1,3 +1,4 @@
+
 #include "fsm.h"
 
 //recv will get events 
@@ -6,11 +7,6 @@
 //2) turn complete,
 //3) tick counting done (from registerTickListener(int x)), 
 //4) color sensor triggered
-
-#define NEW_SENSOR_DATA 1
-#define TURN_COMPLETE 2
-#define TICK_COUNTING_DONE 3
-#define COLOR_SENSOR_TRIGGERED 4
 
 #define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
@@ -21,33 +17,74 @@
 
 #ifdef FSM_TEST
 #include <unistd.h>
+
+static Memory mem;
+
+void debug(int line, char* str);
+FsmEvent nextEvent();
+void moveForward();
+void turnCCW();
+void turnCW();
+void stop();
+void mapStartTimer();
+void mapStopTimer();
+void mapGetMemory(Memory* mem);
+void registerTickListener(int x);
+
+#define PATH_FINDING_DECL void pathFindingFSM()
+#define FSM_FOOT
+#else
+
+#include "armcommon.h"
+#include "map.h"
+#include "comm.h"
+
+#define PATH_FINDING_DECL TASK_FUNC_NOARG(PathFindingFSM)
+#define FSM_FOOT ENDTASK
+
+#define FSM_TASKS
+#include "tasks.h"
+
+static xQueueHandle events;
+void TriggerEvent(FsmEvent event) {
+	SEND(events, event);
+}
+inline FsmEvent nextEvent() {
+	FsmEvent ret;
+	//SLEEP(1000);
+	//return NEW_SENSOR_DATA;
+	
+	RECV(events, ret);
+	return ret;//*/
+}
+void initFsm() {
+	MAKE_Q(events, FsmEvent, 4);
+}
+#include "klcd.h"
+void debug(int line, char*msg) {
+	LCDwriteLn(line, msg);
+}
 #endif
-
-
 
 static int currentstate = WAIT_START_LINE;
 static int startCrossed = 0; //remember if the start has been initially crossed
 
-static Memory mem;
-
 void debug(int line, char* info);
 
-void pathFindingFSM(){
-	moveForward(); //always start moving forward initially.
+PATH_FINDING_DECL {
+	moveForward(100); //always start moving forward initially.
 	currentstate = WAIT_EVENT;
 	for(;;){
-		#ifdef FSM_TEST
-		sleep(1);
-		#endif
-		int event = RECV();
+		FsmEvent event = nextEvent();
 		debug(event, "Got event");
 		switch(currentstate){
 			case WAIT_EVENT:
 				switch(event){
-					case NEW_SENSOR_DATA:
-						getMemory(&mem);
+					case NEW_SENSOR_DATA: {
+						Memory mem;
+						mapGetMemory(&mem);
 						if(mem.Forward <= 10){
-							turnCCW();
+							turnCCW(90);
 							currentstate = TURN_STALL;
 						}
 						else if((mem.Right1 > 10) && (mem.Right2 > 10)){
@@ -55,18 +92,19 @@ void pathFindingFSM(){
 							currentstate = WAIT_TICKS;
 						}
 						break;
+					}
 					case TURN_COMPLETE:
 						break;
 					case TICK_COUNTING_DONE:
 						break;
 					case COLOR_SENSOR_TRIGGERED:
 						if(!startCrossed){
-							startTimer();
+							mapStartTimer();
 							startCrossed = 1;
 							//stay in wait event state
 						}
 						else{
-							stopTimer();
+							mapStopTimer();
 							currentstate = END;
 						}
 						break;
@@ -80,7 +118,7 @@ void pathFindingFSM(){
 					case NEW_SENSOR_DATA:
 						break;
 					case TURN_COMPLETE:
-						moveForward();
+						moveForward(100);
 						currentstate = WAIT_EVENT;
 						break;
 					case TICK_COUNTING_DONE:
@@ -99,7 +137,7 @@ void pathFindingFSM(){
 					case TURN_COMPLETE:
 						break;
 					case TICK_COUNTING_DONE:
-						turnCW();
+						turnCW(90);
 						currentstate = TURN_STALL;
 						break;
 					case COLOR_SENSOR_TRIGGERED:
@@ -132,10 +170,12 @@ void pathFindingFSM(){
 		}
 		
 	}
-}
+} FSM_FOOT
 
 
 #ifdef FSM_TEST
+
+
 
 #include <stdio.h>
 void debug(int line, char* str){
@@ -145,7 +185,9 @@ void debug(int line, char* str){
 
 static int trackStage = -1;
 
-int RECV(){
+FsmEvent FsmEvent(){
+	// Give a delay for the fsm_test
+	sleep(1);
 	int event = 0;
 	trackStage++;
 	switch(trackStage){
@@ -240,7 +282,7 @@ void registerTickListener(int x){
 	debug(x, "waiting for ticks");
 }
 
-void getMemory(Memory* mem){
+void mapGetMemory(Memory* mem){
 	switch(trackStage){
 		case 0:
 			mem->Forward = 60;

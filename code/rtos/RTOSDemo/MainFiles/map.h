@@ -18,10 +18,8 @@ typedef struct {
 	int Right1, Right2;
 } Memory;
 
-#include "frames.h"
-void mapRecordFrames(int len, Frame* frame);
-
-void initMap();
+void mapReportNewFrame(char* frame);
+void InitMind();
 
 typedef struct {
 	uint8_t data[MAP_WIDTH*MAP_WIDTH / 8];
@@ -29,6 +27,8 @@ typedef struct {
 
 void mapGetMap(Map*dest);
 void mapGetMemory(Memory*dest);
+void mapStartTimer();
+void mapStopTimer();
 
 
 #endif
