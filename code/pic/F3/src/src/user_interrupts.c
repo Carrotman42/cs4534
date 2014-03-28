@@ -20,7 +20,7 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
-#if DEBUG_ON
+#ifdef DEBUG_ON
     static int colorSensorCounter = 0;
     if(colorSensorCounter == 100){
         colorSensorCounter++;
@@ -29,7 +29,7 @@ void timer0_int_handler() {
         uart_send_array(command, length);
     }
 #endif
-    //debugNum(2);
+    //debugNum(1);
     static uint8 loop = 0;
 
     char data[5];

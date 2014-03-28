@@ -239,6 +239,8 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 }
 
 static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
+    char command[6] = {0};
+    uint8 length = 0;
     switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(brain->parameters){
@@ -258,8 +260,6 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
             break;
         case MOTOR_COMMANDS:
             if(addr == MOTOR_ADDR){
-                char command[6];
-                uint8 length = 0;
                 switch(brain->parameters){
                     case 0x00:
                     case 0x01:
@@ -272,6 +272,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                 }
                 if(length != 0){
+                    //debugNum(1);
                     i2c_master_send(addr, length, command);
                 }
             }
@@ -286,7 +287,9 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         case SENSOR_COMMANDS:
             switch(rover->parameters){
                 case 0x01:
-                    addSensorFrame(payload[0], payload[1], payload[2]);
+                    if(!isInvalidData((char*) rover)){ //valid data received
+                        addSensorFrame(payload[0], payload[1], payload[2]);
+                    }
                     //debugNum(8);
                     break;
                 default:
@@ -296,7 +299,9 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         case MOTOR_COMMANDS:
             switch(rover->parameters){
                 case 0x05:
-                    addEncoderData(payload[0], payload[1], payload[2], payload[3]);
+                    if(!isInvalidData((char*) rover)){ //valid data received
+                        addEncoderData(payload[0], payload[1], payload[2], payload[3]);
+                    }
                     //debugNum(8);
                     break;
                 default:
@@ -442,7 +447,7 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
-    char command[6] = "";
+    char command[6] = {0};
     uint8 length = 0;
     switch(brain->flags){
         case MOTOR_COMMANDS:
@@ -543,6 +548,16 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                 default:
                     break;
             }
+        case (ACK_FLAG | MOTOR_COMMANDS):
+            switch(rover->parameters){
+                case 0x03:
+                case 0x04:
+                    //turnStarted();//comment out for now because we dont want stalling
+                    break;
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }

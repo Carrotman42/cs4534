@@ -135,7 +135,7 @@
 
 // CONFIG1L
 #pragma config WDTEN = OFF      // Watchdog Timer (Disabled - Controlled by SWDTEN bit)
-#pragma config PLLDIV = 12       // PLL Prescaler Selection bits (Divide by 3 (12 MHz oscillator input))
+#pragma config PLLDIV = 3       // PLL Prescaler Selection bits (Divide by 3 (12 MHz oscillator input))
 #pragma config STVREN = OFF     // Stack Overflow/Underflow Reset (Disabled)
 #ifndef __XC8
 // Have to turn this off because I don't see how to enable this in the checkboxes for XC8 in this IDE
@@ -315,7 +315,7 @@ void main(void) {
 #else
 #ifdef __USE18F46J50
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_HIGH, 38);
+        USART_CONT_RX & USART_BRGH_LOW, 38);
 #else
     OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
         USART_CONT_RX & USART_BRGH_HIGH, 38);
