@@ -91,13 +91,25 @@ void clearFrameData(){
 }
 
 void sendFrameData(){
+    //this block may be unnecessary but it makes all invalid data easier to see for now
+    if(!frameDataReady()){
+        addSensorFrame(0,0,0);
+        addEncoderData(0,0,0,0); //send all 0's if the frame isn't ready
+        clearFrameData(); //resets flags for frame data ready
+    }
     char packedFrame[FRAME_MEMBERS] = "";
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
     char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS] = "";
     int length = packReadFrame(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
     //only way this will get called is if it's an i2c response (from arm)
-
+    if(!frameDataReady()){
+        flagInvalidData(packedFrameMessage);
+    }
+    if(isColorSensorTriggered()){
+        flagColorSensed(packedFrameMessage);
+        clearColorSensorStatus(); //don't need to send multiple times
+    }
     start_i2c_slave_reply(length, packedFrameMessage);
 }
 #endif

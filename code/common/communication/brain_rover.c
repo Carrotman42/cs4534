@@ -410,3 +410,29 @@ void clearHighPriority(char* buf){
     m->flags &= ~HIGH_PRIORITY; //mask flags with 0x7f
     m->checksum -= HIGH_PRIORITY;
 }
+
+
+void flagInvalidData(char* buf){
+    if(isInvalidData(buf))
+        return;
+    Msg* m = (Msg*) buf;
+    m->flags |= FRAME_NOT_VALID;
+    m->checksum += FRAME_NOT_VALID;
+}
+uint8 isInvalidData(char* buf){
+    Msg* m = (Msg*) buf;
+    return (m->flags & FRAME_NOT_VALID) == FRAME_NOT_VALID;
+}
+
+void flagColorSensed(char* buf){
+    if(isColorSensed(buf))
+        return;
+    Msg* m = (Msg*) buf;
+    m->flags |= COLOR_SENSED;
+    m->checksum += COLOR_SENSED;
+}
+uint8 isColorSensed(char* buf){
+    Msg* m = (Msg*) buf;
+    return (m->flags & COLOR_SENSED) == COLOR_SENSED;
+}
+

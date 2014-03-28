@@ -108,6 +108,10 @@ int packReadFrame(char* data, uint8 len, char* out, uint8 maxout);
 void makeHighPriority(char* buf);
 uint8 isHighPriority(char* buf);
 void clearHighPriority(char* buf);
+void flagInvalidData(char* buf);
+uint8 isInvalidData(char* buf);
+void flagColorSensed(char* buf);
+uint8 isColorSensed(char* buf);
 
 
 

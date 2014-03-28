@@ -27,6 +27,7 @@ void sendSensorFrame(uint8 msgid);
 #elif defined(PICMAN) || defined(ARM_EMU)
 void colorSensorTriggered();
 uint8 isColorSensorTriggered();
+void clearColorSensorStatus();
 #endif
 
 #endif	/* SENSORCOMM_H */

@@ -20,6 +20,15 @@
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
+#if DEBUG_ON
+    static int colorSensorCounter = 0;
+    if(colorSensorCounter == 100){
+        colorSensorCounter++;
+        char command[5] = {0};
+        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
+        uart_send_array(command, length);
+    }
+#endif
     //debugNum(2);
     static uint8 loop = 0;
 
@@ -101,7 +110,7 @@ void timer1_int_handler() {
 #elif defined(ARM_EMU) && defined(DEBUG_ON)
         static uint8 temp =0;
         static uint8 start = 0;
-        if(isTurnComplete() && !isColorSensorTriggered() ){
+        if(isTurnComplete() && !isColorSensorTriggered()){
             char testArray[6];
             uint8 length = 0;
             switch(temp){
@@ -197,10 +206,10 @@ void timer1_int_handler() {
  * */
 #endif
 
-#if defined(PICMAN) && defined(DEBUG_ON)
-        char command[6];
-        uint8 length = generateStartForward(command, sizeof command, UART_COMM, 0x10);
-        uart_send_array(command, length);
-#endif
+//#if defined(PICMAN) && defined(DEBUG_ON)
+//        char command[6];
+//        uint8 length = generateStartForward(command, sizeof command, UART_COMM, 0x10);
+//        uart_send_array(command, length);
+//#endif
 
 }

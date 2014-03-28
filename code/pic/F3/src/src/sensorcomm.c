@@ -95,4 +95,7 @@ void colorSensorTriggered(){
 uint8 isColorSensorTriggered(){
     return colorSensorStatus; 
 }
+void clearColorSensorStatus(){
+    colorSensorStatus = 0;
+}
 #endif
