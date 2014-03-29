@@ -109,45 +109,52 @@ void timer1_int_handler() {
 
 #elif defined(ARM_EMU) && defined(DEBUG_ON)
         static uint8 temp =0;
-        static uint8 start = 0;
         if(isTurnComplete() && !isColorSensorTriggered()){
             char testArray[6];
             uint8 length = 0;
             switch(temp){
                 case 0:
-                    length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
+                    length = generateStartFrames(testArray, sizeof testArray, I2C_COMM);
                     temp++;
                     break;
                 case 1:
-                    length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
                     temp++;
                     break;
                 case 2:
-                    length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                    length = generateStartForward(testArray, sizeof testArray, I2C_COMM, 0x05);
                     temp++;
                     break;
                 case 3:
-                    length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
                     temp++;
                     break;
                 case 4:
-                    length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                    length = generateStartBackward(testArray, sizeof testArray, I2C_COMM, 0x06);
                     temp++;
                     break;
                 case 5:
-                    if(start == 0){
-                        length = generateStartFrames(testArray, sizeof testArray, I2C_COMM);
-                        start++;
-                    }
-                    else if(start == 1){
-                        length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
-                        start++;
-                    }
-                    else{
-                        length = generateStopFrames(testArray, sizeof testArray, I2C_COMM);
-                        start = 0;
-                    }
-
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 6:
+                    length = generateStop(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 7:
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 8:
+                    length = generateTurnCW(testArray, sizeof testArray, I2C_COMM, 0x07);
+                    temp++;
+                    break;
+                case 9:
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 10:
+                    length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
                     temp = 0;
                     break;
             }

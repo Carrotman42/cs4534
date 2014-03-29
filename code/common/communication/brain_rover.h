@@ -80,6 +80,7 @@ uint8 generateSensorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly)
 uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly);
 uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly);
+uint8 generateErrorFromParam(char* errorbuf, uint8 buflen, uint8 param, uint8 wifly);
 
 uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 buflen, uint8 wifly);
 uint8 generateGetSensorFrame(char* out, uint8 buflen); //
@@ -103,7 +104,7 @@ uint8 generateColorSensorSensed(char* out, uint8 buflen, uint8 wifly);
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packFrameData(char* data, uint8 len, char* out, uint8 maxout);
-int packReadFrame(char* data, uint8 len, char* out, uint8 maxout);
+int packReadFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 
 void makeHighPriority(char* buf);
 uint8 isHighPriority(char* buf);

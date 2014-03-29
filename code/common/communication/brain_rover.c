@@ -146,75 +146,80 @@ int packFrameData(char* data, uint8 len, char* out, uint8 maxout){
     return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x01, wifly_messageid++);
 }
 
-int packReadFrame(char* data, uint8 len, char* out, uint8 maxout){
-    return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x02, wifly_messageid++);
+int packReadFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid){
+    return packReturnData(data, len, (RoverMsg*) out, maxout, HIGH_LEVEL_COMMANDS, 0x02, msgid);
 }
 
 
-static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 payload, uint8 wifly){
-    if(buflen < 6) return 0;
+static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 wifly){
+    if(buflen < 5) return 0; //must be at least 5 - can have frames too
     errorbuf->flags = ERROR_FLAG;
     errorbuf->parameters = parameters;
-    errorbuf->payloadLen = 1; //1 byte payload for every error
     if(wifly)
         errorbuf->messageid = wifly_messageid++;
     else
         errorbuf->messageid = i2c_messageid++;
-    errorbuf->payload[0] = payload;
-    errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen + payload;
+    errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen;
+    for(int i = 0; i < errorbuf->payloadLen; i++){
+        errorbuf->checksum += errorbuf->payload[i]; //add frames if needed
+    }
     return HEADER_MEMBERS + errorbuf->payloadLen;
 }
 
 uint8 generateLeftWheelError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x03, 0x01, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x0a, wifly);
 }
 
 uint8 generateRightWheelError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x03, 0x02, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x0b, wifly);
 }
 
 uint8 generateChecksumError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x04, 0x01, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x0c, wifly);
 }
 
 uint8 generateUltrasonicError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x01, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x04, wifly);
 }
 
 uint8 generateIR1Error(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x02, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x05, wifly);
 }
 
 uint8 generateIR2Error(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x03, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x06, wifly);
 }
 
 uint8 generateColorSensorError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x04, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x07, wifly);
 }
 
 uint8 generateLeftEncoderError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x05, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x08, wifly);
 }
 
 uint8 generateRightEncoderError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x02, 0x06, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x9, wifly);
 }
 
 uint8 generateSensorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x01, 0x01, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x01, wifly);
 }
 
 uint8 generateMotorPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x01, 0x02, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x02, wifly);
 }
 
 uint8 generateMasterPICDetectionError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*)errorbuf, buflen, 0x01, 0x03, wifly);
+    return generateError((Msg*)errorbuf, buflen, 0x03, wifly);
 }
 
 uint8 generateUnknownCommandError(char* errorbuf, uint8 buflen, uint8 wifly){
-    return generateError((Msg*) errorbuf, buflen, 0x05, 0x01, wifly);
+    return generateError((Msg*) errorbuf, buflen, 0x0d, wifly);
+}
+
+uint8 generateErrorFromParam(char* errorbuf, uint8 buflen, uint8 param, uint8 wifly){
+    return generateError((Msg*) errorbuf, buflen, param, wifly);
 }
 
 
@@ -231,7 +236,7 @@ uint8 repackBrainMsg(BrainMsg* brainmsg, char* payload, char* outbuf, uint8 bufl
         msg->messageid = i2c_messageid++;
     }
     msg->checksum = msg->flags + msg->parameters + msg->messageid + msg->payloadLen;
-	int i;
+    int i;
     for(i = 0; i < brainmsg->payloadLen; i++){
         msg->checksum += payload[i];
         msg->payload[i] = payload[i];

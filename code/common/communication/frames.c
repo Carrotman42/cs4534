@@ -1,9 +1,16 @@
 #include "frames.h"
+#include "error.h"
+
+
+#ifndef MOTOR_PIC
+static uint8 sensorDataSet;
+#endif
+#ifndef SENSOR_PIC
+static uint8 encoderDataSet;
+#endif
 
 #if defined(MASTER_PIC) || defined(ROVER_EMU) || defined(PICMAN)
 static uint8 framesRequested = 0;
-static uint8 sensorDataSet;
-static uint8 encoderDataSet;
 #endif
 static Frame frame;
 
@@ -13,21 +20,25 @@ void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2){
     frame.ultrasonic = ultrasonic;
     frame.IR1 = IR1;
     frame.IR2 = IR2;
-#ifndef SENSOR_PIC
     sensorDataSet = 1;
-#endif
 }
 #endif
 
 #if defined(MOTOR_PIC) || defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
 void addEncoderData(uint8 encoderRightHB, uint8 encoderRightLB, uint8 encoderLeftHB, uint8 encoderLeftLB){
-    frame.encoderRight[0] = encoderRightHB;
-    frame.encoderRight[1] = encoderRightLB;
-    frame.encoderLeft[0] = encoderLeftHB;
-    frame.encoderLeft[1] = encoderLeftLB;
-#ifndef MOTOR_PIC
+    int rightNew = makeInt(encoderRightHB, encoderRightLB);
+    int leftNew = makeInt(encoderLeftHB, encoderLeftLB);
+    int rightOld = makeInt(frame.encoderRight[0], frame.encoderRight[1]);
+    int leftOld = makeInt(frame.encoderLeft[0], frame.encoderLeft[1]);
+
+    rightNew += rightOld;
+    leftNew += leftOld;
+    
+    frame.encoderRight[0] = highByte(rightNew);
+    frame.encoderRight[1] = lowByte(rightNew);
+    frame.encoderLeft[0] = highByte(leftNew);
+    frame.encoderLeft[1] = lowByte(leftNew);
     encoderDataSet = 1;
-#endif
 }
 #endif
 
@@ -75,44 +86,72 @@ void sendFrameData(){
 
 #endif
 
-#ifdef PICMAN
 
+#if defined(PICMAN) || defined(MOTOR_PIC) || defined(SENSOR_PIC)
 //returns 1 if both datas have been set, frame is full AND start frames has been sent
 //0 if either hasnt been set yet
 uint8 frameDataReady(){
-    return sensorDataSet && encoderDataSet;
+    uint8 dataset = 0;
+#if defined(PICMAN) || defined(SENSOR_PIC)
+    dataset += sensorDataSet;
+#endif
+#if defined(PICMAN) || defined(MOTOR_PIC)
+    dataset += encoderDataSet;
+#endif
+    return dataset;
 }
 
 //the frames won't be sent or used unless these values are 1
 //effectively, the frames are reset since they'll  be rewritten before used next.
 void clearFrameData(){
+#if defined(PICMAN) || defined(SENSOR_PIC)
+    addSensorFrame(0,0,0);
     sensorDataSet = 0;
+#endif
+#if defined(PICMAN) || defined(MOTOR_PIC)
+    frame.encoderLeft[0] = 0;
+    frame.encoderLeft[1] = 0;
+    frame.encoderRight[0] = 0;
+    frame.encoderRight[1] = 0;
     encoderDataSet = 0;
+#endif
 }
 
-void sendFrameData(){
+void sendFrameData(uint8 msgid){
     //this block may be unnecessary but it makes all invalid data easier to see for now
     if(!frameDataReady()){
-        addSensorFrame(0,0,0);
-        addEncoderData(0,0,0,0); //send all 0's if the frame isn't ready
         clearFrameData(); //resets flags for frame data ready
     }
-    char packedFrame[FRAME_MEMBERS] = "";
+    char packedFrame[FRAME_MEMBERS] = {0};
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;
-    char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS] = "";
-    int length = packReadFrame(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage); //adds the headers to the data
-    //only way this will get called is if it's an i2c response (from arm)
-    if(!frameDataReady()){
-        flagInvalidData(packedFrameMessage);
+    char packedFrameMessage[FRAME_MEMBERS + HEADER_MEMBERS] = {0};
+#ifdef PICMAN
+    int length = packReadFrame(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage, msgid); //adds the headers to the data
+#elif defined(MOTOR_PIC)
+    int length = packEncoderData(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage, msgid);
+#elif defined(SENSOR_PIC)
+    int length = packSensorFrame(packedFrame, sizeof packedFrame, packedFrameMessage, sizeof packedFrameMessage, msgid);
+#endif
+    if(length != 0){
+        makeErrorHeaderIfNeeded(length, packedFrameMessage);
+        //must set flags after adding error header(if needed)
+        if(!frameDataReady()){
+            flagInvalidData(packedFrameMessage);
+        }
+#ifdef PICMAN
+        if(isColorSensorTriggered()){
+            flagColorSensed(packedFrameMessage);
+            clearColorSensorStatus(); //don't need to send multiple times
+        }
+#endif
+        //only way this will get called is if it's an i2c response (from arm or master pic)
+        start_i2c_slave_reply(length, packedFrameMessage);
+        clearFrameData(); //data sent - prepare for next sending
     }
-    if(isColorSensorTriggered()){
-        flagColorSensed(packedFrameMessage);
-        clearColorSensorStatus(); //don't need to send multiple times
-    }
-    start_i2c_slave_reply(length, packedFrameMessage);
 }
 #endif
+
 
 #if defined(ROVER_EMU) && defined(DEBUG_ON)
 void fillDummyFrame(){

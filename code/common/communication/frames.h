@@ -4,6 +4,11 @@
 #define	FRAMES_H
 #include "sensor_types.h"
 #include "brain_rover.h"
+
+#define makeInt(high, low) (((int) high) << 8 | (low))
+#define highByte(c) (c >> 8)
+#define lowByte(c) (c & 0xFF)
+
 //every pic has its own definition of a frame
 #if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)
 typedef struct {
@@ -48,10 +53,11 @@ void sendFrameData();
 void clearFrameData();
 #endif
 
-#ifdef PICMAN
-void sendFrameData();
+
+#if defined(PICMAN) || defined(MOTOR_PIC) || defined(SENSOR_PIC)
 uint8 frameDataReady();
 void clearFrameData();
+void sendFrameData(uint8 msgid);
 #endif
 
 #if defined(ROVER_EMU) && defined(DEBUG_ON)

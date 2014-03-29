@@ -1,4 +1,5 @@
 #include "comm.h"
+#include "error.h"
 
 #define payloadSize 10
 static BrainMsg LPBrainMsgRecv;
@@ -92,19 +93,20 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
     char errorbuf[6] = {0};
+    uint8 length = 0;
     switch(brain->flags){
         case SENSOR_COMMANDS:{
             if(brain->parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
                sendSensorFrame(brain->messageid);
             }
             else{
-                uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+                length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
                 sendData(errorbuf, length, wifly);
             }
             break;
         };
         default:{
-            uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+            length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
             sendData(errorbuf, length, wifly);
             break;
         };
@@ -457,7 +459,10 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
         case HIGH_LEVEL_COMMANDS:
             switch(brain->parameters){
                 case 0x02:
-                    sendFrameData();
+                    if(!wifly_setup){
+                        saveError(0x03); //MASTER PIC not detected
+                    }
+                    sendFrameData(brain->messageid);
                     break;
                 case 0x05:{
                     if(!isTurnComplete()){
@@ -488,7 +493,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
 //    if(isColorSensorTriggered()){
 //        return; //don't care about propogating any commands
 //    }
-    char command[6] = "";
+    char command[6] = {0};
     uint8 length = 0;
     switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -511,7 +516,9 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                     case 0x03:
                     case 0x04:
-                        turnStarted();
+                        if(wifly_setup){
+                            turnStarted();//only start the turn if we know we have a connection.
+                        }
                         length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
                     default:
