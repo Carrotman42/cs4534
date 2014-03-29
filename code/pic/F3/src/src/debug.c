@@ -15,9 +15,6 @@ void setDBG(unsigned char b) {
         case 3:
             LATBbits.LATB3 = 1;
             break;
-        case 4:
-            LATBbits.LATB4 = 1;
-            break;
         default:
             break;
     }
@@ -37,9 +34,6 @@ void resetDBG(unsigned char b) {
         case 3:
             LATBbits.LATB3 = 0;
             break;
-        case 4:
-            LATBbits.LATB4 = 0;
-            break;
         default:
             break;
     }
@@ -57,9 +51,6 @@ void flipDBG(unsigned char b) {
             break;
         case 3:
             LATBbits.LATB3 = !LATBbits.LATB3;
-            break;
-        case 4:
-            LATBbits.LATB4 = !LATBbits.LATB4;
             break;
         default:
             break;
@@ -83,9 +74,4 @@ void debugNum(int num){
         setDBG(DBG4);
         resetDBG(DBG4);
     }
-    if(num & 16){
-        setDBG(DBG5);
-        resetDBG(DBG5);
-    }
-
 }

@@ -35,14 +35,14 @@ void init_i2c(i2c_comm *ic) {
 //   i2c_comm (as pointed to by ic_ptr) for later use.
 //SSPADD=(FOSC / (4 * BAUD)) - 1;
 void i2c_configure_master() {
+#ifdef __USE18F46J50
+    TRISBbits.TRISB4 = 1; //RB4 = SCL1
+    TRISBbits.TRISB5 = 1; //RB5 = SDA1
+#endif
     SSPCON1bits.SSPM = 0x8; // Master with Baud rate as set below
     SSPCON1bits.SSPEN = 0x1; //Enable SDA/SCL
     SSPSTATbits.SMP = 0x1;
-#ifdef MASTER_PIC
-    SSPADD = (48000000 / (4*100000))-1; //should be 0x1D for a 12 MHz clock
-#else
     SSPADD = (12000000 / (4*100000))-1; //should be 0x1D for a 12 MHz clock
-#endif
 }
 
 // Sending in I2C Master mode [slave write]
@@ -59,10 +59,7 @@ void i2c_configure_master() {
 
 //addr is the actual address.  It will be shifted here
 unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg) {
-    debugNum(1);
     if(ic_ptr->status != I2C_IDLE){
-        debugNum(1);
-        debugNum(1);
         //copy addr and msg into a single array
         char tempbuf[MAX_I2C_SENSOR_DATA_LEN +1];
         tempbuf[0] = addr;
@@ -84,9 +81,7 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
     ic_ptr->outbuflen = length + 1; //char length + addr byte
     ic_ptr->outbufind = 0; //start at 0th pos.  addr will be written in after S int happens
     ic_ptr->status = I2C_STARTED;
-    debugNum(1);
     SSPCON2bits.SEN = 1; //send start signal
-
     return 1;
 }
 

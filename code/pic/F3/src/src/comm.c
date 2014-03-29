@@ -91,20 +91,19 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    char errorbuf[6] = {0};
     switch(brain->flags){
         case SENSOR_COMMANDS:{
             if(brain->parameters == 0x01){ // this will only be called on the MOTOR PIC (M->Mo)
                sendSensorFrame(brain->messageid);
             }
             else{
-                char errorbuf[6];
                 uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
                 sendData(errorbuf, length, wifly);
             }
             break;
         };
         default:{
-            char errorbuf[6];
             uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
             sendData(errorbuf, length, wifly);
             break;
@@ -486,9 +485,9 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 //it sends most commands across uart.
 //only command it won't propogate is read frames
 static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
-    if(isColorSensorTriggered()){
-        return; //don't care about propogating any commands
-    }
+//    if(isColorSensorTriggered()){
+//        return; //don't care about propogating any commands
+//    }
     char command[6] = "";
     uint8 length = 0;
     switch(brain->flags){
@@ -508,13 +507,17 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                     case 0x00:
                     case 0x01:
                     case 0x02:
+                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
+                        break;
                     case 0x03:
                     case 0x04:
+                        turnStarted();
                         length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
                     default:
                         break;
                 }
+
             }
             break;
     }
@@ -552,7 +555,6 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x03:
                 case 0x04:
-                    //turnStarted();//comment out for now because we dont want stalling
                     break;
                 default:
                     break;
