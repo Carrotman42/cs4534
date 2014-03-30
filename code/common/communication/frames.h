@@ -48,16 +48,17 @@ uint8 packFrame(char* out, uint8 maxout);
 #if defined(MASTER_PIC) || defined(ROVER_EMU)
 void startFrames();
 void stopFrames();
-uint8 frameDataReady();
 void sendFrameData();
-void clearFrameData();
 #endif
 
 
 #if defined(PICMAN) || defined(MOTOR_PIC) || defined(SENSOR_PIC)
+void sendFrameData(uint8 msgid);
+#endif
+
+#ifndef ARM_EMU
 uint8 frameDataReady();
 void clearFrameData();
-void sendFrameData(uint8 msgid);
 #endif
 
 #if defined(ROVER_EMU) && defined(DEBUG_ON)

@@ -261,7 +261,7 @@ void main(void) {
 #ifndef MASTER_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
 #endif
     
 #ifdef __USE18F26J50
@@ -364,13 +364,13 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(8);
+                    //debugNum(4);
                     i2c_master_recv(msgbuffer[0]);
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-                    //debugNum(16);
+                    //debugNum(8);
                     i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
                 };
                 #endif
@@ -460,47 +460,21 @@ void main(void) {
                     setRoverDataLP(msgbuffer);
                     handleRoverDataLP();
 #elif defined(MASTER_PIC) || defined(ROVER_EMU)
-                    //unsigned char test[7] = {1,0,0,18,2,7,8};
-                    //uart_send_array(test, sizeof test);
-                    //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
-                    //send ack
                     setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
                     handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
-
-                    /*unsigned char addr;
-                    if(msgbuffer[0] == 0x01)
-                        addr = 0x10;
-                    else
-                        addr = 0x20;
-                    */
-                    // test code for the master pic
-                    // Glen_Debug = 1 ---> Master PIC
-                    // Glen_Debug = 0 ---> Slave PIC
 #endif
-#if GLEN_DEBUG == 0
-//                  unsigned char test[5] = {'1','2','3','4','\r'};
-                    uart_send_array(msgbuffer, 5);
-
-                    /*
-                    char i, count;
-                    count = 0;
-                    for (i = 0; i < length; i++) {
-                        if (msgbuffer[i] == test[i]) {
-                            count += 1;
-                        }
-                    }
-                    if (count >= 5) {
-                        PORTBbits.RB7 = 1;
-                    } else {
-                        PORTBbits.RB7 = 0;
-                    }*/
-#else
-                   //Write code to copy and resend exact message back to master
-                    // This will be the test for the slave pic if implemented
-#endif
-//                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
                     break;
                 };
+//                case MSGT_UART_COMM_BUSY:
+//                {
+//#ifdef PICMAN
+//                    setRoverDataLP(msgbuffer);
+//                    handleRoverDataLP();
+//#elif defined(MASTER_PIC) || defined(ROVER_EMU)
+//                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+//                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+//#endif
+//                };
                 case MSGT_UART_RECV_FAILED:
                 {
                     debugNum(1);

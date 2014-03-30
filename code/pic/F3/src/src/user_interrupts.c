@@ -17,6 +17,8 @@
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
 
+unsigned char datareq = 0;
+
 void timer0_int_handler() {
 
 #ifdef MASTER_PIC
@@ -35,24 +37,35 @@ void timer0_int_handler() {
     char data[5];
     uint8 length = 0;
     uint8 addr;
-    switch(loop){
-        case 0:
-            length = generateGetSensorFrame(data, sizeof data);
-            loop++;
-            addr = SENSOR_ADDR;
-            break;
-        case 1:
-            length = generateGetEncoderData(data, sizeof data);
-            loop = 0;
-            addr = MOTOR_ADDR;
-            break;
-        default:
-            loop = 0;
-            break;
+    static uint8 datareq_loop = 0;
+    if(!datareq){
+        switch(loop){
+            case 0:
+                length = generateGetSensorFrame(data, sizeof data);
+                loop++;
+                addr = SENSOR_ADDR;
+                break;
+            case 1:
+                length = generateGetEncoderData(data, sizeof data);
+                loop = 0;
+                addr = MOTOR_ADDR;
+                break;
+            default:
+                loop = 0;
+                break;
+        }
+        //uart_send_array(encoderDataReq, length);
+        datareq = 1;
+        i2c_master_send(addr, length, data);
     }
-    //uart_send_array(encoderDataReq, length);
-    i2c_master_send(addr, length, data);
-    WriteTimer0(0x2000);
+    else{
+        datareq_loop++;
+        if(datareq_loop == 5){ //reset after 5
+            datareq = 0;
+            datareq_loop = 0;
+        }
+    }
+    WriteTimer0(0x4000);
 #endif
 
 

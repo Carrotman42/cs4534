@@ -1,5 +1,6 @@
 #include "comm.h"
 #include "error.h"
+#include "user_interrupts.h" //used for extern var
 
 #define payloadSize 10
 static BrainMsg LPBrainMsgRecv;
@@ -13,8 +14,8 @@ static char  HPRoverPayload[payloadSize];
 static uint8 wifly;
 
 static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
-    clearHighPriority(incomingMsg); //at this point, hp is useless since the hp functions are already getting called
     BrainMsg* msg = unpackBrainMsg(incomingMsg); //just a cast but this adds clarification
+    clearHighPriority(incomingMsg); //at this point, hp is useless since the hp functions are already getting called
     staticMsg->flags = msg->flags;
     staticMsg->parameters = msg->parameters;
     staticMsg->messageid = msg->messageid;
@@ -25,20 +26,27 @@ static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
         payload[i] = *(msg->payload + i);
     }
 }
+
 //wifly is 1 the brain msg is received via wifly, 0 through i2c
 void setBrainDataHP(char* msg){
+    debugNum(1);
     setData(&HPBrainMsgRecv, &HPBrainPayload, msg);
 }
 
 void setBrainDataLP(char* msg){
+    debugNum(2);
     setData(&LPBrainMsgRecv, &LPBrainPayload, msg);
 }
 
 void setRoverDataHP(char* msg){
+    debugNum(1);
+    debugNum(1);
     setData(&HPRoverMsgRecv, &HPRoverPayload, msg);
 }
 
 void setRoverDataLP(char* msg){
+    debugNum(2);
+    debugNum(2);
     setData(&LPRoverMsgRecv, &LPRoverPayload, msg);
 }
 
@@ -131,6 +139,7 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 
 
 static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 dest){
+    //debugNum(2);
     uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
@@ -141,10 +150,12 @@ static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 de
 
 void handleMessageHP(uint8 source, uint8 dest){
     handleMessage(&HPBrainMsgRecv, HPBrainPayload, source, dest);
+    debugNum(4);
 }
 
 void handleMessageLP(uint8 source, uint8 dest){
     handleMessage(&LPBrainMsgRecv, LPBrainPayload, source, dest);
+    debugNum(8);
 }
 
 
@@ -273,7 +284,6 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                 }
                 if(length != 0){
-                    //debugNum(1);
                     i2c_master_send(addr, length, command);
                 }
             }
@@ -282,6 +292,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
     }
 }
 static void handleRoverData(RoverMsg* rover, char* payload){
+    //debugNum(4);
     char command[HEADER_MEMBERS] = {0};
     uint8 length = 0;
     switch(rover->flags){
@@ -291,6 +302,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     if(!isInvalidData((char*) rover)){ //valid data received
                         addSensorFrame(payload[0], payload[1], payload[2]);
                     }
+                    datareq = 0; //done
                     //debugNum(8);
                     break;
                 default:
@@ -303,6 +315,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     if(!isInvalidData((char*) rover)){ //valid data received
                         addEncoderData(payload[0], payload[1], payload[2], payload[3]);
                     }
+                    datareq = 0; //done
                     //debugNum(8);
                     break;
                 default:
@@ -344,6 +357,18 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     break;
             }
             break;
+        case (ERROR_FLAG)://frames are returned with error flags
+            if(!isInvalidData((char*) rover)){
+                if(rover->payloadLen == 3){
+                    addSensorFrame(payload[0], payload[1], payload[2]);
+                }
+                else if(rover->payloadLen == 4){
+                    addEncoderData(payload[0], payload[1], payload[2], payload[3]);
+                }
+            }
+            length = generateErrorFromParam(command, sizeof command, rover->parameters, UART_COMM);
+            sendData(command, length, UART_COMM);
+            break;
         default:
             break;
     }
@@ -356,10 +381,14 @@ static void handleRoverData(RoverMsg* rover, char* payload){
 
 void handleRoverDataHP(){
     handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
+    debugNum(4);
+    debugNum(4);
 }
 
 void handleRoverDataLP(){
     handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
+    debugNum(8);
+    debugNum(8);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
