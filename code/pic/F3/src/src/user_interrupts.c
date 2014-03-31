@@ -20,7 +20,7 @@
 unsigned char datareq = 0;
 
 void timer0_int_handler() {
-
+    //debugNum(1);
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
     static int colorSensorCounter = 0;
@@ -31,13 +31,13 @@ void timer0_int_handler() {
         uart_send_array(command, length);
     }
 #endif
-    //debugNum(1);
     static uint8 loop = 0;
 
-    char data[5];
+    char data[5] = {0};
     uint8 length = 0;
     uint8 addr;
     static uint8 datareq_loop = 0;
+    
     if(!datareq){
         switch(loop){
             case 0:
@@ -60,7 +60,7 @@ void timer0_int_handler() {
     }
     else{
         datareq_loop++;
-        if(datareq_loop == 5){ //reset after 5
+        if(datareq_loop == 10){ //reset after 5
             datareq = 0;
             datareq_loop = 0;
         }
@@ -72,7 +72,6 @@ void timer0_int_handler() {
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
     //WriteTimer0(0x4000);
-    //debugNum(4);
     //i2c_master_recv(0x10);
     //char buf[1];
     //buf[0] = 0x01;
@@ -95,21 +94,18 @@ void timer1_int_handler() {
 #ifdef __USE18F2680
     LATBbits.LATB1 = !LATBbits.LATB1;
 #endif
-    //debugNum(4);
     //uart_send((char) 0x55);
 //    result = ReadTimer1();
 #if defined(ROVER_EMU) && defined(DEBUG_ON)
         //the only thing the rover does on its own is send data
     static uint8 colorSensorCounter = 0;
     if(colorSensorCounter == 50){
-        debugNum(2);
         colorSensorCounter++;
         char command[5];
         uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
         uart_send_array(command, length);
     }
     else if(colorSensorCounter < 50){
-        debugNum(1);
         fillDummyFrame();
         if(frameDataReady()){ //used for checking the framesrequested flag
             sendFrameData();
@@ -175,8 +171,7 @@ void timer1_int_handler() {
         }
         WriteTimer1(0x2000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
-        //debugNum(1);
-/*        static uint8 temp =0;
+        static uint8 temp =0;
         static uint8 start = 0;
         char testArray[6];
         uint8 length = 0;
@@ -195,7 +190,9 @@ void timer1_int_handler() {
                     temp++;
                     break;
                 case 3:
+                    //debugNum(2);
                     length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
+                    //FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
                     temp++;
                     break;
                 case 4:
@@ -203,15 +200,14 @@ void timer1_int_handler() {
                     temp++;
                     break;
                 case 5:
-                    debugNum(1);
-                    if(start == 0){
-                        length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
-                        start = 1;
-                    }
-                    else{
-                        length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
-                        start = 0;
-                    }
+//                    if(start == 0){
+//                        length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
+//                        start = 1;
+//                    }
+//                    else{
+//                        length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
+//                        start = 0;
+//                    }
 
                     temp = 0;
                     break;
@@ -219,11 +215,10 @@ void timer1_int_handler() {
 
 
             //uart_send_array(testArray, length);
-            ToMainLow_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
+            FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
         }
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         //WriteTimer1(0x4000);
- * */
 #endif
 
 //#if defined(PICMAN) && defined(DEBUG_ON)
@@ -231,5 +226,6 @@ void timer1_int_handler() {
 //        uint8 length = generateStartForward(command, sizeof command, UART_COMM, 0x10);
 //        uart_send_array(command, length);
 //#endif
+
 
 }

@@ -7,6 +7,7 @@
 #include "my_i2c.h"
 #include "debug.h"
 #include "my_uart.h"
+#include "interrupts.h"
 
 #ifdef DEBUG_ON
 #include "testAD.h"
@@ -67,9 +68,17 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
         for(i; i < length+1; i++){
             tempbuf[i] = msg[i-1];
         }
-        ToMainHigh_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
+        if(in_main()){
+            debugNum(1);
+            FromMainHigh_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
+        }
+        else{
+            debugNum(1);
+            FromI2CInt_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
+        }
         return 0;
     }
+    ic_ptr->status = I2C_STARTED;
     ic_ptr->txnrx = 1;
     ic_ptr->addr = addr;
     char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits
@@ -80,7 +89,6 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
     }
     ic_ptr->outbuflen = length + 1; //char length + addr byte
     ic_ptr->outbufind = 0; //start at 0th pos.  addr will be written in after S int happens
-    ic_ptr->status = I2C_STARTED;
     SSPCON2bits.SEN = 1; //send start signal
     return 1;
 }
@@ -100,7 +108,12 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
 
 unsigned char i2c_master_recv(unsigned char addr) {
     if(ic_ptr->status != I2C_IDLE){
-        ToMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
+        if(in_main()){
+            FromMainHigh_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
+        }
+        else{
+            FromI2CInt_sendmsg(1, MSGT_MASTER_RECV_BUSY, &addr);
+        }
         return 0;
     }
     ic_ptr->txnrx = 0;
@@ -172,7 +185,7 @@ void i2c_tx_handler(){
                 else{//motor pic
                     generateMotorPICDetectionError(error, sizeof error, UART_COMM);
                 }
-                ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_SEND_FAILED, error);
+                FromI2CInt_sendmsg(sizeof error, MSGT_I2C_MASTER_SEND_FAILED, error);
             }
             break;
         default:
@@ -256,14 +269,14 @@ void i2c_rx_handler(){
                         handleRoverDataHP();
                     }
                     else{
-                        ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
+                        FromI2CInt_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, ic_ptr->buffer);
                     }
                 }
                 else{
                     char error[6];
                     generateChecksumError(error, sizeof error, UART_COMM); //the intention is that this may be sent over uart
                                                                    //but will not be sent over i2c
-                    ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
+                    FromI2CInt_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
                 }
             }
             else{
@@ -274,7 +287,7 @@ void i2c_rx_handler(){
                 else{//motor pic
                     generateMotorPICDetectionError(error, sizeof error, UART_COMM);
                 }
-                ToMainHigh_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
+                FromI2CInt_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
             }
             break;
         default:
@@ -495,27 +508,18 @@ void i2c_int_handler() {
     }
 
     if (msg_ready) {
-
-        //#ifdef SENSOR_PIC
-        //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
-        //setBrainReqData(ic_ptr->buffer);
-        //ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
-        //#elif defined(PICMAN) || defined(MOTOR_PIC)
-        //ic_ptr->buffer[ic_ptr->buflen] = ic_ptr->event_count;
-        //debugNum(1);
-        //#endif
         if(isHighPriority(ic_ptr->buffer)){
             setBrainDataHP(ic_ptr->buffer);
         }
         else{
-            ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
+            FromI2CInt_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
         }
         ic_ptr->buflen = 0;
     } else if (ic_ptr->error_count >= I2C_ERR_THRESHOLD) {
         error_buf[0] = ic_ptr->error_count;
         error_buf[1] = ic_ptr->error_code;
         error_buf[2] = ic_ptr->event_count;
-        ToMainHigh_sendmsg(sizeof (unsigned char) *3, MSGT_I2C_DBG, (void *) error_buf);
+        FromI2CInt_sendmsg(sizeof (unsigned char) *3, MSGT_I2C_DBG, (void *) error_buf);
         ic_ptr->error_count = 0;
     }
     if (msg_to_send) {
@@ -533,7 +537,7 @@ void i2c_int_handler() {
 #endif
         }
         else{
-            ToMainHigh_sendmsg(0, MSGT_I2C_RQST, (void *) 0);
+            FromI2CInt_sendmsg(0, MSGT_I2C_RQST, (void *) 0);
         }
 
         //sendRequestedData();

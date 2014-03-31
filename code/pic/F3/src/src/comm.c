@@ -29,24 +29,18 @@ static void setData(Msg* staticMsg, char* payload, char* incomingMsg){
 
 //wifly is 1 the brain msg is received via wifly, 0 through i2c
 void setBrainDataHP(char* msg){
-    debugNum(1);
     setData(&HPBrainMsgRecv, &HPBrainPayload, msg);
 }
 
 void setBrainDataLP(char* msg){
-    debugNum(2);
     setData(&LPBrainMsgRecv, &LPBrainPayload, msg);
 }
 
 void setRoverDataHP(char* msg){
-    debugNum(1);
-    debugNum(1);
     setData(&HPRoverMsgRecv, &HPRoverPayload, msg);
 }
 
 void setRoverDataLP(char* msg){
-    debugNum(2);
-    debugNum(2);
     setData(&LPRoverMsgRecv, &LPRoverPayload, msg);
 }
 
@@ -71,14 +65,14 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                 if(!ack){
                     char command[6] = {0};
                     uint8 length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
-                    makeHighPriority(command);
+//                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
                     ack = 1;
                 }
                 else{
                     char command[6] = {0};
                     uint8 length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
-                    makeHighPriority(command);
+//                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
                     ack = 0;
                 }
@@ -139,7 +133,6 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 
 
 static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 dest){
-    //debugNum(2);
     uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
@@ -150,12 +143,12 @@ static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 de
 
 void handleMessageHP(uint8 source, uint8 dest){
     handleMessage(&HPBrainMsgRecv, HPBrainPayload, source, dest);
-    debugNum(4);
+    //debugNum(4);
 }
 
 void handleMessageLP(uint8 source, uint8 dest){
     handleMessage(&LPBrainMsgRecv, LPBrainPayload, source, dest);
-    debugNum(8);
+    //debugNum(8);
 }
 
 
@@ -276,8 +269,12 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                     case 0x00:
                     case 0x01:
                     case 0x02:
+                        length = repackBrainMsg(brain, payload, command, sizeof command, dest);
+                        break;
                     case 0x03:
                     case 0x04:
+                        //debugNum(1);
+                        turnStarted();
                         length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
                     default:
@@ -327,11 +324,13 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x05:{//ack or nack back from turn complete
                     if(payload[0] == 0){ //nack
+                        //debugNum(2);
                         length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                         i2c_master_send(MOTOR_ADDR, length, command);
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
+                        //debugNum(4);
                         length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
                         uart_send_array(command, length);
                         turnCompleted();
@@ -347,9 +346,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x03: //one of the turns has been ack'd
                 case 0x04:{
-                    turnStarted();
                     length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask if done
-                    //uart_send_array(command, length);
                     i2c_master_send(MOTOR_ADDR, length, command);
                     break;
                 };
@@ -374,6 +371,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
     }
     //debugNum(1);
     if(frameDataReady()){
+        //debugNum(4);
         sendFrameData();
         clearFrameData();
     }
@@ -381,14 +379,14 @@ static void handleRoverData(RoverMsg* rover, char* payload){
 
 void handleRoverDataHP(){
     handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
-    debugNum(4);
-    debugNum(4);
+//    debugNum(4);
+//    debugNum(4);
 }
 
 void handleRoverDataLP(){
     handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
-    debugNum(8);
-    debugNum(8);
+//    debugNum(8);
+//    debugNum(8);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
@@ -500,7 +498,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     else{
                         length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
                     }
-                    makeHighPriority(command);
+//                    makeHighPriority(command);
                     sendData(command, length, I2C_COMM);
                     break;
                 };

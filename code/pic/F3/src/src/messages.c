@@ -190,6 +190,48 @@ signed char FromMainHigh_recvmsg(unsigned char maxlength, unsigned char *msgtype
     return (recv_msg(&FromMainHigh_MQ, maxlength, msgtype, data));
 }
 
+static msg_queue FromUARTInt_MQ;
+
+signed char FromUARTInt_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
+#ifdef DEBUG
+    if (!in_high_int()) {
+        return (MSG_NOT_IN_HIGH);
+    }
+#endif
+    return (send_msg(&FromUARTInt_MQ, length, msgtype, data));
+}
+
+signed char FromUARTInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
+#ifdef DEBUG
+    if (!in_main()) {
+        return (MSG_NOT_IN_MAIN);
+    }
+#endif
+    return (recv_msg(&FromUARTInt_MQ, maxlength, msgtype, data));
+}
+
+static msg_queue FromI2CInt_MQ;
+
+signed char FromI2CInt_sendmsg(unsigned char length, unsigned char msgtype, void *data) {
+#ifdef DEBUG
+    if (!in_high_int()) {
+        return (MSG_NOT_IN_HIGH);
+    }
+#endif
+    return (send_msg(&FromI2CInt_MQ, length, msgtype, data));
+}
+
+signed char FromI2CInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data) {
+#ifdef DEBUG
+    if (!in_main()) {
+        return (MSG_NOT_IN_MAIN);
+    }
+#endif
+    return (recv_msg(&FromI2CInt_MQ, maxlength, msgtype, data));
+}
+
+
+
 static unsigned char MQ_Main_Willing_to_block;
 
 void init_queues() {
@@ -198,6 +240,8 @@ void init_queues() {
     init_queue(&ToMainHigh_MQ);
     init_queue(&FromMainLow_MQ);
     init_queue(&FromMainHigh_MQ);
+    init_queue(&FromUARTInt_MQ);
+    init_queue(&FromI2CInt_MQ);
 }
 
 void enter_sleep_mode(void) {
@@ -249,6 +293,18 @@ void SleepIfOkay() {
     if (check_msg(&ToMainLow_MQ)) {
         return;
     }
+    if (check_msg(&FromMainHigh_MQ)) {
+        return;
+    }
+    if (check_msg(&FromMainLow_MQ)) {
+        return;
+    }
+    if (check_msg(&FromUARTInt_MQ)) {
+        return;
+    }
+    if (check_msg(&FromI2CInt_MQ)) {
+        return;
+    }
     enter_sleep_mode();
 }
 
@@ -258,28 +314,33 @@ void block_on_To_msgqueues() {
     if (!in_main()) {
         return;
     }
-#ifdef __USE18F2680
-    LATBbits.LATB3 = 1;
-#endif
     MQ_Main_Willing_to_block = 1;
     while (1) {
+        if (check_msg(&FromMainHigh_MQ)) {
+            MQ_Main_Willing_to_block = 0;
+            return;
+        }
+        if (check_msg(&FromMainLow_MQ)) {
+            MQ_Main_Willing_to_block = 0;
+            return;
+        }
+        if (check_msg(&FromUARTInt_MQ)) {
+            MQ_Main_Willing_to_block = 0;
+            return;
+        }
+        if (check_msg(&FromI2CInt_MQ)) {
+            MQ_Main_Willing_to_block = 0;
+            return;
+        }
         if (check_msg(&ToMainHigh_MQ)) {
             MQ_Main_Willing_to_block = 0;
-#ifdef __USE18F2680
-            LATBbits.LATB3 = 0;
-#endif
             return;
         }
         if (check_msg(&ToMainLow_MQ)) {
             MQ_Main_Willing_to_block = 0;
-#ifdef __USE18F2680
-            LATBbits.LATB3 = 0;
-#endif
             return;
         }
+
         Delay1KTCYx(10);
-#ifdef __USE18F2680
-        LATBbits.LATB3 = !LATBbits.LATB3;
-#endif
     }
 }

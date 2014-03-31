@@ -19,20 +19,19 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 msgid, uint8 wifly){
             break;
         case 0x03:
             bytes_packed = packTurnCWAck(outbuf, sizeof outbuf, msgid);
-            if(!wifly)
-                makeHighPriority(outbuf);
+//            if(!wifly)
+//                makeHighPriority(outbuf);
             break;
         case 0x04:
             bytes_packed = packTurnCCWAck(outbuf, sizeof outbuf, msgid);
-            if(!wifly)
-                makeHighPriority(outbuf);
+//            if(!wifly)
+//                makeHighPriority(outbuf);
             break;
         default:
             bytes_packed = packPICDetectErrorAck(outbuf, sizeof outbuf, msgid);
             success = 0;
             break;
     }
-    //debugNum(1);
     sendData(outbuf, bytes_packed, wifly);
     return success;
 }

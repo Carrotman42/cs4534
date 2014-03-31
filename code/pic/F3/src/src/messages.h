@@ -78,4 +78,10 @@ signed char FromMainLow_recvmsg(unsigned char,unsigned char *,void *);
 signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
 signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
 
+signed char FromUARTInt_sendmsg(unsigned char length, unsigned char msgtype, void *data);
+signed char FromUARTInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data);
+
+signed char FromI2CInt_sendmsg(unsigned char length, unsigned char msgtype, void *data);
+signed char FromI2CInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data);
+
 #endif
