@@ -197,9 +197,9 @@ void main(void) {
     uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
-    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
-    uint8 to_send_len;
-    int data_points_count = 0;
+//    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
+//    uint8 to_send_len;
+//    int data_points_count = 0;
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread
@@ -397,6 +397,7 @@ void main(void) {
                 case MSGT_UART_DATA:
                 {
 #ifdef PICMAN
+                    //debugNum(1);
                     setRoverDataLP(msgbuffer);
                     handleRoverDataLP();
 #elif defined(MASTER_PIC) || defined(ROVER_EMU)
@@ -434,7 +435,6 @@ void main(void) {
             switch(msgtype){
                 case MSGT_I2C_DATA:
                 {
-                    debugNum(4);
 #if defined(MASTER_PIC) || defined(ARM_EMU)
                     //handle whatever data will come through via i2c
                     //msgbuffer can hold real data - error codes will be returned through the error cases
@@ -443,7 +443,6 @@ void main(void) {
 #else
                     setBrainDataLP(msgbuffer);
 #endif
-                    debugNum(4);
                     break;
                 };
                 case MSGT_I2C_RQST:

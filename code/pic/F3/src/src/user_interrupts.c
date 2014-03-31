@@ -171,52 +171,52 @@ void timer1_int_handler() {
         }
         WriteTimer1(0x2000);
 #elif defined(MASTER_PIC) && defined(DEBUG_ON)
-        static uint8 temp =0;
-        static uint8 start = 0;
-        char testArray[6];
-        uint8 length = 0;
-        if(isTurnComplete()){ //make sure rover is not turning
-            switch(temp){
-                case 0:
-                    length = generateStartForward(testArray, sizeof testArray, UART_COMM, 0x05);
-                    temp++;
-                    break;
-                case 1:
-                    length = generateStartBackward(testArray, sizeof testArray, UART_COMM, 0x06);
-                    temp++;
-                    break;
-                case 2:
-                    length = generateStop(testArray, sizeof testArray, UART_COMM);
-                    temp++;
-                    break;
-                case 3:
-                    //debugNum(2);
-                    length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
-                    //FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
-                    temp++;
-                    break;
-                case 4:
-                    length = generateTurnCCW(testArray, sizeof testArray, UART_COMM, 0x08);
-                    temp++;
-                    break;
-                case 5:
-//                    if(start == 0){
-//                        length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
-//                        start = 1;
-//                    }
-//                    else{
-//                        length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
-//                        start = 0;
-//                    }
-
-                    temp = 0;
-                    break;
-            }
-
-
-            //uart_send_array(testArray, length);
-            FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
-        }
+//        static uint8 temp =0;
+//        static uint8 start = 0;
+//        char testArray[6];
+//        uint8 length = 0;
+//        if(isTurnComplete()){ //make sure rover is not turning
+//            switch(temp){
+//                case 0:
+//                    length = generateStartForward(testArray, sizeof testArray, UART_COMM, 0x05);
+//                    temp++;
+//                    break;
+//                case 1:
+//                    length = generateStartBackward(testArray, sizeof testArray, UART_COMM, 0x06);
+//                    temp++;
+//                    break;
+//                case 2:
+//                    length = generateStop(testArray, sizeof testArray, UART_COMM);
+//                    temp++;
+//                    break;
+//                case 3:
+//                    //debugNum(2);
+//                    length = generateTurnCW(testArray, sizeof testArray, UART_COMM, 0x07);
+//                    //FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
+//                    temp++;
+//                    break;
+//                case 4:
+//                    length = generateTurnCCW(testArray, sizeof testArray, UART_COMM, 0x08);
+//                    temp++;
+//                    break;
+//                case 5:
+////                    if(start == 0){
+////                        length = generateStartFrames(testArray, sizeof testArray, UART_COMM);
+////                        start = 1;
+////                    }
+////                    else{
+////                        length = generateStopFrames(testArray, sizeof testArray, UART_COMM);
+////                        start = 0;
+////                    }
+//
+//                    temp = 0;
+//                    break;
+//            }
+//
+//
+//            //uart_send_array(testArray, length);
+//            FromUARTInt_sendmsg(length, MSGT_UART_DATA, (void*) testArray);
+//        }
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         //WriteTimer1(0x4000);
 #endif

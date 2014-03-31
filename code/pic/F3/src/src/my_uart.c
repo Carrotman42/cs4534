@@ -77,6 +77,7 @@ void uart_recv_int_handler() {
         if (pos == payload_length+HEADER_MEMBERS-1){
             pos++;
             if(checksum_calc_value == checksum_recv_value){
+                //debugNum(4);
                 FromUARTInt_sendmsg(pos, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             }
             else{ //Invalid Checksum
@@ -88,9 +89,9 @@ void uart_recv_int_handler() {
             checksum_recv_value = 0;
             checksum_calc_value = 0;
 #ifdef __USE18F46J50
-            Read1USART();    // clears buffer and returns value to nothing
+            //Read1USART();    // clears buffer and returns value to nothing
 #else
-            ReadUSART();
+            //ReadUSART();
 #endif
         }
         // portion of the bytes were received or there was a corrupt byte or there was 

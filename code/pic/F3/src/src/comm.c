@@ -143,12 +143,10 @@ static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 de
 
 void handleMessageHP(uint8 source, uint8 dest){
     handleMessage(&HPBrainMsgRecv, HPBrainPayload, source, dest);
-    //debugNum(4);
 }
 
 void handleMessageLP(uint8 source, uint8 dest){
     handleMessage(&LPBrainMsgRecv, LPBrainPayload, source, dest);
-    //debugNum(8);
 }
 
 
@@ -273,7 +271,6 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                     case 0x03:
                     case 0x04:
-                        //debugNum(1);
                         turnStarted();
                         length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
@@ -300,7 +297,6 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                         addSensorFrame(payload[0], payload[1], payload[2]);
                     }
                     datareq = 0; //done
-                    //debugNum(8);
                     break;
                 default:
                     //all other cases get an ack
@@ -313,7 +309,6 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                         addEncoderData(payload[0], payload[1], payload[2], payload[3]);
                     }
                     datareq = 0; //done
-                    //debugNum(8);
                     break;
                 default:
                     //all other cases get an ack
@@ -324,13 +319,11 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x05:{//ack or nack back from turn complete
                     if(payload[0] == 0){ //nack
-                        //debugNum(2);
                         length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                         i2c_master_send(MOTOR_ADDR, length, command);
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
-                        //debugNum(4);
                         length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
                         uart_send_array(command, length);
                         turnCompleted();
@@ -369,9 +362,7 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         default:
             break;
     }
-    //debugNum(1);
     if(frameDataReady()){
-        //debugNum(4);
         sendFrameData();
         clearFrameData();
     }
@@ -379,14 +370,10 @@ static void handleRoverData(RoverMsg* rover, char* payload){
 
 void handleRoverDataHP(){
     handleRoverData(&HPRoverMsgRecv, HPRoverPayload);
-//    debugNum(4);
-//    debugNum(4);
 }
 
 void handleRoverDataLP(){
     handleRoverData(&LPRoverMsgRecv, LPRoverPayload);
-//    debugNum(8);
-//    debugNum(8);
 }
 
 void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
@@ -414,7 +401,6 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 }
 
 static void handleRoverData(RoverMsg* rover, char* payload){
-    debugNum(1);
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){

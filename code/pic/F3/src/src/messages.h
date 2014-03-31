@@ -5,7 +5,7 @@
 #define MSGLEN 15
 
 // The maximum number of messages in a single queue
-#define MSGQUEUELEN 4
+#define MSGQUEUELEN 3
 
 typedef struct __msg {
     unsigned char full;

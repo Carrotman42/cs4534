@@ -69,11 +69,9 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
             tempbuf[i] = msg[i-1];
         }
         if(in_main()){
-            debugNum(1);
             FromMainHigh_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
         }
         else{
-            debugNum(1);
             FromI2CInt_sendmsg(length+1, MSGT_MASTER_SEND_BUSY, tempbuf);
         }
         return 0;
@@ -250,7 +248,6 @@ void i2c_rx_handler(){
             if(receive_data() == 1){ //receive is finished
                 ic_ptr->status = I2C_NACK;
             }
-            //debugNum(8);
             break;
         case(I2C_ACK):
             ic_ptr->status = I2C_RCV_DATA;
