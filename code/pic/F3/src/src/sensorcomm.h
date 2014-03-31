@@ -28,6 +28,7 @@ void sendSensorFrame(uint8 msgid);
 void colorSensorTriggered();
 uint8 isColorSensorTriggered();
 void clearColorSensorStatus();
+uint8 timesColorSensorTriggered();
 #endif
 
 #endif	/* SENSORCOMM_H */

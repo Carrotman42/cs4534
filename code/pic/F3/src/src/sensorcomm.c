@@ -82,13 +82,18 @@ void sendSensorFrame(uint8 msgid){
 }
 #elif defined(PICMAN) || defined(ARM_EMU)
 static uint8 colorSensorStatus = 0;
+static uint8 timesColorTriggered = 0;
 void colorSensorTriggered(){
     colorSensorStatus = 1;
+    timesColorTriggered++;
 }
 uint8 isColorSensorTriggered(){
     return colorSensorStatus; 
 }
 void clearColorSensorStatus(){
     colorSensorStatus = 0;
+}
+uint8 timesColorSensorTriggered(){
+    return timesColorTriggered;
 }
 #endif

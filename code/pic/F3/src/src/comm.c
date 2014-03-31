@@ -547,6 +547,8 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
 }
 
 static void handleRoverData(RoverMsg* rover, char* payload){
+    char command[5] = {0};
+    uint8 length = 0;
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){
@@ -555,15 +557,15 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     addEncoderData(payload[3], payload[4], payload[5], payload[6]);
                     break;
                 case 0x04:
-                    if(isColorSensorTriggered()){//it's been triggered once before, meaning this is the second time
+                    debugNum(8);
+                    colorSensorTriggered();
+                    if(timesColorSensorTriggered() == 2){ //this is the second time we've seen this message
                         //to handle a finish line differently, change this code here.
-                        char command[5];
-                        uint8 length = generateStop(command, sizeof command, UART_COMM);
+                        length = generateStop(command, sizeof command, UART_COMM);
                         sendData(command, length, UART_COMM); //send stop to stop the rover (more important than frames)
                         length = generateStopFrames(command, sizeof command, UART_COMM);
                         sendData(command, length, UART_COMM); //want to send stop frames because the arm no longer cares about the data
                     }
-                    colorSensorTriggered();
                     break;
                 case 0x05:
                     turnCompleted();
