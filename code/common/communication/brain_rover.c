@@ -160,7 +160,8 @@ static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 
     else
         errorbuf->messageid = i2c_messageid++;
     errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen;
-    for(int i = 0; i < errorbuf->payloadLen; i++){
+	int i;
+    for(i = 0; i < errorbuf->payloadLen; i++){
         errorbuf->checksum += errorbuf->payload[i]; //add frames if needed
     }
     return HEADER_MEMBERS + errorbuf->payloadLen;
