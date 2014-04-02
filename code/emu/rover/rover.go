@@ -106,6 +106,15 @@ func (r*Rover) FrameLoop() {
 			r.Listener.Update(r.RoverSnapshot)
 		}
 		
+		cs := float64(common.CourseSize)
+		x := r.X / common.ArmUnitsPerTile
+		y := r.Y / common.ArmUnitsPerTile
+		if x > cs-60 && x < cs-55 &&
+				y > cs-25 && y < cs-10 {
+			r.FinishLine()	
+			fmt.Println("         %%%%%%%%%%%%%%%%%%%5                       %%%%%%%%%%%%%%%%%%%%% ")
+		}
+		
 		r.Unlock()
 	}
 }
@@ -188,6 +197,9 @@ func (t TelnetProtocol) WriteFrameData(f common.FrameData) {
 }
 func (t TelnetProtocol) TurnFinished() {
 	fmt.Fprintln(t.d, "Turn Finished")
+}
+func (t TelnetProtocol) FinishLine() {
+	fmt.Fprintln(t.d, "Finishline crossed!")
 }
 
 type TelnetCmd struct {
@@ -319,6 +331,10 @@ func (s SerialProtocol) WriteFrameData(f common.FrameData) {
 	fmt.Println("write frame data, Implement me please!")
 	//TODO!
 }
+
+func (s SerialProtocol) FinishLine() {
+	fmt.Println("Finishline, Implement me please!")
+}
 func (s SerialProtocol) TurnFinished() {
 	fmt.Println("Turn finished, Implement me please!")
 }
@@ -402,8 +418,12 @@ type PicmanProtocol struct {
 	last common.FrameData
 	lastOk bool
 	doneTurning bool
+	finishLine, flineSent bool
 }
 
+func (s*PicmanProtocol) FinishLine() {
+	s.finishLine = true
+}
 func (s*PicmanProtocol) TurnFinished() {
 	s.doneTurning = true
 }
@@ -420,6 +440,10 @@ func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 				} else {
 					cmd |= 0x08
 				}
+				if s.finishLine && !s.flineSent {
+					s.flineSent = true
+					cmd |= 0x10
+				}
 				s.Arm.writePacket(cmd, 2, payload)
 				continue
 			} else if r.cmd == 4 && r.param == 5 {
@@ -427,6 +451,10 @@ func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 				if s.doneTurning {
 					pay[0] = 1
 					s.doneTurning = false
+					
+					// Reset the color sensor on the first turn so that we can sense it for the next lap
+					s.finishLine = false
+					s.flineSent = false
 				}
 				s.Arm.writePacket(4, 5, pay[:])
 				continue

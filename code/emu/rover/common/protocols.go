@@ -55,6 +55,7 @@ type Protocol interface {
 	ReadCmd() InCmd
 	WriteFrameData(f FrameData)
 	TurnFinished()
+	FinishLine()
 	//WriteError(f ErrorKind)
 }
 
