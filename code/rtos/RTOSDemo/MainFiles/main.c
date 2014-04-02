@@ -212,12 +212,13 @@ int main( void )
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();
 	
-	Start();
 
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );
 	
 	xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) NULL, mainUIP_TASK_PRIORITY, NULL );
+	
+	Start();
 	
 	/* Start the scheduler. */
 	vTaskStartScheduler(); // noreturn

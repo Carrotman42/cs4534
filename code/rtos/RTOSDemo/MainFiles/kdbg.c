@@ -21,12 +21,25 @@ void DBGbit(unsigned value, int on) {
 
 #include "klcd.h"
 void ReportDroppedMsg(int len, char* msg) {
-	aBuf(b, 100);
+	//aBuf(b, 100);
 	LCDwriteLn(14, "DROPPED MSG!!");
 }
 
-void ReportInvalidResponse( char* orig, char* resp) {
-	LCDwriteLn(14, "Invalid Response!!");
+#define D(a) \
+	bByte(a[0]); \
+	bChar(' '); \
+	bByte(a[1]); \
+	bChar(' '); \
+	bByte(a[3]);
+void ReportInvalidResponse(int last, char* orig, char* resp) {
+	bBuf(40);
+	bStr("Bad resp to cmd ");
+	bByte(last);
+	bStr(" (");
+	D(orig);
+	bStr("): ");
+	D(resp);
+	bPrint(14);
 }
 
 

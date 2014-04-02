@@ -234,7 +234,7 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		 	// TODO: Check this value too?
 		}
 		
-		gotData(act, outBuf, inBuf);
+		gotData(act, inBuf);
 	}
 }
 

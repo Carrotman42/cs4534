@@ -8,17 +8,35 @@
 #define MAP_RESOLUTION 10
 #define MAP_WIDTH 48
 
+typedef enum {
+	Right = 0, // Initial value
+	Up = 1,
+	Left = 2,
+	Down = 3,
+} Dir;
+
 //All values in "armunits"
 typedef struct {
-	// Best guess at location
+	// Best guess at location with top-left being (0, 0)
 	int X, Y;
+	
+	// Current direction
+	Dir dir;
+	
+	// Will be true if "dir" was recently changed. This means that the next set of
+	//    encoder datas should be ignored since they will be from the turn itself.
+	int newDir : 1;
 	
 	// The last values for each sensor.
 	int Forward;
 	int Right1, Right2;
+	
+	// A countdown of ticks left before 
+	unsigned int tCount;
 } Memory;
 
 void mapReportNewFrame(char* frame);
+void mapReportTurn(int dir);
 void InitMind();
 
 typedef struct {
@@ -29,6 +47,7 @@ void mapGetMap(Map*dest);
 void mapGetMemory(Memory*dest);
 void mapStartTimer();
 void mapStopTimer();
+void mapRegisterTick(int x);
 
 
 #endif

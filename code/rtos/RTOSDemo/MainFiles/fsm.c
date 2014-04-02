@@ -76,19 +76,33 @@ PATH_FINDING_DECL {
 	currentstate = WAIT_EVENT;
 	for(;;){
 		FsmEvent event = nextEvent();
-		debug(event, "Got event");
+		{
+			bBuf(30);
+			bStr("State: ");
+			bByte(currentstate);
+			bStr(", Event: ");
+			bByte(event);
+			bPrint(5);
+		}
+		
+		#define Remember(name) Memory name; mapGetMemory(&name)
+		#define CHECK_FRONT(mem) \
+			if(mem.Forward <= 10){\
+				stop(); \
+				turnCCW(90); \
+				currentstate = TURN_STALL; \
+			}
+		
+		//debug(event, "Got event");
 		switch(currentstate){
 			case WAIT_EVENT:
 				switch(event){
 					case NEW_SENSOR_DATA: {
-						Memory mem;
-						mapGetMemory(&mem);
-						if(mem.Forward <= 10){
-							turnCCW(90);
-							currentstate = TURN_STALL;
-						}
-						else if((mem.Right1 > 10) && (mem.Right2 > 10)){
-							registerTickListener(400);
+						Remember(mem);
+						
+						CHECK_FRONT(mem)
+						else if((mem.Right1 > 30) && (mem.Right2 > 30)){
+							registerTickListener(400*3);
 							currentstate = WAIT_TICKS;
 						}
 						break;
@@ -132,8 +146,12 @@ PATH_FINDING_DECL {
 				break;
 			case WAIT_TICKS:
 				switch(event){
-					case NEW_SENSOR_DATA:
+					case NEW_SENSOR_DATA: {
+						Remember(mem);
+						
+						CHECK_FRONT(mem);
 						break;
+					}
 					case TURN_COMPLETE:
 						break;
 					case TICK_COUNTING_DONE:

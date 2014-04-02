@@ -298,6 +298,9 @@ PT_THREAD(handle_input(struct httpd_state *s))
 
 #include "armcommon.h"
 
+void ReportMsg(int len, char*in);
+void LCDwriteLn(int, char*);
+
 static void f(int row, char* desc, int* d) {
 	/*aBuf(b, 100);
 	aStr(b, desc);
@@ -305,11 +308,8 @@ static void f(int row, char* desc, int* d) {
 	aChar(b, 0);
 	aPrint(b,row);
 	
-	(*d)++;*/
+	(*d)++;		*/
 }
-
-void ReportMsg(int len, char*in);
-void LCDwriteLn(int, char*);
 
 #if ETHER_EMU==1  
 #include "comm.h"
@@ -323,7 +323,7 @@ PT_THREAD(handle_emu_in(struct httpd_state *s, RoverAction last)) {
 	f(8, "Input ", &c);
 	//int len = PSOCK_DATALEN(&s->sin)-1;
 	// Report the data we got
-	gotData(last, s->outputbuf, s->inputbuf);
+	gotData(last, s->inputbuf);
 	s->state = STATE_WAITING;
 	
 	PSOCK_END(&s->sin);
@@ -349,6 +349,7 @@ static void handle_connection(struct httpd_state *s) {
 	static char buf[15]; // TODO: See if this has to be static
 	static int len;
 	static RoverAction lastAct; // Has to be static
+	
 nextCmd:
 	if (s->state == STATE_WAITING) {
 		lastAct = nextCommand(&len, buf);

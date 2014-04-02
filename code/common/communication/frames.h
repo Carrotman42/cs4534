@@ -5,6 +5,7 @@
 #include "sensor_types.h"
 #include "brain_rover.h"
 
+#define u2_8to16(v) makeInt(v[0], v[1])
 #define makeInt(high, low) (((int) high) << 8 | (low))
 #define highByte(c) (c >> 8)
 #define lowByte(c) (c & 0xFF)

@@ -14,8 +14,9 @@ Prot(TurnCCW,     2, 4, 1);
 Prot(TurnCW,      2, 3, 1);
 Prot(Stop,        2, 2, 0);
 Prot(StartFrames, 4, 0, 0);
-Prot(StopFrames , 4, 3, 0);
-Prot(ReadFrames , 4, 2, 0);
+Prot(StopFrames,  4, 3, 0);
+Prot(ReadFrames,  4, 2, 0);
+Prot(TurnAck,     4, 5, 0);
 
 #define P(name) {name##1, name##2, name##3}
 static const char protBytes[LASTROVER][3] = {
@@ -26,6 +27,7 @@ static const char protBytes[LASTROVER][3] = {
 	P(StartFrames),
 	P(StopFrames),
 	P(ReadFrames),
+	P(TurnAck),
 };
 
 #define copyToPay(a,b,pay) \
@@ -63,17 +65,11 @@ int copyToBuf(RoverCmd cmd, char* dest) {
 		Case(StartFrames);
 		Case(StopFrames);
 		Case(ReadFrames);
+		Case(TurnAck);
 		default:
 			FATAL(cmd.act);
 			return -1;
 	}
-}
-
-int isCorrectAck(char* cmd, char* ret) {
-	// Compare the headers
-	
-	// TODO:
-	return 1;
 }
 
 /*
@@ -135,44 +131,95 @@ void InitComm() {
 
 // Keep track of how many times we've seen an invalid ReadFrames response
 static int invalid = 0;
+// Keep track of if we're turning: 
+//   -1 means it was last turning right, 1 means it was last turning left, 0 means it isn't turning.						   
+static int turning = 0;
+
+
 #include "klcd.h"
-// outBuf was the message written to the picman
-// inBuf is the message that was just read from the picman
-inline void gotData(RoverAction last, char* outBuf, char* inBuf) {
-	if (!isCorrectAck(outBuf, inBuf)) {
-		ReportInvalidResponse(outBuf, inBuf);
+ 
+// Will check whether the message header matches an error message. In this case it prints
+//   it on the LCD. TODO: Tell the webserver that something is wrong.
+inline void checkError(char* ret) {
+	if (!(ret[0] & ERROR_FLAG)) {
 		return;
 	}
-
-	if (last == ReadFrames) {
-		aBuf(b, 100);
-		aStr(b, "First byte: ");
-		aByte(b, inBuf[0]);
-		aStr(b, "; invalid: ");
-		aByte(b, invalid);
-		aChar(b, 0);
-		aPrint(b, 6);
-		if (inBuf[0] & FRAME_NOT_VALID) {
-			invalid++;
-		} else {
-			invalid = 0;
-			mapReportNewFrame(&inBuf[HEADER_MEMBERS]);
-		}
-	}
+	
+	bBuf(30);
+	bStr("ERR: ");
+	bByte(ret[1]);
+	bPrint(6);
 }
+
+// outBuf was the message written to the picman
+// inBuf is the message that was just read from the picman
+inline void gotData(RoverAction last, char* ret) {
+	// TODO: Check checksum maybe
+	
+	switch (last) {
+		case ReadFrames: {
+			checkError(ret);
+			if (ret[0] & FRAME_NOT_VALID) {
+				invalid++;
+				break;
+			}
+			invalid = 0;
+			mapReportNewFrame(&ret[HEADER_MEMBERS]);
+			break;
+		}
+		case TurnAck: {
+			if (!turning) {
+				LCDwriteLn(10, "Got TurnAck without a 'turning' value!");
+				return;
+			}
+			// A payload of 0 means still turning, 1 means done turning
+			if (ret[HEADER_MEMBERS]) {
+				mapReportTurn(turning);
+				turning = 0;
+			}
+			break;
+		}
+		default: { // An async cmd
+			// Check the ack:
+			char tmp[MAX_OUT_SIZE];
+			RoverCmd cmd;
+			cmd.act = last;
+			//cmd.param = 0; doesn't matter
+			copyToBuf(cmd, tmp);
+			if ((tmp[0] | ACK_FLAG) != ret[0]) {
+				// Error in ack!
+				ReportInvalidResponse(last, tmp, ret);
+			} else if (last == TurnCCW) {
+				turning = 1;
+			} else if (last == TurnCW) {
+				turning = -1;
+			}
+		}
+			break;
+	}
+	
+	
+}
+
 
 inline RoverAction nextCommand(int* len, char* outBuf) {
 	RoverCmd cmd;
 	//SLEEP(1000);
 	if (!TRY_RECV(toRover, cmd)) {
-		if (invalid > 10) {
+		char *dbg;
+		if (turning) {
+			cmd.act = TurnAck;
+			dbg = "Send TurnAck";
+		} else if (invalid > 10) {
 			invalid = 0;
 			cmd.act = StartFrames;
-			LCDwriteLn(4, "Send StartFrames");
+			dbg = "Send StartFrames";
 		} else {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
+			dbg = "Send ReadFrames";
 		}
+		LCDwriteLn(4, dbg);
 	}
 	*len = copyToBuf(cmd, outBuf);
 	return cmd.act;
@@ -186,12 +233,8 @@ inline void asyncWrite(RoverAction act, char param) {
 	SEND(toRover, cmd);
 }
 
-void registerTickListener(int x) {
-	aBuf(b, 100);
-	aStr(b, "Tick listener: ")
-	aByte(b, x);
-	aChar(b, 0);
-	aPrint(b, 14);
+inline void registerTickListener(int x) {
+	mapRegisterTick(x);
 }
 
 

@@ -136,6 +136,10 @@
 		}					\
 	}
 
+#define aWord(dest, w) \
+	aByte(dest, (w >> 8) & 0xFF);\
+	aByte(dest, w & 0xFF);
+
 #define aByte(dest, val) {         \
 		int t = (val);             \
 		aNib(dest, (t / 16) % 16); \
@@ -148,5 +152,13 @@
 #define aChar(dest, ch) *dest++ = (ch)
 #define aPrint(name, line) LCDwriteLn(line, name##name);
 
+// Convenience functions for naming the buffer 'b'. Also don't require you to a char(0) before printing
+#define bBuf(p)   aBuf(b, p)
+#define bStr(p)   aStr(b, p)
+#define bByte(p)  aByte(b, p)
+#define bWord(p)  aWord(b, p)
+#define bNib(p)   aNib(b, p)
+#define bChar(p)  aChar(b, p)
+#define bPrint(p) aChar(b, 0); aPrint(b, p)
 
 #endif

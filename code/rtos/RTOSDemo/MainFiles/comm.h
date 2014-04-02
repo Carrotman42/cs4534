@@ -11,7 +11,8 @@ typedef enum {
 	StartFrames = 4,
 	StopFrames = 5,
 	ReadFrames = 6,
-	LASTROVER = 7,
+	TurnAck = 7,
+	LASTROVER = 8,
 } RoverAction;		  
 
 typedef struct {
@@ -36,7 +37,7 @@ void InitComm();
 
 // To be called by the implementation on data recv. This will take care of parsing and understanding the message sent
 //   back to reduce copy-paste.
-inline void gotData(RoverAction act, char* outBuf, char* inBuf);
+inline void gotData(RoverAction act, char* inBuf);
 
 inline RoverAction nextCommand(int* len, char* outBuf);
 void registerTickListener(int x);
