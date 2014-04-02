@@ -597,6 +597,211 @@ end_stage:
 	}
 }
 
+#include "brain_rover.h"
+
+// A reimplemented version that is specialized to our message format.
+//   It reads the first 3 bytes. Then it looks at that third byte and
+//   reads that many more bytes.
+//   Note: Make sure you pass that you want at least 3 bytes to be received, or else
+//   I'll be mad at you (and it won't work, but mostly the former)
+void kevinsMasterHandler(LPC_I2C_TypeDef  *I2Cx)
+{
+	int32_t tmp;
+	uint8_t returnCode;
+	I2C_M_SETUP_Type *txrx_setup;
+
+	tmp = I2C_getNum(I2Cx);
+	txrx_setup = (I2C_M_SETUP_Type *) i2cdat[tmp].txrx_setup;
+
+	returnCode = (I2Cx->I2STAT & I2C_STAT_CODE_BITMASK);
+	// Save current status
+	txrx_setup->status = returnCode;
+	// there's no relevant information
+	if (returnCode == I2C_I2STAT_NO_INF){
+		I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+		return;
+	}
+
+	/* ----------------------------- TRANSMIT PHASE --------------------------*/
+	if (i2cdat[tmp].dir == 0){
+		switch (returnCode)
+		{
+		/* A start/repeat start condition has been transmitted -------------------*/
+		case I2C_I2STAT_M_TX_START:
+		case I2C_I2STAT_M_TX_RESTART:
+			I2Cx->I2CONCLR = I2C_I2CONCLR_STAC;
+			/*
+			 * If there's any transmit data, then start to
+			 * send SLA+W right now, otherwise check whether if there's
+			 * any receive data for next state.
+			 */
+			if ((txrx_setup->tx_data != NULL) && (txrx_setup->tx_length != 0)){
+				I2Cx->I2DAT = (txrx_setup->sl_addr7bit << 1);
+				I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+			} else {
+				goto next_stage;
+			}
+			break;
+
+		/* SLA+W has been transmitted, ACK has been received ----------------------*/
+		case I2C_I2STAT_M_TX_SLAW_ACK:
+		/* Data has been transmitted, ACK has been received */
+		case I2C_I2STAT_M_TX_DAT_ACK:
+			/* Send more data */
+			if ((txrx_setup->tx_count < txrx_setup->tx_length) \
+					&& (txrx_setup->tx_data != NULL)){
+				I2Cx->I2DAT =  *(uint8_t *)(txrx_setup->tx_data + txrx_setup->tx_count);
+				txrx_setup->tx_count++;
+				I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+			}
+			// no more data, switch to next stage
+			else {
+next_stage:
+				// change direction
+				i2cdat[tmp].dir = 1;
+				// Check if any data to receive
+				if ((txrx_setup->rx_length != 0) && (txrx_setup->rx_data != NULL)){
+						// check whether if we need to issue an repeat start
+						if ((txrx_setup->tx_length != 0) && (txrx_setup->tx_data != NULL)){
+							// Send out an repeat start command
+							I2Cx->I2CONSET = I2C_I2CONSET_STA;
+							I2Cx->I2CONCLR = I2C_I2CONCLR_AAC | I2C_I2CONCLR_SIC;
+						}
+						// Don't need issue an repeat start, just goto send SLA+R
+						else {
+							goto send_slar;
+						}
+				}
+				// no more data send, the go to end stage now
+				else {
+					// success, goto end stage
+					txrx_setup->status |= I2C_SETUP_STATUS_DONE;
+					goto end_stage;
+				}
+			}
+			break;
+
+		/* SLA+W has been transmitted, NACK has been received ----------------------*/
+		case I2C_I2STAT_M_TX_SLAW_NACK:
+		/* Data has been transmitted, NACK has been received -----------------------*/
+		case I2C_I2STAT_M_TX_DAT_NACK:
+			// update status
+			txrx_setup->status |= I2C_SETUP_STATUS_NOACKF;
+			goto retry;
+		/* Arbitration lost in SLA+R/W or Data bytes -------------------------------*/
+		case I2C_I2STAT_M_TX_ARB_LOST:
+			// update status
+			txrx_setup->status |= I2C_SETUP_STATUS_ARBF;
+		default:
+			goto retry;
+		}
+	}
+
+	/* ----------------------------- RECEIVE PHASE --------------------------*/
+	else if (i2cdat[tmp].dir == 1){
+		switch (returnCode){
+			/* A start/repeat start condition has been transmitted ---------------------*/
+		case I2C_I2STAT_M_RX_START:
+		case I2C_I2STAT_M_RX_RESTART:
+			I2Cx->I2CONCLR = I2C_I2CONCLR_STAC;
+			/*
+			 * If there's any receive data, then start to
+			 * send SLA+R right now, otherwise check whether if there's
+			 * any receive data for end of state.
+			 */
+			if ((txrx_setup->rx_data != NULL) && (txrx_setup->rx_length != 0)){
+send_slar:
+				I2Cx->I2DAT = (txrx_setup->sl_addr7bit << 1) | 0x01;
+				I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+			} else {
+				// Success, goto end stage
+				txrx_setup->status |= I2C_SETUP_STATUS_DONE;
+				goto end_stage;
+			}
+			break;
+
+		/* SLA+R has been transmitted, ACK has been received -----------------*/
+		case I2C_I2STAT_M_RX_SLAR_ACK:
+			if (txrx_setup->rx_count < (txrx_setup->rx_length - 1)) {
+				/*Data will be received,  ACK will be return*/
+				I2Cx->I2CONSET = I2C_I2CONSET_AA;
+			}
+			else {
+				/*Last data will be received,  NACK will be return*/
+				I2Cx->I2CONCLR = I2C_I2CONSET_AA;
+			}
+			I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+			break;
+
+		/* Data has been received, ACK has been returned ----------------------*/
+		case I2C_I2STAT_M_RX_DAT_ACK:
+			// Note save data and increase counter first, then check later
+			/* Save data  */
+			if ((txrx_setup->rx_data != NULL) && (txrx_setup->rx_count < txrx_setup->rx_length)){
+				uint8_t recv = (I2Cx->I2DAT & I2C_I2DAT_BITMASK);
+				*(uint8_t *)(txrx_setup->rx_data + txrx_setup->rx_count) = recv;
+				if (++txrx_setup->rx_count == HEADER_MEMBERS) {
+					// This byte says how much *more* data we should receive
+					txrx_setup->rx_length = HEADER_MEMBERS + recv;
+				}
+			}
+			if (txrx_setup->rx_count < (txrx_setup->rx_length - 1)) {
+				/*Data will be received,  ACK will be return*/
+				I2Cx->I2CONSET = I2C_I2CONSET_AA;
+			}
+			else {
+				/*Last data will be received,  NACK will be return*/
+				I2Cx->I2CONCLR = I2C_I2CONSET_AA;
+			}
+
+			I2Cx->I2CONCLR = I2C_I2CONCLR_SIC;
+			break;
+
+		/* Data has been received, NACK has been return -------------------------*/
+		case I2C_I2STAT_M_RX_DAT_NACK:
+			/* Save the last data */
+			if ((txrx_setup->rx_data != NULL) && (txrx_setup->rx_count < txrx_setup->rx_length)){
+				*(uint8_t *)(txrx_setup->rx_data + txrx_setup->rx_count) = (I2Cx->I2DAT & I2C_I2DAT_BITMASK);
+				txrx_setup->rx_count++;
+			}
+			// success, go to end stage
+			txrx_setup->status |= I2C_SETUP_STATUS_DONE;
+			goto end_stage;
+
+		/* SLA+R has been transmitted, NACK has been received ------------------*/
+		case I2C_I2STAT_M_RX_SLAR_NACK:
+			// update status
+			txrx_setup->status |= I2C_SETUP_STATUS_NOACKF;
+			goto retry;
+
+		/* Arbitration lost ----------------------------------------------------*/
+		case I2C_I2STAT_M_RX_ARB_LOST:
+			// update status
+			txrx_setup->status |= I2C_SETUP_STATUS_ARBF;
+		default:
+retry:
+			// check if retransmission is available
+			if (txrx_setup->retransmissions_count < txrx_setup->retransmissions_max){
+				// Clear tx count
+				txrx_setup->tx_count = 0;
+				I2Cx->I2CONSET = I2C_I2CONSET_STA;
+				I2Cx->I2CONCLR = I2C_I2CONCLR_AAC | I2C_I2CONCLR_SIC;
+				txrx_setup->retransmissions_count++;
+			}
+			// End of stage
+			else {
+end_stage:
+				// Disable interrupt
+				I2C_IntCmd(I2Cx, 0);
+				// Send stop
+				I2C_Stop(I2Cx);
+
+				I2C_MasterComplete[tmp] = TRUE;
+			}
+			break;
+		}
+	}
+}
 
 /*********************************************************************//**
  * @brief 		General Slave Interrupt handler for I2C peripheral

@@ -103,7 +103,6 @@ You should read the note above.
 
 // Include file for MTJ's LCD & i2cTemp tasks
 #include "vtUtilities.h"
-#include "i2cTemp.h"
 #include "vtI2C.h"
 #include "conductor.h"
 
@@ -133,7 +132,6 @@ tick hook). */
 #define mainLCD_TASK_PRIORITY				( tskIDLE_PRIORITY)
 #define mainI2CTEMP_TASK_PRIORITY			( tskIDLE_PRIORITY)
 #define mainUSB_TASK_PRIORITY				( tskIDLE_PRIORITY)
-#define mainI2CMONITOR_TASK_PRIORITY		( tskIDLE_PRIORITY)
 #define mainCONDUCTOR_TASK_PRIORITY			( tskIDLE_PRIORITY)
 
 /* The WEB server has a larger stack as it utilises stack hungry string
@@ -186,13 +184,19 @@ static vtLCDStruct vtLCDdata;
 
 #include "klcd.h"
 #include "kdbg.h"
-#include "sensors.h"
+			  
+#include "comm.h"
+#include "map.h"
 
-// all milestone-specific code for milestone 1. Will just be tasks starting and whatnot.
-void StartMilestone1() {
-	StartSignalTest();
-	StartSensorTasks();
+void Start() {														   
+	StartLCD();
+	InitComm();
+	InitMind();
 }
+
+
+
+
 
 /*-----------------------------------------------------------*/
 int main( void )
@@ -208,10 +212,12 @@ int main( void )
 	/* Configure the hardware for use by this demo. */
 	prvSetupHardware();
 	
-	StartMilestone1();
+	Start();
 
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );
+	
+	xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) NULL, mainUIP_TASK_PRIORITY, NULL );
 	
 	/* Start the scheduler. */
 	vTaskStartScheduler(); // noreturn

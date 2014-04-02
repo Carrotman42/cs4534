@@ -17,4 +17,6 @@ void timer1_int_handler(void);
 // include the i2c interrupt handler definitions
 #include "my_i2c.h"
 
+extern unsigned char datareq;
+
 #endif

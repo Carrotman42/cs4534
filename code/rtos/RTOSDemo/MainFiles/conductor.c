@@ -3,103 +3,216 @@
 #include <math.h>
 #include <string.h>
 
-/* Scheduler include files. */
+/*
 #include "FreeRTOS.h"
 #include "task.h"
 #include "projdefs.h"
 #include "semphr.h"
-
-/* include files. */
+#include "timers.h"
+				
+#include "armcommon.h"
 #include "vtUtilities.h"
 #include "vtI2C.h"
-#include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
+
 #include "conductor.h"
 
-/* *********************************************** */
-// definitions and data structures that are private to this file
+#include "brain_rover.h"
+#include "klcd.h"
 
-// I have set this to a large stack size because of (a) using printf() and (b) the depth of function calls
-//   for some of the i2c operations	-- almost certainly too large, see LCDTask.c for details on how to check the size
-#define INSPECT_STACK 1
-#define baseStack 2
-#if PRINTF_VERSION == 1
-#define conSTACK_SIZE		((baseStack+5)*configMINIMAL_STACK_SIZE)
-#else
-#define conSTACK_SIZE		(baseStack*configMINIMAL_STACK_SIZE)
-#endif
-// end of defs
-/* *********************************************** */
+#define COMM_TASKS
+#include "tasks.h"
 
-/* The i2cTemp task. */
-static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
 
-/*-----------------------------------------------------------*/
+#define LCD_REFRESH_RATE
+#ifdef LCD_REFRESH_RATE					 
+TIMER_PROTOTYPE_NOARG(CopyToLCDTimer, 250/portTICK_RATE_MS);
+#endif	
+
+// Of type BrainMsg
+static xQueueHandle toRover;
+
 // Public API
-void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature)
-{
-	/* Start the task */
-	portBASE_TYPE retval;
-	params->dev = i2c;
-	params->tempData = temperature;
-	if ((retval = xTaskCreate( vConductorUpdateTask, ( signed char * ) "Conductor", conSTACK_SIZE, (void *) params, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
-		VT_HANDLE_FATAL_ERROR(retval);
-	}
+void StartProcessingTasks(vtI2CStruct *i2c) {
+	MAKE_Q(toRover, BrainMsg, 2);
+	
+	StartFromI2C(i2c);
+	//StartToI2C(i2c);
+	START_TIMER(MakeCopyToLCDTimer(), 0);
 }
 
 // End of Public API
-/*-----------------------------------------------------------*/
-
-// This is the actual task that is run
-static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
-{
-	uint8_t rxLen, status;
-	uint8_t Buffer[vtI2CMLen];
-	uint8_t *valPtr = &(Buffer[0]);
-	// Get the parameters
-	vtConductorStruct *param = (vtConductorStruct *) pvParameters;
-	// Get the I2C device pointer
-	vtI2CStruct *devPtr = param->dev;
-	// Get the LCD information pointer
-	vtTempStruct *tempData = param->tempData;
-	uint8_t recvMsgType;
-
-	// Like all good tasks, this should never exit
-	for(;;)
-	{
-		// Wait for a message from an I2C operation
-		if (vtI2CDeQ(devPtr,vtI2CMLen,Buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
-			VT_HANDLE_FATAL_ERROR(0);
-		}
-
-		// Decide where to send the message 
-		//   This just shows going to one task/queue, but you could easily send to
-		//   other Q/tasks for other message types
-		// This isn't a state machine, it is just acting as a router for messages
-		switch(recvMsgType) {
-		case vtI2CMsgTypeTempInit: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		case vtI2CMsgTypeTempRead1: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		case vtI2CMsgTypeTempRead2: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		case vtI2CMsgTypeTempRead3: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		default: {
-			VT_HANDLE_FATAL_ERROR(recvMsgType);
-			break;
-		}
-		}
 
 
+#define SAVED_SIZE SIGNAL_SAMPLES
+static char saved[SAVED_SIZE] = {0};
+static int savedPos = 0;
+
+void copyToLCD() {
+	static int times = 0;
+	times = (times + 1) % 1;
+	if (times == 0) {
+		// Copy the full saved buffer to the signal buffer
+		SignalLCDMsg* msg = LCDgetSignalBuffer(); 
+		char* dest = &(msg->data[0]);
+		char* end = &(msg->data[SAVED_SIZE]);
+		char* src = &saved[0];
+		while (dest != end) {
+			*dest++ = *src++;
+		}
+		LCDcommitBuffer(msg);
 	}
 }
 
+int handleAD(sensorADData* data, int len) {
+	
+	/ * COPY/WRAP code
+	{
+		sensorADData* in = data;
+		sensorADData* end = in+len;
+		while (in != end) {
+			saved[savedPos] = (char)((*in++).data);
+			savedPos = (savedPos + 1) % SAVED_SIZE;
+		}
+	}// * /
+	
+	// Attempt at trigger noticing
+	static int waiting = 1;
+	static char lastNum = 0;
+	
+	{
+		sensorADData* in = data;
+		sensorADData* end = data + len;
+		if (waiting) {
+			do {
+				char cur = (char)((*in++).data);
+				waiting = (lastNum - cur) > 0;
+				lastNum = cur;
+				
+				if (in == end) {
+					// We were looking for a trigger but didn't find one in this whole set of
+					//    samples. So let's stop and wait until the next set of samples.
+					//    (there's no reason to draw on the LCD if we didn't actually write down
+					//    any new samples).
+					return 0;
+				}
+			} while (waiting);
+			// When we're done waiting for a trigger we should start drawing at the leftmost side:
+			savedPos = 0;
+		}
+		while (in != end) {
+			saved[savedPos] = (char)((*in++).data);
+			if (++savedPos >= SAVED_SIZE) {
+				// Got to the end of the buffer. We should stop processing this set of samples
+				//    and should just spit out the signal buffer
+				waiting = 1;
+				break;
+			}
+		}
+	} // * /
+	
+
+#ifndef LCD_REFRESH_RATE
+	copyToLCD();
+#endif
+	return 0;
+	#undef SAVED_SIZE
+}
+
+#ifdef LCD_REFRESH_RATE
+TIMER_FUNC_NOARG(CopyToLCDTimer) {
+	copyToLCD();
+} ENDTIMER
+#endif
+
+int ms2Msg(sensorADData* data, int len) {
+	aBuf(b, 100);
+	aStr(b, "Len: ");
+	aByte(b, len);
+	aStr(b, "; Data: ");
+	aByte(b, data[0].data);
+	aChar(b, ' ');
+	aByte(b, data[1].data);
+	aChar(b, 0);
+	aPrint(b, 5);
+
+	// Then just pass the data to try and plot it
+	//return handleAD(data, len);
+	return 0;
+}
+
+RoverMsgRouter Conductor = {
+	//For MS1: handleAD,
+	ms2Msg,
+};
+
+TASK_FUNC(FromI2C, vtI2CStruct, from) {
+	uint8_t rxLen;
+	uint8_t buffer[255];
+
+	uint8_t msgCount = 0;
+	// Like all good tasks, this should never exit
+	for(;;) {
+		BrainMsg msg;
+		packBrainMsgRequest(&msg, 0);
+
+		//vTaskDelay(1000/portTICK_RATE_MS);
+		int q = ki2cReadReq(from, 0x10, msg, buffer, sizeof buffer, &rxLen);
+		msgCount++;
+		aBuf(a, 100);
+		aStr(a, "I2C ret: ");
+		aByte(a, q);
+		aStr(a, "; msgCount: ");
+		aByte(a, msgCount);
+		aChar(a, 0);
+		aPrint(a, 7);
+
+		// Attempt to read
+		if (ERROR == q) {
+			LCDwriteLn(10, "I2C read err");
+			continue;
+		}
+		
+		// Test the error code from unpacking:
+		int ret = unpackRoverMsg((char*)buffer, rxLen, &Conductor);
+		
+		static char ebuf[3];
+		char* err;
+		switch (ret) {
+			case 0:
+				err = NULL; //no error
+				break;
+			default:
+				ebuf[0] = 'U';
+				ebuf[1] = '0' + ret;
+				ebuf[2] = 0;
+				err = ebuf;
+				break;
+			case -1:
+				err = "Unknown msgid";
+				break;
+			case -2:
+				err = "Unknown sensorid";
+				break;
+			case -3:
+				err = "payLen!=actLen";
+				break;
+		}
+		if (err) {
+			LCDwriteLn(1, err);
+		} else {
+			LCDwriteLn(1, "noerr");
+		}
+	}												 
+} ENDTASK
+
+
+								  */
+
+
+
+
+
+
+
+		 

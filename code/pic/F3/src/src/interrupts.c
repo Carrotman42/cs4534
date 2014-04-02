@@ -2,6 +2,9 @@
 #include "interrupts.h"
 #include "user_interrupts.h"
 #include "messages.h"
+#include "my_adc.h"
+#include "debug.h"
+#include "my_uart.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -87,8 +90,8 @@ void InterruptHandlerHigh() {
     // check to see if we have an I2C interrupt
     if (PIR1bits.SSPIF) {
         // clear the interrupt flag
-        PIR1bits.SSPIF = 0;
         // call the handler
+        PIR1bits.SSPIF = 0;
         i2c_int_handler();
     }
 
@@ -120,7 +123,14 @@ interrupt low_priority
 #pragma interruptlow InterruptHandlerLow
 #endif
 void InterruptHandlerLow() {
-    /*// check to see if we have an interrupt on timer 1
+    #ifdef SENSOR_PIC
+    if (PIR1bits.ADIF) {
+        PIR1bits.ADIF = 0;
+        adc_int_handler();
+    }
+    #endif //SENSOR_PIC
+
+    // check to see if we have an interrupt on timer 1
     if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
@@ -129,7 +139,17 @@ void InterruptHandlerLow() {
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
-        uart_recv_int_handler();
-    }*/
+        if(wifly_setup){
+            uart_recv_int_handler();
+        }
+        else{
+            uart_recv_wifly_debug_handler();
+        }
+    }
+    if (PIR1bits.TXIF && PIE1bits.TXIE)
+    {
+        PIR1bits.TXIF = 0; // clear interrupt flag
+        uart_send_int_handler();
+    }
 }
 

@@ -65,6 +65,8 @@
 
 #define STATE_WAITING 0
 #define STATE_OUTPUT  1
+#define STATE_OUTPUT_READBACK  2
+#define STATE_READBACK  3
 
 #define ISO_nl      0x0a
 #define ISO_space   0x20
@@ -293,6 +295,78 @@ PT_THREAD(handle_input(struct httpd_state *s))
   PSOCK_END(&s->sin);
 }
 /*---------------------------------------------------------------------------*/
+
+#include "armcommon.h"
+
+static void f(int row, char* desc, int* d) {
+	/*aBuf(b, 100);
+	aStr(b, desc);
+	aByte(b, *d);
+	aChar(b, 0);
+	aPrint(b,row);
+	
+	(*d)++;*/
+}
+
+void ReportMsg(int len, char*in);
+void LCDwriteLn(int, char*);
+
+#if ETHER_EMU==1  
+#include "comm.h"
+static
+PT_THREAD(handle_emu_in(struct httpd_state *s, RoverAction last)) {
+	static int c = 0;
+	PSOCK_BEGIN(&s->sin);
+	
+	f(8, "Input______________ ", &c);
+	PSOCK_READTO(&s->sin, 0xFF);
+	f(8, "Input ", &c);
+	//int len = PSOCK_DATALEN(&s->sin)-1;
+	// Report the data we got
+	gotData(last, s->outputbuf, s->inputbuf);
+	s->state = STATE_WAITING;
+	
+	PSOCK_END(&s->sin);
+}
+
+static PT_THREAD(SendData(struct httpd_state *s, int len, char* b)) {
+	static int c = 0;
+	
+	PSOCK_BEGIN(&s->sout);
+	f(7, "SendData___________________ ", &c);
+	PSOCK_SEND(&s->sout, b, len);
+	f(7, "SendData ", &c);
+	
+	if (s->state == STATE_OUTPUT) {
+		s->state = STATE_WAITING;
+	} else { // if == STATE_OUTPUT_READBACK
+		s->state = STATE_READBACK;
+	}
+	PSOCK_END(&s->sout);
+}
+
+static void handle_connection(struct httpd_state *s) {
+	static char buf[15]; // TODO: See if this has to be static
+	static int len;
+	static RoverAction lastAct; // Has to be static
+nextCmd:
+	if (s->state == STATE_WAITING) {
+		lastAct = nextCommand(&len, buf);
+		// Always expect a readback (at least for the ack)
+		s->state = STATE_OUTPUT_READBACK;
+	}
+	if (s->state == STATE_OUTPUT_READBACK) {
+		SendData(s, len, buf);
+	}
+	if (s->state == STATE_READBACK) {
+		handle_emu_in(s, lastAct);
+		// Don't wait until next poll if we know this transfer has finished
+		if (s->state == STATE_WAITING)
+			goto nextCmd;
+	}
+}
+
+#else
 static void
 handle_connection(struct httpd_state *s)
 {
@@ -301,6 +375,7 @@ handle_connection(struct httpd_state *s)
     handle_output(s);
   }
 }
+#endif
 /*---------------------------------------------------------------------------*/
 void
 httpd_appcall(void)
@@ -310,11 +385,12 @@ httpd_appcall(void)
   if(uip_closed() || uip_aborted() || uip_timedout()) {
   } else if(uip_connected()) {
     PSOCK_INIT(&s->sin, s->inputbuf, sizeof(s->inputbuf) - 1);
-    PSOCK_INIT(&s->sout, s->inputbuf, sizeof(s->inputbuf) - 1);
+    PSOCK_INIT(&s->sout, s->outputbuf, sizeof(s->outputbuf) - 1);
     PT_INIT(&s->outputpt);
     s->state = STATE_WAITING;
     /*    timer_set(&s->timer, CLOCK_SECOND * 100);*/
     s->timer = 0;
+	
     handle_connection(s);
   } else if(s != NULL) {
     if(uip_poll()) {

@@ -1,0 +1,74 @@
+
+import "math"
+
+type mainG group {
+	Paint kgui.CanvasProperty
+	Mouse kgui.MouseEventSlot
+	
+	Map gMapProperty
+	Snap gSnapProperty
+}
+
+type Main impl {mainG}
+
+const SCALE = 0.5
+
+%always (m*Main) (
+	m.Paint = func(sn m.Snap, pam m.Map) kgui.Canvas {
+		r := kgui.NewCanvasMaker()
+		
+		r.ChangeColor(kgui.Color{0,0,0})
+		_, h := kgui.AFont.MeasureText("L")
+		
+		p := kgui.Point{0,0}
+		
+		r.Text(kgui.AFont, kgui.Point{0,0}, fmt.Sprint("Latest frame: ", sn.FrameData))
+		p.Y += h
+		r.Text(kgui.AFont, p, fmt.Sprint("Sending frame data: ", sn.SendFrames))
+		p.Y += h
+		
+		x, y := float64(sn.X) * SCALE, float64(sn.Y) * SCALE
+		y += p.Y
+		
+		rad := 5*SCALE
+		// Save roverpos so that we can draw it over the grid after we draw the grid
+		roverX, roverY := x, y
+		
+		gridSize := ArmUnitsPerTile * SCALE
+		
+		startY := p.Y
+		max := CourseSize * SCALE
+		for x,xs := range pam.Course {
+			x := float64(x)*gridSize
+			for y,v := range xs {
+				y := float64(y)*gridSize + startY
+				if v {
+					//fmt.Println(x,y)
+					r.ChangeColor(kgui.Color{0,x/max, y/max})
+					r.Polygon(ps(x,y, x+gridSize,y, x+gridSize,y+gridSize, x,y+gridSize))
+				}
+			}
+		}
+		
+		r.ChangeColor(kgui.Color{0,0,0})
+		x, y = roverX, roverY
+		r.Polygon(ps(x-rad,y-rad, x+rad,y-rad, x+rad,y+rad, x-rad,y+rad))
+		
+		ang := float64(sn.Dir)*math.Pi/180
+		endX, endY := x + 10 * math.Cos(ang), y + 10 * math.Sin(ang)
+		r.LineStrip(2, ps(x,y, endX,endY))
+		
+		return r.Freeze()
+	}
+)
+
+
+
+
+
+
+
+
+
+
+

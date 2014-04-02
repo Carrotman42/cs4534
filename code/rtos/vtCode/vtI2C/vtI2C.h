@@ -7,12 +7,16 @@
 #include "projDefs.h"
 #include "semphr.h"
 
+// TODO: Fix includes to not be dumb.
+#include "armcommon.h"
+#include "brain_rover.h"
+
 // return codes for vtI2CInit()
 #define vtI2CErrInit -1
 #define vtI2CInitSuccess 0
 
 // The maximum length of a message to be sent/received over I2C 
-#define vtI2CMLen 64
+#define vtI2CMLen 128
 
 // Structure that is used to define the operate of an I2C peripheral using the vtI2C routines
 //   It should be initialized by vtI2CInit() and then not changed by anything... ever
@@ -51,7 +55,10 @@ int vtI2CInit(vtI2CStruct *devPtr,uint8_t i2cDevNum,unsigned portBASE_TYPE taskP
 //   rxLen: The number of bytes that you would like to receive
 // Return:
 //   Result of the call to xQueueSend()
-portBASE_TYPE vtI2CEnQ(vtI2CStruct *dev,uint8_t msgType,uint8_t slvAddr,uint8_t txLen,const uint8_t *txBuf,uint8_t rxLen);
+//portBASE_TYPE vtI2CEnQ(vtI2CStruct *dev,uint8_t msgType,uint8_t slvAddr,uint8_t txLen,const uint8_t *txBuf,uint8_t rxLen);
+
+// Returns the status info from I2C
+portBASE_TYPE ki2cReadReq(vtI2CStruct *dev, uint8_t slvAddr, BrainMsg msg, uint8_t* dest, uint8_t destLen, uint8_t* destAct);
 
 // A simple routine to use for retrieving a message from the I2C thread
 // Args
@@ -63,5 +70,5 @@ portBASE_TYPE vtI2CEnQ(vtI2CStruct *dev,uint8_t msgType,uint8_t slvAddr,uint8_t 
 //   status: Return code of the operation (you will need to dive into the code to understand the status values)
 // Return:
 //   Result of the call to xQueueReceive()
-portBASE_TYPE vtI2CDeQ(vtI2CStruct *dev,uint8_t maxRxLen,uint8_t *rxBuf,uint8_t *rxLen,uint8_t *msgType,uint8_t *status);
+//portBASE_TYPE vtI2CDeQ(vtI2CStruct *dev,uint8_t maxRxLen,uint8_t *rxBuf,uint8_t *rxLen,uint8_t *msgType,uint8_t *status);
 #endif

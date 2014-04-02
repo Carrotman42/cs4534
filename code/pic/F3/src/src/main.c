@@ -17,7 +17,12 @@
 //#include "timer1_thread.h"
 #include "timer0_thread.h"
 #include "debug.h"
+#include "comm.h"
+
+#ifdef SENSOR_PIC
+#include "my_adc.h"
 #include "sensorcomm.h"
+#endif
 
 
 //Setup configuration registers
@@ -189,15 +194,16 @@ void main(void) {
     signed char length;
     unsigned char msgtype;
     unsigned char last_reg_recvd;
-    //uart_comm uc;
+    uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
-    unsigned char to_send_buffer[MSGLEN+1];
-    int data_points_count = 0;
+//    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
+//    uint8 to_send_len;
+//    int data_points_count = 0;
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread
-    timer0_thread_struct t0thread_data; // info for timer0_lthread
+    //timer0_thread_struct t0thread_data; // info for timer0_lthread
 
 #ifdef __USE18F2680
     OSCCON = 0xFC; // see datasheet
@@ -223,15 +229,15 @@ void main(void) {
 #endif
 #endif
 
-    resetAccumulators();
     // initialize my uart recv handling code
-    //init_uart_recv(&uc);
+
+    init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
 
     // init the timer1 lthread
-    //init_timer1_lthread(&t1thread_data);
+//    init_timer1_lthread(&t1thread_data);
 
     // initialize message queues before enabling any interrupts
     init_queues();
@@ -252,7 +258,11 @@ void main(void) {
      */
 
     // initialize Timers
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_2);
+#ifndef MASTER_PIC
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
+#else
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
+#endif
     
 #ifdef __USE18F26J50
     // MTJ added second argument for OpenTimer1()
@@ -261,42 +271,42 @@ void main(void) {
 #ifdef __USE18F46J50
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
-    //OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #endif
 #endif
 
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     // Timer1 interrupt
-    //IPR1bits.TMR1IP = 0;
+    IPR1bits.TMR1IP = 0;
     // USART RX interrupt
-    //IPR1bits.RCIP = 0;
+    IPR1bits.RCIP = 0;
+    IPR1bits.TXIP = 0;
     // I2C interrupt
     IPR1bits.SSPIP = 1;
 
-    // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-#if 1
-    // Note that the temperature sensor Address bits (A0, A1, A2) are also the
-    // least significant bits of LATB -- take care when changing them
-    // They *are* changed in the timer interrupt handlers if those timers are
-    //   enabled.  They are just there to make the lights blink and can be
-    //   disabled.
-    i2c_configure_slave(0x9E);
-#else
-    // If I want to test the temperature sensor from the ARM, I just make
-    // sure this PIC does not have the same address and configure the
-    // temperature sensor address bits and then just stay in an infinite loop
-    i2c_configure_slave(0x9A);
-#ifdef __USE18F2680
-    LATBbits.LATB1 = 1;
-    LATBbits.LATB0 = 1;
-    LATBbits.LATB2 = 1;
-#endif
-    for (;;);
-#endif
+    //set i2c int high
+    PIE1bits.SSPIE = 1;
+
+
+    
+#ifdef SENSOR_PIC
+    //resetAccumulators();
+    init_adc();
 
     // must specifically enable the I2C interrupts
-    PIE1bits.SSPIE = 1;
+    IPR1bits.ADIP = 0;
+    // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
+    i2c_configure_slave(SENSOR_ADDR << 1);//address 0x10
+#elif defined MOTOR_PIC
+    i2c_configure_slave(MOTOR_ADDR << 1);//address 0x20
+#elif defined PICMAN
+    i2c_configure_slave(PICMAN_ADDR << 1);//address 0x10,different bus from sensor
+#elif defined I2C_MASTER
+    //sending clock frequency
+    i2c_configure_master(); //12MHz clock set hardcoded
+#endif
+
 
     // configure the hardware USART device
 #ifdef __USE18F26J50
@@ -305,29 +315,21 @@ void main(void) {
 #else
 #ifdef __USE18F46J50
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+        USART_CONT_RX & USART_BRGH_LOW, 38);
 #else
     OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+        USART_CONT_RX & USART_BRGH_HIGH, 38);
+//    BAUDCONbits.BRG16 = 1;
+//    TXSTAbits.TXEN = 1;
+//    RCSTAbits.SPEN = 1;
+//    RCSTAbits.CREN = 1;
 #endif
 #endif
 
     // Peripheral interrupts can have their priority set to high or low
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
-
-    /* Junk to force an I2C interrupt in the simulator (if you wanted to)
-    PIR1bits.SSPIF = 1;
-    _asm
-    goto 0x08
-    _endasm;
-     */
-
-    // printf() is available, but is not advisable.  It goes to the UART pin
-    // on the PIC and then you must hook something up to that to view it.
-    // It is also slow and is blocking, so it will perturb your code's operation
-    // Here is how it looks: printf("Hello\r\n");
-
+    LATBbits.LB7 = 0;
 
     // loop forever
     // This loop is responsible for "handing off" messages to the subroutines
@@ -340,11 +342,159 @@ void main(void) {
         // an idle mode)
         block_on_To_msgqueues();
 
-        // At this point, one or both of the queues has a message.  It
-        // makes sense to check the high-priority messages first -- in fact,
-        // you may only want to check the low-priority messages when there
-        // is not a high priority message.  That is a design decision and
-        // I haven't done it here.
+        //We have a bunch of queues now - ToMainHigh, ToMainLow, FromMainHigh, FromMainLow,
+        //FromUARTInt, and FromI2CInt
+        //From queues are most important because they will be called repeatedly with busy info
+        //Int queues are second because we'll often get data from either UART or I2C
+        //ToMain are least
+
+        length = FromMainHigh_recvmsg(MSGLEN, &msgtype, (void *) msgbuffer);
+        if (length < 0) {
+            // no message, check the error code to see if it is concern
+            if (length != MSGQUEUE_EMPTY) {
+                // This case be handled by your code.
+            }
+        }
+        else{
+            switch(msgtype){
+                #ifdef I2C_MASTER
+                case MSGT_MASTER_RECV_BUSY:
+                {
+                    //retry
+                    debugNum(4);
+                    i2c_master_recv(msgbuffer[0]);
+                    break;
+                };
+                case MSGT_MASTER_SEND_BUSY:
+                {
+                    //retry
+                    debugNum(8);
+                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                    break;
+                };
+                #endif
+                case MSGT_UART_TX_BUSY:
+                {
+                    uart_send_array(msgbuffer, length);
+                    break;
+                };
+                default:
+                    break;
+            }
+        }
+
+        length = FromUARTInt_recvmsg(MSGLEN, &msgtype, (void *) msgbuffer);
+        if (length < 0) {
+            // no message, check the error code to see if it is concern
+            if (length != MSGQUEUE_EMPTY) {
+                // This case be handled by your code.
+            }
+        }
+        else{
+            switch(msgtype){
+                case MSGT_OVERRUN:
+                    break;
+                case MSGT_UART_DATA:
+                {
+#ifdef PICMAN
+                    setRoverDataLP(msgbuffer);
+                    handleRoverDataLP();
+#elif defined(MASTER_PIC) || defined(ROVER_EMU)
+                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+#endif
+                    break;
+                };
+                case MSGT_UART_RECV_FAILED:
+                {
+                    debugNum(1);
+                    debugNum(2);
+                    debugNum(1);
+                    debugNum(2);
+                    break;
+                };
+                case MSGT_UART_TX_BUSY:
+                {
+                    uart_send_array(msgbuffer, length);
+                    break;
+                };
+                default:
+                    break;
+            }
+        }
+
+        length = FromI2CInt_recvmsg(MSGLEN, &msgtype, (void *) msgbuffer);
+        if (length < 0) {
+            // no message, check the error code to see if it is concern
+            if (length != MSGQUEUE_EMPTY) {
+                // This case be handled by your code.
+            }
+        }
+        else{
+            switch(msgtype){
+                case MSGT_I2C_DATA:
+                {
+#if defined(MASTER_PIC) || defined(ARM_EMU)
+                    //handle whatever data will come through via i2c
+                    //msgbuffer can hold real data - error codes will be returned through the error cases
+                    setRoverDataLP(msgbuffer);
+                    handleRoverDataLP();
+#else
+                    setBrainDataLP(msgbuffer);
+#endif
+                    break;
+                };
+                case MSGT_I2C_RQST:
+                {
+#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
+                    handleMessageLP(I2C_COMM, I2C_COMM);
+#elif defined(PICMAN)
+                    handleMessageLP(I2C_COMM, UART_COMM);
+#endif
+                    break;
+                };
+                case MSGT_I2C_DBG:
+                {
+                    // Here is where you could handle debugging, if you wanted
+                    // keep track of the first byte received for later use (if desired)
+                    last_reg_recvd = msgbuffer[0];
+                    break;
+                };
+#ifdef MASTER_PIC
+                case MSGT_I2C_MASTER_RECV_FAILED:
+                {
+                    uart_send_array(msgbuffer, length);
+                    break;
+                };
+                case MSGT_I2C_MASTER_SEND_FAILED:
+                {
+                    uart_send_array(msgbuffer, length);
+                    break;
+                };
+                case MSGT_MASTER_RECV_BUSY:
+                {
+                    //retry
+                    debugNum(4);
+                    i2c_master_recv(msgbuffer[0]);
+                    break;
+                };
+                case MSGT_MASTER_SEND_BUSY:
+                {
+                    //retry
+                    debugNum(8);
+                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                    break;
+                };
+#endif
+                default:
+                    break;
+            }
+        }
+
+
+
+
+
         length = ToMainHigh_recvmsg(MSGLEN, &msgtype, (void *) msgbuffer);
         if (length < 0) {
             // no message, check the error code to see if it is concern
@@ -358,80 +508,69 @@ void main(void) {
                     //timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
                     break;
                 };
-                case MSGT_I2C_DATA:
-                case MSGT_I2C_DBG:
-                {
-                    // Here is where you could handle debugging, if you wanted
-                    // keep track of the first byte received for later use (if desired)
-                    last_reg_recvd = msgbuffer[0];
-                    break;
-                };
-                case MSGT_I2C_RQST:
-                {
-                    // Generally, this is *NOT* how I recommend you handle an I2C slave request
-                    // I recommend that you handle it completely inside the i2c interrupt handler
-                    // by reading the data from a queue (i.e., you would not send a message, as is done
-                    // now, from the i2c interrupt handler to main to ask for data).
-                    //
-                    // The last byte received is the "register" that is trying to be read
-                    // The response is dependent on the register.
-                    switch (last_reg_recvd) {
-                        /*
-                        case 0xaa:
-                        {
-                            length = 2;
-                            msgbuffer[0] = 0x55;
-                            msgbuffer[1] = 0xAA;
-                            break;
-                        }
-                        case 0xa8:
-                        {
-                            length = 1;
-                            msgbuffer[0] = 0x3A;
-                            break;
-                        }
-                        case 0xa9:
-                        {
-                            length = 1;
-                            msgbuffer[0] = 0xA3;
-                            break;
-                        }*/
-                        case 0xaa:
-                        {
-                            if(data_points_count == 0){
-                                msgbuffer[0] = 0xff; //This tells the ARM that nothing is in the buffer
-                                length = 1;
-                            }
-                            else{
-                                for(int j = 0; j < data_points_count; j++){
-                                    msgbuffer[j] = to_send_buffer[j];
-                                }
-                                length = data_points_count;
-                                data_points_count = 0; //reset data point counters after use.
-                            }
-                            break;
-                        };
-                        case 0xab:
-                        {
-                            to_send_buffer[0] = 0x04;
-                            to_send_buffer[1] = 0x0d;
-                            data_points_count = 2;
-                            for(int j = 0; j < data_points_count; j++){
-                                msgbuffer[j] = to_send_buffer[j];
-                            }
-                            length = data_points_count;
-                            data_points_count = 0; //reset data point counters after use.
-                            break;
-                        };
-                    };
-                    msgbuffer[0] = 0xaa;
-                    length = 1;
-                    start_i2c_slave_reply(length, msgbuffer);
-                    break;
-                };
+//                #ifdef I2C_MASTER
+//                case MSGT_MASTER_RECV_BUSY:
+//                {
+//                    //retry
+//                    debugNum(4);
+//                    i2c_master_recv(msgbuffer[0]);
+//                    break;
+//                };
+//                case MSGT_MASTER_SEND_BUSY:
+//                {
+//                    //retry
+//                    debugNum(8);
+//                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+//                    break;
+//                };
+//                #endif
+//                case MSGT_I2C_DATA:
+//                {
+//                    debugNum(4);
+//#if defined(MASTER_PIC) || defined(ARM_EMU)
+//                    //handle whatever data will come through via i2c
+//                    //msgbuffer can hold real data - error codes will be returned through the error cases
+//                    setRoverDataLP(msgbuffer);
+//                    handleRoverDataLP();
+//#else
+//                    setBrainDataLP(msgbuffer);
+//#endif
+//                    debugNum(4);
+//                    break;
+//                };
+//                case MSGT_I2C_RQST:
+//                {
+//#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
+//                    handleMessageLP(I2C_COMM, I2C_COMM);
+//#elif defined(PICMAN)
+//                    handleMessageLP(I2C_COMM, UART_COMM);
+//#endif
+//                    break;
+//                };
+//                case MSGT_I2C_DBG:
+//                {
+//                    // Here is where you could handle debugging, if you wanted
+//                    // keep track of the first byte received for later use (if desired)
+//                    last_reg_recvd = msgbuffer[0];
+//                    break;
+//                };
+//#ifdef MASTER_PIC
+//                case MSGT_I2C_MASTER_RECV_FAILED:
+//                {
+//                    uart_send_array(msgbuffer, length);
+//                    break;
+//                };
+//                case MSGT_I2C_MASTER_SEND_FAILED:
+//                {
+//                    uart_send_array(msgbuffer, length);
+//                    break;
+//                };
+//#endif
                 case MSGT_AD:
                 {
-                    addDataPoints(sensorADid, msgbuffer, length);
+                    #ifdef SENSOR_PIC
+                    //addDataPoints(sensorADid, msgbuffer, length);
+                    #endif
                     break;
                 };
 
@@ -454,25 +593,37 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_AD:
                 {
-                    addDataPoints(sensorADid, msgbuffer, length);
-                    /*
-                    if(data_points_count <= MSGLEN+1){       //if a new sample comes in, just ignore them.
-                        to_send_buffer[data_points_count];
-                        data_points_count++;
-                    }*/
+                    #ifdef SENSOR_PIC
+                    //addDataPoints(sensorADid, msgbuffer, length);
+                    #endif
                     break;
                 };
-                /*case MSGT_TIMER1:
+                case MSGT_TIMER1:
                 {
-                    timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
+                    //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
                 };
-                case MSGT_OVERRUN:
-                case MSGT_UART_DATA:
-                {
-                    uart_lthread(&uthread_data, msgtype, length, msgbuffer);
-                    break;
-                };*/
+//                case MSGT_OVERRUN:
+//                    break;
+//                case MSGT_UART_DATA:
+//                {
+//#ifdef PICMAN
+//                    setRoverDataLP(msgbuffer);
+//                    handleRoverDataLP();
+//#elif defined(MASTER_PIC) || defined(ROVER_EMU)
+//                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+//                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+//#endif
+//                    break;
+//                };
+//                case MSGT_UART_RECV_FAILED:
+//                {
+//                    debugNum(1);
+//                    debugNum(2);
+//                    debugNum(1);
+//                    debugNum(2);
+//                    break;
+//                };
                 default:
                 {
                     // Your code should handle this error

@@ -2,9 +2,6 @@
 #ifndef KLCD_H_INC
 #define KLCD_H_INC
 
-void LCDinit();
-
-void StartSignalTest();
 void StartLCD();
 
 
@@ -19,7 +16,7 @@ void LCDabortBuffer(void*a);
 
 // DEBUG FUNCTION
 
-// Wraps text to next line.
+// Don't wrap text to next line.
 // NOTE: If this prototype is changed, make sure to change the corresponding prototype in FATAL
 void LCDwriteLn(int line, char* data);
 #endif

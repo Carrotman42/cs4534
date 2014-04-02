@@ -5,12 +5,12 @@
 extern "C" {
 #endif
 
-    enum {DBG1, DBG2, DBG3, DBG4, DBG5};
+    enum {DBG1, DBG2, DBG3, DBG4};
 
     void setDBG(unsigned char );
     void resetDBG(unsigned char );
     void flipDBG(unsigned char );
-    void readNum(int );
+    void debugNum(int );
 
 
 #ifdef	__cplusplus

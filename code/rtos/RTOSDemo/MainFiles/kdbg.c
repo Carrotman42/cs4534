@@ -8,10 +8,25 @@ void InitDBG() {
 	GPIO_SetDir(0, b(0) | b(1), 1);
 }
 
-void DBGval(unsigned value) {
-	if (value >= 4) {
+void DBGbit(unsigned value, int on) {
+	if (value >= 2) {
 		FATALSTR("Too many bits required for debug function");
-	}		
-	GPIO_ClearValue(0, ~value);
-	GPIO_SetValue(0, value);
+	}
+	if (on) {
+		GPIO_SetValue(0, 1<<value);
+	} else {
+		GPIO_ClearValue(0, 1<<value);
+	}
 }
+
+#include "klcd.h"
+void ReportDroppedMsg(int len, char* msg) {
+	aBuf(b, 100);
+	LCDwriteLn(14, "DROPPED MSG!!");
+}
+
+void ReportInvalidResponse( char* orig, char* resp) {
+	LCDwriteLn(14, "Invalid Response!!");
+}
+
+

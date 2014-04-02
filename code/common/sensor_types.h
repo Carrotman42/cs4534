@@ -10,7 +10,15 @@ typedef short uint16;
 
 
 typedef struct {
-	uint8 data;
+    uint8 data;
 } sensorADData;
+
+typedef struct{
+    uint8 data;
+} encoderData;
+
+typedef struct{
+    uint8 data;
+} sensorFrameData;
 
 #endif

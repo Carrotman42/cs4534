@@ -2,10 +2,10 @@
 #define __messages
 
 // The maximum length (in bytes) of a message
-#define MSGLEN 10
+#define MSGLEN 15
 
 // The maximum number of messages in a single queue
-#define MSGQUEUELEN 4
+#define MSGQUEUELEN 3
 
 typedef struct __msg {
     unsigned char full;
@@ -77,5 +77,11 @@ signed char FromMainLow_recvmsg(unsigned char,unsigned char *,void *);
 // in the "main()" thread and the receive from the interrupt handlers.
 signed char FromMainHigh_sendmsg(unsigned char,unsigned char,void *);
 signed char FromMainHigh_recvmsg(unsigned char,unsigned char *,void *);
+
+signed char FromUARTInt_sendmsg(unsigned char length, unsigned char msgtype, void *data);
+signed char FromUARTInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data);
+
+signed char FromI2CInt_sendmsg(unsigned char length, unsigned char msgtype, void *data);
+signed char FromI2CInt_recvmsg(unsigned char maxlength, unsigned char *msgtype, void *data);
 
 #endif

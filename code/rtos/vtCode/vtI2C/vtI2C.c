@@ -19,12 +19,13 @@
 // Private definitions used in the Public API
 // Structure used to define the messages that are sent to/from the I2C thread 
 typedef struct __vtI2CMsg {
-	uint8_t msgType; // A field you will likely use in your communications between processors (and for debugging)
+	uint8_t *dest; // Receive buffer
+	uint8_t destLen; // Receive buffer max length, or length received on the way out
+	uint8_t status;  // Status response for msg
 	uint8_t slvAddr; // Address of the device to whom the message is being sent (or was sent)
-	uint8_t	rxLen;	 // Length of the message you *expect* to receive (or, on the way back, the length that *was* received)
-	uint8_t txLen;   // Length of the message you want to sent (or, on the way back, the length that *was* sent)
-	uint8_t status;  // status of the completed operation -- I've not done anything much here, you probably should...
-	uint8_t buf[vtI2CMLen]; // On the way in, message to be sent, on the way out, message received (if any)
+	
+	// Msg to send
+	BrainMsg data;
 } vtI2CMsg;
 // Length of the message queues to/from this task
 #define vtI2CQLen 10
@@ -144,54 +145,30 @@ int vtI2CInit(vtI2CStruct *devPtr,uint8_t i2cDevNum,unsigned portBASE_TYPE taskP
 	}
 }
 
-// A simple routine to use for filling out and sending a message to the I2C thread
-//   You may want to make your own versions of these as they are not suited to all purposes
-portBASE_TYPE vtI2CEnQ(vtI2CStruct *dev,uint8_t msgType,uint8_t slvAddr,uint8_t txLen,const uint8_t *txBuf,uint8_t rxLen)
-{
+portBASE_TYPE ki2cReadReq(vtI2CStruct *dev, uint8_t slvAddr, BrainMsg msg, uint8_t* dest, uint8_t destLen, uint8_t* destAct) {
 	vtI2CMsg msgBuf;
-	int i;
+	msgBuf.dest = dest;
+	msgBuf.destLen = destLen;
+	msgBuf.slvAddr = slvAddr;
+	msgBuf.data = msg;
 
-    msgBuf.slvAddr = slvAddr;
-	msgBuf.msgType = msgType;
-	msgBuf.rxLen = rxLen;
-	if (msgBuf.rxLen > vtI2CMLen) {
-		VT_HANDLE_FATAL_ERROR(0);
-	}
-	msgBuf.txLen = txLen;
-	if (msgBuf.txLen > vtI2CMLen) {
-		VT_HANDLE_FATAL_ERROR(0);
-	}
-	for (i=0;i<msgBuf.txLen;i++) {
-		msgBuf.buf[i] = txBuf[i];
-	}
-	return(xQueueSend(dev->inQ,(void *) (&msgBuf),portMAX_DELAY));
+	SEND(dev->inQ, msgBuf);
+	RECV(dev->outQ, msgBuf);
+	
+	*destAct = msgBuf.destLen;
+	return msgBuf.status;
 }
 
-// A simple routine to use for retrieving a message from the I2C thread
-portBASE_TYPE vtI2CDeQ(vtI2CStruct *dev,uint8_t maxRxLen,uint8_t *rxBuf,uint8_t *rxLen,uint8_t *msgType,uint8_t *status)
-{
-	vtI2CMsg msgBuf;
-	int i;
-
-	if (xQueueReceive(dev->outQ,(void *) (&msgBuf),portMAX_DELAY) != pdTRUE) {
-		return(pdFALSE);
-	}
-	(*status) = msgBuf.status;
-	(*rxLen) = msgBuf.rxLen;
-	if (msgBuf.rxLen > maxRxLen) msgBuf.rxLen = maxRxLen;
-	for (i=0;i<msgBuf.rxLen;i++) {
-		rxBuf[i] = msgBuf.buf[i];
-	}
-	(*msgType) = msgBuf.msgType;
-	return(pdTRUE);
-}
+#include "kdbg.h"
 
 // End of public API Functions
 /* ************************************************ */
 
+void kevinsMasterHandler(LPC_I2C_TypeDef *devAddr);
+
 // i2c interrupt handler
 static __INLINE void vtI2CIsr(LPC_I2C_TypeDef *devAddr,xSemaphoreHandle *binSemaphore) {
-	I2C_MasterHandler(devAddr);
+	kevinsMasterHandler(devAddr);
 	if (I2C_MasterTransferComplete(devAddr)) {
 		static signed portBASE_TYPE xHigherPriorityTaskWoken;
 		xHigherPriorityTaskWoken = pdFALSE;
@@ -217,50 +194,48 @@ void vtI2C2Isr(void) {
 	vtI2CIsr(devStaticPtr[2]->devAddr,&(devStaticPtr[2]->binSemaphore));
 }
 
+#include "comm.h"
 
 // This is the actual task that is run
+//   We expect only one to be run the entire time, ie we only support one I2C connection.
 static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 {
+	
 	// Get the i2c structure for this task/device
 	vtI2CStruct *devPtr = (vtI2CStruct *) pvParameters;
-	vtI2CMsg msgBuffer;
-	uint8_t tmpRxBuf[vtI2CMLen];
-	I2C_M_SETUP_Type transferMCfg;
-	int i;
+	I2C_M_SETUP_Type tx;
 
+	RoverCmd cmd;
+	char outBuf[MAX_OUT_SIZE];
+	// All the space we need for header + frame size
+	char inBuf[15];
+
+	// Counts how many times it gets an invalid frame response so that it can request StartFrames
+	//    after a long gap of correct frames.
 	for (;;) {
-		// wait for a message from another task telling us to send/recv over i2c
-		if (xQueueReceive(devPtr->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
-			VT_HANDLE_FATAL_ERROR(0);
-		}
-		//Log that we are processing a message
-		vtITMu8(vtITMPortI2CMsg,msgBuffer.msgType);
-
-		// process the messsage and perform the I2C transaction
-		transferMCfg.sl_addr7bit = msgBuffer.slvAddr;
-		transferMCfg.tx_data = msgBuffer.buf;
-		transferMCfg.tx_length = msgBuffer.txLen;
-		transferMCfg.rx_data = tmpRxBuf;
-		transferMCfg.rx_length = msgBuffer.rxLen;
-		transferMCfg.retransmissions_max = 3;
-		transferMCfg.retransmissions_count = 0;	 // this *should* be initialized in the LPC code, but is not for interrupt mode
-		msgBuffer.status = I2C_MasterTransferData(devPtr->devAddr, &transferMCfg, I2C_TRANSFER_INTERRUPT);
+		RoverAction act = nextCommand((int*)&tx.tx_length, outBuf);
+		
+		int len;
+		len = copyToBuf(cmd, outBuf);
+		tx.tx_length = len;
+		tx.tx_data = (unsigned char*)outBuf;
+		
+		// TODO: See which ones of these I can hoist above the for loop
+		tx.sl_addr7bit = PICMAN_I2C_ADDR;
+		tx.rx_data = (unsigned char*)inBuf;
+		tx.rx_length = sizeof inBuf;
+		tx.retransmissions_max = 3;
+		tx.retransmissions_count = 0;	 // this *should* be initialized in the LPC code, but is not for interrupt mode
+		int ret = I2C_MasterTransferData(devPtr->devAddr, &tx, I2C_TRANSFER_INTERRUPT);
 		// Block until the I2C operation is complete -- we *cannot* overlap operations on the I2C bus...
-		if (xSemaphoreTake(devPtr->binSemaphore,portMAX_DELAY) != pdTRUE) {
-			// something went wrong 
-			VT_HANDLE_FATAL_ERROR(0);
+		FAILIF(xSemaphoreTake(devPtr->binSemaphore,portMAX_DELAY) != pdTRUE);
+		
+		if (ret) {
+		 	// TODO: Check this value too?
 		}
-		msgBuffer.txLen = transferMCfg.tx_count;
-		msgBuffer.rxLen = transferMCfg.rx_count;
-		// Now send out a message with the data that was read
-		// First, copy over the buffer that was received (if any)
-		for (i=0;i<msgBuffer.rxLen;i++) {
-			msgBuffer.buf[i] = tmpRxBuf[i];
-		}
-		// now put a message in the message queue
-		if (xQueueSend(devPtr->outQ,(void*)(&msgBuffer),portMAX_DELAY) != pdTRUE) {
-			// something went wrong 
-			VT_HANDLE_FATAL_ERROR(0);
-		} 
+		
+		gotData(act, outBuf, inBuf);
 	}
 }
+
+

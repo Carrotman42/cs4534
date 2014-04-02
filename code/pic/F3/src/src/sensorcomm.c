@@ -1,15 +1,12 @@
-#include "../../../../common/common.h"
-
-
 #include "sensorcomm.h"
-#include "../../../../common/sensor_types.h"
-#include "../../../../common/common.h"
+
+#include "sensor_types.h"
+#include "common.h"
 #include "testAD.h"
 #include "debug.h"
 #include "my_i2c.h"
-#include "maindefs.h"
 
-
+/*
 static BrainMsg BrainMsgRecv;
 static sensorADaccumulator ADacc;
 
@@ -17,21 +14,14 @@ void setBrainReqData(char* buf){
 
     BrainMsg* tempBrain = unpackBrainMsg(buf); //just a cast but this adds clarification
 
-    if(tempBrain->flags == 0){
-        reqADData();
-    }
-    else{
-        BrainMsgRecv.flags = tempBrain->flags;
-        BrainMsgRecv.sensorMask = tempBrain->sensorMask;
-    }
+    //reqADData();
+    BrainMsgRecv.flags = tempBrain->flags;
+    BrainMsgRecv.parameters = tempBrain->parameters;
 }
 
 void sendRequestedData(){
-    readNum(1);
-    if(BrainMsgRecv.flags == SENSOR_REQ){ //Requesting sensor data
-        readNum(2);
-        if(BrainMsgRecv.sensorMask == sensorADid){ //requesting A/D converter data
-            readNum(4);
+    if(BrainMsgRecv.flags == SENSOR_COMMANDS){ //Requesting sensor data
+        if(BrainMsgRecv.parameters == sensorADid){ //requesting A/D converter data
             sendADdata();
             resetADacc(); //make sure we don't send extra on next request
         }
@@ -40,15 +30,15 @@ void sendRequestedData(){
 
 void sendADdata() {
     //readNum(1);
-	char outBuff[100]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
-        int bytes_packed = packADData( ADacc.data, ADacc.len, outBuff, 100);
+	char outBuff[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS]; //sizeof(RoverMsg) + sizeof(sensorADData) * len
+        int bytes_packed = packADData( ADacc.data, ADacc.len, outBuff, sizeof(outBuff));
         if(bytes_packed == 0){
             //error
         }
         else{
             //char* dat = (char*) ADacc->data;
             //readNum((int)dat[0]);
-            start_i2c_slave_reply(bytes_packed, outBuff);
+            start_i2c_slave_reply(MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS, outBuff);
         }
 }
 
@@ -62,17 +52,12 @@ void addDataPoints(int sensorid, void* data, int len){
 }
 
 void addADDataPoints(sensorADData* data, int len){
-    //readNum(len);
-    if(ADacc.len + len < MSGLEN){
+    if(ADacc.len + len < (int) sizeof(ADacc.data)){
         int i = 0;
         for(i; i < len; i++){
             ADacc.data[ADacc.len++] = data[i]; //set the accumulator at position len to the data at i, then increment the accumulator length
         }
     }
-
-    //char* dat = (char*) ADacc->data;
-    //readNum((int)dat[0]);
-    //readNum(ADacc->len);
     
 }
 
@@ -87,3 +72,28 @@ void resetADacc(){
 void resetAccumulators(){
     resetADacc();
 }
+*/
+
+#ifdef SENSOR_PIC
+void sendSensorFrame(uint8 msgid){
+    addSensorFrame(0x05,0x06,0x07);//will need a function to actually get the sensor data.
+                                   //For now, send dummy values
+    sendFrameData(msgid);
+}
+#elif defined(PICMAN) || defined(ARM_EMU)
+static uint8 colorSensorStatus = 0;
+static uint8 timesColorTriggered = 0;
+void colorSensorTriggered(){
+    colorSensorStatus = 1;
+    timesColorTriggered++;
+}
+uint8 isColorSensorTriggered(){
+    return colorSensorStatus; 
+}
+void clearColorSensorStatus(){
+    colorSensorStatus = 0;
+}
+uint8 timesColorSensorTriggered(){
+    return timesColorTriggered;
+}
+#endif

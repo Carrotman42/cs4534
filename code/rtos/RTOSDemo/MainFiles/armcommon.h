@@ -3,8 +3,11 @@
 #ifndef COMMON_H_INC
 #define COMMON_H_INC
 
+#define PICMAN_I2C_ADDR 0x10
+#define ARM
 // Define this for debug checks that double-check the programmer. Will be disabled for final run once testing is over.
 #define CHECKS
+#define ETHER_EMU 1
 
 // Common includes:
 #include "FreeRTOS.h"
@@ -56,8 +59,8 @@
 // These macros have to do with queues and are relatively straightforward.
 #define MAKE_Q(dest, type, len) if (((dest) = xQueueCreate(len, sizeof(type))) == NULL) FATAL(0);
 #define RECV(chan, dest) if(xQueueReceive(chan,(void *)&(dest),portMAX_DELAY) != pdTRUE) FATAL(0);
+#define TRY_RECV(chan, dest) (xQueueReceive(chan,(void *)&(dest), 0) == pdTRUE)
 #define SEND(chan, src)  if(xQueueSend(chan, &src, portMAX_DELAY) != pdTRUE) FATAL(0);
-
 
 // Helper defines, used internally in this common.h. They are considered private and should not
 //    be used outside of this file.
@@ -120,5 +123,30 @@
 	if (remainingStack < 0.10) {\
 		FATAL(0); \
 	}
+
+
+// staticf (Static string format) functions
+#define aBuf(name, len) char name##name[len], *name = name##name;
+
+#define aStr(dest, str) {   \
+		char* s = str, c;	\
+		while ((c = *s)) {	\
+		 	aChar(dest, c);	\
+			s++;			\
+		}					\
+	}
+
+#define aByte(dest, val) {         \
+		int t = (val);             \
+		aNib(dest, (t / 16) % 16); \
+		aNib(dest, (t     ) % 16); \
+	}
+
+#define aNib(dest, val) \
+	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
+
+#define aChar(dest, ch) *dest++ = (ch)
+#define aPrint(name, line) LCDwriteLn(line, name##name);
+
 
 #endif
