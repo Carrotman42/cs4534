@@ -18,6 +18,30 @@ type RoverSnapshot struct {
 	SendFrames bool
 }
 
+func (m*Map) hLine(l, r, y int) {
+	for i := l; i < r; i++ {
+		if m.Course[i][y] {
+			m.Course[i][y] = false
+		} else {
+			m.Course[i][y] = true
+		}
+	}
+}
+func (m*Map) vLine(t, b, x int) {
+	for i := t; i < b; i++ {
+		if m.Course[x][i] {
+			m.Course[x][i] = false
+		} else {
+			m.Course[x][i] = true
+		}
+	}
+}
+func (m*Map) box(t, l, b, r int) {
+	m.vLine(t, b, l)
+	m.vLine(t, b, r)
+	m.hLine(l, r, t)
+	m.hLine(l, r, b)
+}
 
 func (m*Map) Init() {
 	for i := 10; i < (CourseSize - 10); i++ {
@@ -27,11 +51,7 @@ func (m*Map) Init() {
 		m.Course[CourseSize - 10][i] = true
 	}
 	
-	/*for i := 10; i < 30; i++ {
-		m.Course[CourseSize-i][30] = true
-		m.Course[CourseSize-30][i+20] = true
-		m.Course[CourseSize-i][50] = true
-	}*/
+	m.box(50, CourseSize-40, 70, CourseSize-10)
 }
 
 const (

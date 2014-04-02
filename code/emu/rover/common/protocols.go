@@ -54,6 +54,7 @@ func (e ErrorKind) Error() string {
 type Protocol interface {
 	ReadCmd() InCmd
 	WriteFrameData(f FrameData)
+	TurnFinished()
 	//WriteError(f ErrorKind)
 }
 

@@ -45,7 +45,8 @@ func (r*Rover) StartLoops() {
 	go r.Loop()
 }
 
-const SPEED_SCALE = 1./25
+const SPEED_SCALE = 1./15
+
 func (r*Rover) Tick() {
 	ang := float64(r.Dir)*math.Pi/180
 	newx, newy := r.X + r.Vel * SPEED_SCALE * math.Cos(ang), r.Y + r.Vel * SPEED_SCALE * math.Sin(ang)
@@ -59,6 +60,10 @@ func (r*Rover) Tick() {
 	r.FrameData.Ultrasonic = r.CalcSensorDist(5, 0, 0)
 	r.FrameData.IR1 = r.CalcSensorDist(2, 5, 90)
 	r.FrameData.IR2 = r.CalcSensorDist(-2, 5, 90)
+	
+	d := uint16(r.Vel)
+	r.FrameData.REnc += d
+	r.FrameData.LEnc += d
 	//r.FrameData.Ultrasonic = r.CalcSensorDist()
 }
 
@@ -85,7 +90,7 @@ func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 func (r*Rover) FrameLoop() {
 	//r.Vel = 3
 	for {
-		time.Sleep(time.Second/10)
+		time.Sleep(time.Second/30)
 		
 		r.Lock()
 		
@@ -93,6 +98,9 @@ func (r*Rover) FrameLoop() {
 		
 		if r.SendFrames {
 			r.WriteFrameData(r.FrameData)
+			// Reset the encoder values
+			r.REnc = 0
+			r.LEnc = 0
 		}
 		if r.Listener != nil {
 			r.Listener.Update(r.RoverSnapshot)
@@ -122,6 +130,7 @@ func (r*Rover) Loop() {
 			r.Vel = 0
 		} else if val, ok := cmd.CheckTurnCmd(); ok {
 			r.Dir += val
+			r.TurnFinished()
 		} else {
 			fmt.Println("UNKNOWN CMD:", cmd)
 		}
@@ -176,6 +185,9 @@ func (t TelnetProtocol) Error(f common.ErrorKind) {
 }
 func (t TelnetProtocol) WriteFrameData(f common.FrameData) {
 	fmt.Fprint(t.d, f.String())
+}
+func (t TelnetProtocol) TurnFinished() {
+	fmt.Fprintln(t.d, "Turn Finished")
 }
 
 type TelnetCmd struct {
@@ -304,8 +316,11 @@ func (s SerialProtocol) ReadCmd() (ret common.InCmd) {
 }
 
 func (s SerialProtocol) WriteFrameData(f common.FrameData) {
-	fmt.Println("Implement me please!")
+	fmt.Println("write frame data, Implement me please!")
 	//TODO!
+}
+func (s SerialProtocol) TurnFinished() {
+	fmt.Println("Turn finished, Implement me please!")
 }
 func (t SerialProtocol) Error(f common.ErrorKind) {
 	var p, l byte
@@ -386,8 +401,12 @@ type PicmanProtocol struct {
 	Arm SerialProtocol
 	last common.FrameData
 	lastOk bool
+	doneTurning bool
 }
 
+func (s*PicmanProtocol) TurnFinished() {
+	s.doneTurning = true
+}
 func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 	for {
 		ret = s.Arm.ReadCmd()
@@ -403,14 +422,26 @@ func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 				}
 				s.Arm.writePacket(cmd, 2, payload)
 				continue
+			} else if r.cmd == 4 && r.param == 5 {
+				var pay [1]byte
+				if s.doneTurning {
+					pay[0] = 1
+					s.doneTurning = false
+				}
+				s.Arm.writePacket(4, 5, pay[:])
+				continue
 			}
-		} else {
-			s.Arm.writePacket(uint(r.cmd) | 0x20, r.param, nil)
 		}
 		return ret
 	}
 }
 func (s *PicmanProtocol) WriteFrameData(f common.FrameData) {
+	if s.lastOk {
+		// The last one was still valid, so don't
+		//   overwrite it
+		f.LEnc += s.last.LEnc
+		f.REnc += s.last.REnc
+	}
 	s.last = f
 	s.lastOk = true
 }
