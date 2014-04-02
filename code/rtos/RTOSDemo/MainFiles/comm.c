@@ -164,7 +164,7 @@ inline void gotData(RoverAction last, char* ret) {
 				break;
 			}
 			invalid = 0;
-			mapReportNewFrame(&ret[HEADER_MEMBERS]);
+			mapReportNewFrame(ret[0] & COLOR_SENSED, &ret[HEADER_MEMBERS]);
 			break;
 		}
 		case TurnAck: {

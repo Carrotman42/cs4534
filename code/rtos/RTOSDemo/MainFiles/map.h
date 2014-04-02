@@ -35,7 +35,7 @@ typedef struct {
 	unsigned int tCount;
 } Memory;
 
-void mapReportNewFrame(char* frame);
+void mapReportNewFrame(int colorSensed, char* frame);
 void mapReportTurn(int dir);
 void InitMind();
 

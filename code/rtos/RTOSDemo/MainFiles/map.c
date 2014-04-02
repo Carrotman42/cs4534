@@ -9,6 +9,12 @@ static Map map;
 static Memory mem;
 static xSemaphoreHandle dataSem;
 
+// Uses the current memory to make a guess at where the wall in the course is.
+//   It takes into account the X,Y position as well as sensors.
+void mapMark() {
+	
+}
+
 #define FSM_TASKS
 #include "tasks.h"
 
@@ -18,6 +24,8 @@ void InitMind() {
 	initFsm();
 	//memset(&map, 0, sizeof(Map));
 	//memset(&mem, 0, sizeof(Memory));
+	mem.X = MAP_WIDTH/2*MAP_RESOLUTION;
+	mem.Y = (MAP_WIDTH-20)*MAP_RESOLUTION;
 	dataSem = xSemaphoreCreateMutex();
 	FAILIF(dataSem == NULL);
 	
@@ -49,12 +57,18 @@ char drawDir(Dir dir) {
 	}
 }
 
-void mapReportNewFrame(char* frame) {
+#define TICK_PRESCALE 75
+
+void mapReportNewFrame(int colorSensed, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
+	
+	if (colorSensed) {
+		TriggerEvent(COLOR_SENSOR_TRIGGERED);
+	}
+	
 	// Read the data in the correct form
 	Frame *f = (Frame*)frame;
-	
-	int X, Y, tCount, dir, countDone = 0;
+	int countDone = 0;
 	
 	LOCK
 		mem.Forward = f->ultrasonic;
@@ -65,7 +79,7 @@ void mapReportNewFrame(char* frame) {
 			mem.newDir = 0;
 			// Ignore encorder values for the first frames after turning.
 		} else {
-			int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2;
+			int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/TICK_PRESCALE;
 			
 			if (mem.tCount > 0) {
 				if (mem.tCount > ticks) {
@@ -91,10 +105,6 @@ void mapReportNewFrame(char* frame) {
 					break;
 			}
 		}
-		X = mem.X;
-		Y = mem.Y;
-		tCount = mem.tCount;
-		dir = mem.dir;
 	UNLOCK
 	
 	if (countDone) {
@@ -102,20 +112,20 @@ void mapReportNewFrame(char* frame) {
 	}
 	
 	TriggerEvent(NEW_SENSOR_DATA);
+	// Maybe only do this every few loops?
+	//mapMark();
 	
-   {
+	// We can read mem safely because this is the only task that
+	//   ever modifies mem
+	
 	bBuf(100);
 	bChar('(');
-	bWord(X);
+	bWord(mem.X);
 	bChar(',');
-	bWord(Y);
+	bWord(mem.Y);
 	bStr("); tC=");
-	bWord(tCount);
-	bPrint(14);
-   }
-    bBuf(100);
-	bChar(drawDir(dir));
-	bPrint(13);		
+	bWord(mem.tCount);
+	bPrint(14);	
 }
 
 // Called to record that the rover has finished the turn with the given direction. dir should be -1 for right and 1 for left.
@@ -136,7 +146,20 @@ void mapReportTurn(int dir) {
 }
 
 void mapStartTimer() {
-	LCDwriteLn(9, "Timer started");
+	int x, y;
+	LOCK
+		x = mem.X;
+		y = mem.Y;
+	UNLOCK
+	
+	
+	bBuf(100);
+	bStr("Timer started     started at (");
+	bWord(x);
+	bChar(',');
+	bWord(y);
+	bChar(')');
+	bPrint(9);
 }
 void mapStopTimer() {
 	LCDwriteLn(9, "Timer stopped");

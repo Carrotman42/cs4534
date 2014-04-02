@@ -102,7 +102,7 @@ PATH_FINDING_DECL {
 						
 						CHECK_FRONT(mem)
 						else if((mem.Right1 > 30) && (mem.Right2 > 30)){
-							registerTickListener(400*3);
+							registerTickListener(15);
 							currentstate = WAIT_TICKS;
 						}
 						break;
@@ -120,6 +120,7 @@ PATH_FINDING_DECL {
 						else{
 							mapStopTimer();
 							currentstate = END;
+							stop();
 						}
 						break;
 					default:
@@ -154,10 +155,19 @@ PATH_FINDING_DECL {
 					}
 					case TURN_COMPLETE:
 						break;
-					case TICK_COUNTING_DONE:
-						turnCW(90);
-						currentstate = TURN_STALL;
+					case TICK_COUNTING_DONE:{
+						Remember(mem);
+						
+						// Turn right if we don't know where the wall to our right is
+						if((mem.Right1 > 30) && (mem.Right2 > 30)){
+							turnCW(90);
+							currentstate = TURN_STALL;
+						} else {
+							moveForward(100);
+							currentstate = WAIT_EVENT;
+						}
 						break;
+					}
 					case COLOR_SENSOR_TRIGGERED:
 						break;
 					default:
