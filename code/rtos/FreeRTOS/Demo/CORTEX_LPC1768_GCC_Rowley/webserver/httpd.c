@@ -243,7 +243,12 @@ PT_THREAD(handle_output(struct httpd_state *s))
 		     send_file(s));
     }
   }
-  PSOCK_CLOSE(&s->sout);
+  if (s->emumode) {
+	// Just switched to emulator mode! Fix the state
+	s->state = STATE_WAITING;
+  } else {
+	PSOCK_CLOSE(&s->sout);
+  }
   PT_END(&s->outputpt);
 }
 /*---------------------------------------------------------------------------*/
@@ -311,7 +316,6 @@ static void f(int row, char* desc, int* d) {
 	(*d)++;		*/
 }
 
-#if ETHER_EMU==1  
 #include "comm.h"
 static
 PT_THREAD(handle_emu_in(struct httpd_state *s, RoverAction last)) {
@@ -346,6 +350,15 @@ static PT_THREAD(SendData(struct httpd_state *s, int len, char* b)) {
 }
 
 static void handle_connection(struct httpd_state *s) {
+	if (!s->emumode) {
+		handle_input(s);
+		if(s->state == STATE_OUTPUT) {
+			handle_output(s);
+		}
+		return;
+	}
+	// Else: emulator mode!
+  
 	static char buf[15]; // TODO: See if this has to be static
 	static int len;
 	static RoverAction lastAct; // Has to be static
@@ -366,17 +379,6 @@ nextCmd:
 			goto nextCmd;
 	}
 }
-
-#else
-static void
-handle_connection(struct httpd_state *s)
-{
-  handle_input(s);
-  if(s->state == STATE_OUTPUT) {
-    handle_output(s);
-  }
-}
-#endif
 /*---------------------------------------------------------------------------*/
 void
 httpd_appcall(void)
@@ -388,11 +390,11 @@ httpd_appcall(void)
     PSOCK_INIT(&s->sin, s->inputbuf, sizeof(s->inputbuf) - 1);
     PSOCK_INIT(&s->sout, s->outputbuf, sizeof(s->outputbuf) - 1);
     PT_INIT(&s->outputpt);
+	s->emumode = 0;
     s->state = STATE_WAITING;
     /*    timer_set(&s->timer, CLOCK_SECOND * 100);*/
     s->timer = 0;
-	
-    handle_connection(s);
+	handle_connection(s);
   } else if(s != NULL) {
     if(uip_poll()) {
       ++s->timer;
@@ -402,7 +404,7 @@ httpd_appcall(void)
     } else {
       s->timer = 0;
     }
-    handle_connection(s);
+	handle_connection(s);
   } else {
     uip_abort();
   }

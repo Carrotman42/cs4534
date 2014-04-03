@@ -150,7 +150,9 @@
 	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
 
 #define aChar(dest, ch) *dest++ = (ch)
-#define aPrint(name, line) LCDwriteLn(line, name##name);
+// Also resets the pointer to the beginning of the buffer so that it
+//   can be reused easily
+#define aPrint(name, line) LCDwriteLn(line, name##name); name = name##name
 
 // Convenience functions for naming the buffer 'b'. Also don't require you to a char(0) before printing
 #define bBuf(p)   aBuf(b, p)

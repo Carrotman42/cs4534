@@ -60,9 +60,10 @@ HTTPD_CGI_CALL(net, "net-stats", net_stats);
 HTTPD_CGI_CALL(rtos, "rtos-stats", rtos_stats );
 HTTPD_CGI_CALL(run, "run-time", run_time );
 HTTPD_CGI_CALL(io, "led-io", led_io );
+HTTPD_CGI_CALL(emureg, "emu-reg", register_emu );
 
 
-static const struct httpd_cgi_call *calls[] = { &file, &tcp, &net, &rtos, &run, &io, NULL };
+static const struct httpd_cgi_call *calls[] = { &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -293,6 +294,18 @@ static PT_THREAD(led_io(struct httpd_state *s, char *ptr))
   ( void ) ptr;
   PSOCK_GENERATOR_SEND(&s->sout, generate_io_state, NULL);
   PSOCK_END(&s->sout);
+}
+
+#include "armcommon.h"
+#include "klcd.h"
+static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	if (ETHER_EMU) {
+		s->emumode = 1;
+	} else {
+		LCDwriteLn(7, "Got emulator connect when emu mode is off!");
+	} 
+	PSOCK_END(&s->sout);
 }
 
 /** @} */

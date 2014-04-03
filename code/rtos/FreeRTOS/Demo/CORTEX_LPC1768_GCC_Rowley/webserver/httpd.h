@@ -45,7 +45,8 @@ struct httpd_state {
   char inputbuf[50];
   char outputbuf[50];
   char filename[20];
-  char state;
+  unsigned state : 4;
+  unsigned emumode : 1;
   struct httpd_fs_file file;
   int len;
   char *scriptptr;

@@ -40,7 +40,7 @@
 #ifndef NULL
 #define NULL 0
 #endif /* NULL */
-
+		   
 #include "httpd-fsdata.c"
 
 #if HTTPD_FS_STATISTICS
@@ -53,7 +53,7 @@ httpd_fs_strcmp(const char *str1, const char *str2)
 {
   u8_t i;
   i = 0;
- loop:
+ loop:			 
 
   if(str2[i] == 0 ||
      str1[i] == '\r' ||

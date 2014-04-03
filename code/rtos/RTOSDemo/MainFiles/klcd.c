@@ -163,8 +163,8 @@ void lcdMap() {
 			}
 			GLCD_SetTextColor(color);
 			
-			int x = a*2 + 50;
-			int y = b*2 + 115;
+			int x = a*2 + 100;
+			int y = b*2 + 0;
 			GLCD_PutPixel(x+0, y+0);
 			GLCD_PutPixel(x+0, y+1);
 			GLCD_PutPixel(x+1, y+0);

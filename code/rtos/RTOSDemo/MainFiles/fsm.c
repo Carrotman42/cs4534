@@ -10,8 +10,9 @@
 
 #define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
-#define TURN_STALL 3
-#define WAIT_TICKS 4
+#define L_TURN_STALL 3
+#define R_TURN_STALL 4
+#define WAIT_TICKS 5
 #define END 7 //picman handles stop frame data and stop moving
 
 
@@ -95,8 +96,10 @@ PATH_FINDING_DECL {
 			if(mem.Forward <= 50){\
 				stop(); \
 				turnCCW(90); \
-				currentstate = TURN_STALL; \
+				currentstate = L_TURN_STALL; \
+				registerTickListener(0); \
 			}
+		#define TOO_FAR 60
 		
 		//debug(event, "Got event");
 		switch(currentstate){
@@ -106,17 +109,13 @@ PATH_FINDING_DECL {
 						Remember(mem);
 						
 						CHECK_FRONT(mem)
-						else if((mem.Right1 > 30) && (mem.Right2 > 30)){
-							registerTickListener(400);
+						else if((mem.Right1 > TOO_FAR) && (mem.Right2 > TOO_FAR)){
+							registerTickListener(30);
 							currentstate = WAIT_TICKS;
 						}
 						
 						break;
 					}
-					case TURN_COMPLETE:
-						break;
-					case TICK_COUNTING_DONE:
-						break;
 					case COLOR_SENSOR_TRIGGERED:
 						if(!startCrossed){
 							mapStartTimer();
@@ -130,25 +129,35 @@ PATH_FINDING_DECL {
 						}
 						break;
 					default:
-						debug(1, "event error");
-						break;
+						goto invalid;
 				}
 				break;
-			case TURN_STALL:
+			case L_TURN_STALL:
 				switch(event){
 					case NEW_SENSOR_DATA:
+						// Ignore sensor data here
 						break;
 					case TURN_COMPLETE:
 						GO_SLOW;
 						currentstate = WAIT_EVENT;
 						break;
-					case TICK_COUNTING_DONE:
+					default:
+						goto invalid;
+				}
+				break;
+			case R_TURN_STALL:
+				switch(event){
+					case NEW_SENSOR_DATA:
+						// Ignore sensor data here
 						break;
-					case COLOR_SENSOR_TRIGGERED:
+					case TURN_COMPLETE:
+						GO_SLOW;
+						// Just turned right - try and find the wall again
+						registerTickListener(50);
+						currentstate = WAIT_TICKS;
 						break;
 					default:
-						debug(1, "event error");
-						break;
+						goto invalid;
 				}
 				break;
 			case WAIT_TICKS:
@@ -159,50 +168,52 @@ PATH_FINDING_DECL {
 						CHECK_FRONT(mem);
 						break;
 					}
-					case TURN_COMPLETE:
-						break;
 					case TICK_COUNTING_DONE:{
 						Remember(mem);
 						
 						// Turn right if we don't know where the wall to our right is
-						if((mem.Right1 > 30) && (mem.Right2 > 30)){
+						if((mem.Right1 > TOO_FAR) && (mem.Right2 > TOO_FAR)){
+							stop();
 							turnCW(90);
-							currentstate = TURN_STALL;
+							currentstate = R_TURN_STALL;
 						} else {
 							GO_SLOW;
 							currentstate = WAIT_EVENT;
 						}
 						break;
 					}
-					case COLOR_SENSOR_TRIGGERED:
-						break;
 					default:
-						debug(1, "event error");
-						break;
+						goto invalid;
 				}
 				break;
 			case END:
 				debug(1, "in end");
 				switch(event){
 					case NEW_SENSOR_DATA:
-						break;
 					case TURN_COMPLETE:
-						break;
 					case TICK_COUNTING_DONE:
-						break;
 					case COLOR_SENSOR_TRIGGERED:
 						break;
 					default:
-						debug(1, "event error");
-						break;
+						goto invalid;
 				}
 				break;
 			default:
-				debug(1, "current state error");
-				break;
+				goto invalid;
 				
 		}
 		
+		continue;
+		
+invalid:
+		{
+			bBuf(40);
+			bStr("Unknown event ");
+			bByte(event);
+			bStr(" in state ");
+			bByte(currentstate);
+			bPrint(6);
+		}
 	}
 } FSM_FOOT
 

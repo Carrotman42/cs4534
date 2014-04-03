@@ -6,7 +6,7 @@
 //   It's a guess right now, but we need to choose a value that allows us
 //   to have a good balance of precision and memory/processing required.
 #define MAP_RESOLUTION 10
-#define MAP_WIDTH 48
+#define MAP_WIDTH 64
 
 typedef enum {
 	Right = 0, // Initial value

@@ -89,7 +89,7 @@ void InitMind() {
 	//memset(&map, 0, sizeof(Map));
 	//memset(&mem, 0, sizeof(Memory));
 	mem.X = MAP_WIDTH/2*MAP_RESOLUTION;
-	mem.Y = (MAP_WIDTH-20)*MAP_RESOLUTION;
+	mem.Y = (MAP_WIDTH-10)*MAP_RESOLUTION;
 	dataSem = xSemaphoreCreateMutex();
 	FAILIF(dataSem == NULL);
 	
@@ -143,6 +143,7 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 		mem.Right1 = f->IR1;
 		mem.Right2 = f->IR2;
 		
+		mem.newDir = 0;
 		if (mem.newDir) {
 			mem.newDir = 0;
 			// Ignore encorder values for the first frames after turning.
@@ -186,13 +187,20 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	//   ever modifies mem
 	
 	bBuf(40);
+	if (mem.tCount) {
+		bStr("TICK COUNTDOWN=");
+		bWord(mem.tCount);
+	} else {
+		bStr("                   ");
+	}
+	bPrint(15);
+	// 'b' is reset correctly by above macro.
 	bChar('(');
 	bWord(mem.X);
 	bChar(',');
 	bWord(mem.Y);
-	bStr("); tC=");
-	bWord(mem.tCount);
-	bPrint(14);	
+	bChar(')');
+	bPrint(14);
 }
 
 // Called to record that the rover has finished the turn with the given direction. dir should be -1 for right and 1 for left.
