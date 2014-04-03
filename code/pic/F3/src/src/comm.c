@@ -56,6 +56,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
         case MOTOR_COMMANDS:
             switch(brain->parameters){
                 case 0x00:
+                    saveError(0x0a);
                 case 0x01:
                 case 0x02:
                     sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
@@ -613,6 +614,9 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                 default:
                     break;
             }
+            break;
+        case ERROR_FLAG:
+            saveError(rover->parameters);
             break;
         default:
             break;
