@@ -50,7 +50,10 @@ int mapTest(int x, int y);
 // Same as mapTest, but reads from the given map
 int mapTestMap(Map*m, int x, int y);
 
+// Copy the real map into this destination map for safekeeping
 void mapGetMap(Map*dest);
+// Return the pointer to the real map. Do not modify this map!
+Map* mapMapPtr();
 void mapGetMemory(Memory*dest);
 void mapStartTimer();
 void mapStopTimer();

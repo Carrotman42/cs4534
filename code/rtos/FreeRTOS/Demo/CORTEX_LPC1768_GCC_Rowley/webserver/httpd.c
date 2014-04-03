@@ -196,10 +196,11 @@ PT_THREAD(send_headers(struct httpd_state *s, const char *statushdr))
   PSOCK_SEND_STR(&s->sout, statushdr);
 
   ptr = strrchr(s->filename, ISO_period);
-  if(ptr == NULL) {
+  if(ptr == NULL || strncmp(".bin", ptr, 4) == 0) {
     PSOCK_SEND_STR(&s->sout, http_content_type_binary);
   } else if(strncmp(http_html, ptr, 5) == 0 ||
-	    strncmp(http_shtml, ptr, 6) == 0) {
+	    strncmp(http_shtml, ptr, 6) == 0 ||
+		strncmp(".htm", ptr, 4) == 0) {
     PSOCK_SEND_STR(&s->sout, http_content_type_html);
   } else if(strncmp(http_css, ptr, 4) == 0) {
     PSOCK_SEND_STR(&s->sout, http_content_type_css);
@@ -235,7 +236,7 @@ PT_THREAD(handle_output(struct httpd_state *s))
 		   send_headers(s,
 		   http_header_200));
     ptr = strchr(s->filename, ISO_period);
-    if(ptr != NULL && strncmp(ptr, http_shtml, 6) == 0) {
+    if(ptr != NULL && (strncmp(ptr, http_shtml, 6) == 0 || strncmp(ptr, ".bin", 4) == 0)) {
       PT_INIT(&s->scriptpt);
       PT_WAIT_THREAD(&s->outputpt, handle_script(s));
     } else {

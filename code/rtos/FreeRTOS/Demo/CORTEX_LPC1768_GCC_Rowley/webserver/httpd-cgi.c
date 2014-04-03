@@ -61,9 +61,10 @@ HTTPD_CGI_CALL(rtos, "rtos-stats", rtos_stats );
 HTTPD_CGI_CALL(run, "run-time", run_time );
 HTTPD_CGI_CALL(io, "led-io", led_io );
 HTTPD_CGI_CALL(emureg, "emu-reg", register_emu );
+HTTPD_CGI_CALL(mapdump, "map-dump", dump_map );
 
 
-static const struct httpd_cgi_call *calls[] = { &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
+static const struct httpd_cgi_call *calls[] = { &mapdump, &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -308,6 +309,17 @@ static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
 	PSOCK_END(&s->sout);
 }
 
+#include "map.h"
+
+//static Map save;
+static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	//mapGetMap(&save);
+	PSOCK_SEND(&s->sout, (char*)(mapMapPtr()), sizeof(Map));
+	PSOCK_END(&s->sout);
+}
+
+									 
 /** @} */
 
 

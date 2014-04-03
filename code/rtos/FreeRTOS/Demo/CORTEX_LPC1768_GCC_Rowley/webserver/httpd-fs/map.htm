@@ -20,10 +20,11 @@ function doAjaxGet(url, callback){
 			}
 		}
 	}
+	ajaxRequest.responseType = 'arraybuffer';
 	// Create a function that will receive data sent from the server
 	ajaxRequest.onreadystatechange = function(){
 		if(ajaxRequest.readyState == 4){
-			callback(ajaxRequest.responseText);
+			callback(new Uint8Array(ajaxRequest.response));
 			//document.getElementById(resultDiv).innerHTML = ajaxRequest.responseText;
 		}
 	}
@@ -37,8 +38,8 @@ var tab = [];
 function tableCreate(){
 	var body=document.getElementsByTagName('body')[0];
 	var tbl=document.createElement('table');
-	tbl.style.width='100%';
-	tbl.setAttribute('border','1');
+	tbl.setAttribute('border','0');
+	tbl.setAttribute('cellspacing','0');
 	var tbdy=document.createElement('tbody');
 	for(var i=0;i<Width;i++){
 		 var tr=document.createElement('tr');
@@ -46,7 +47,8 @@ function tableCreate(){
 		 tab[i] = rr;
 		 for(var j=0;j<Width;j++){
 			  var td=document.createElement('td');
-			  td.appendChild(document.createTextNode("`"))
+			  td.style.width = 2;
+			  td.style.height = 4;
 			  tr.appendChild(td)
 			  rr[j] = td;
 		 }
@@ -60,25 +62,25 @@ function tableCreate(){
 function tableUpdate(data) {
 	// This is completely safe!
 	data = eval(data);
-	var n = 0, val = 0;
+	var n = 4, val = 0;
 	var cur = 0;
 	for (var i=0; i<Width; i++) {
 		for (var j=0;j<Width; j++) {
-			if (n == 0) {
+			if (n == 4) {
 				val = data[cur];
 				cur++;
-				n = 4;
+				n = 0;
 			}
-			n--;
 			
 			var ch;
 			switch ((val >> (n*2)) & 3) {
-				case 0: ch = '`'; break;
-				case 1: ch = 'x'; break;
-				case 2: ch = 'X'; break;
-				case 3: ch = 'o'; break;
+				case 0: ch = "#FFFFFF"; break;
+				case 1: ch = "#CCCCCC"; break;
+				case 2: ch = "#000000"; break;
+				case 3: ch = "#FF0000"; break;
 			}
-			tab[i][j].innerHTML = ch;
+			tab[j][i].style.background = ch;
+			n++
 		}
 	}
 }
@@ -91,7 +93,8 @@ function tableUpdate(data) {
 
 <script>
 tableCreate();
-setInterval(function(){doAjaxGet("http://localhost:8080/bar",tableUpdate)}, 10000);
+doAjaxGet("/map.bin",tableUpdate);
+setInterval(function(){doAjaxGet("/map.bin",tableUpdate)}, 2000);
 </script>
 </body>
 

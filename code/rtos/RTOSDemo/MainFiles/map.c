@@ -89,7 +89,7 @@ void InitMind() {
 	//memset(&map, 0, sizeof(Map));
 	//memset(&mem, 0, sizeof(Memory));
 	mem.X = MAP_WIDTH/2*MAP_RESOLUTION;
-	mem.Y = (MAP_WIDTH-10)*MAP_RESOLUTION;
+	mem.Y = (MAP_WIDTH-25)*MAP_RESOLUTION;
 	dataSem = xSemaphoreCreateMutex();
 	FAILIF(dataSem == NULL);
 	
@@ -112,6 +112,10 @@ inline void mapGetMap(Map* dest) {
 	//  We don't need a lock because there's no such thing as an "inconsistent" map (even when the map is being changed there is no point
 	//   during an update during which the map could be in a non-readable state)
 	*dest = map;
+}
+
+Map* mapMapPtr() {
+	return &map;
 }
 #include "klcd.h"
 #include "frames.h"
@@ -244,5 +248,4 @@ void mapRegisterTick(int x) {
 		mem.tCount = x;
 	UNLOCK
 }
-
 
