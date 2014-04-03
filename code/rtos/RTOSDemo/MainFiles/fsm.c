@@ -72,8 +72,10 @@ static int startCrossed = 0; //remember if the start has been initially crossed
 void debug(int line, char* info);
 
 PATH_FINDING_DECL {
-	moveForward(100); //always start moving forward initially.
+	#define GO_SLOW moveForward(50)
+	GO_SLOW; //always start moving forward initially.
 	currentstate = WAIT_EVENT;
+	int cur = 0;
 	for(;;){
 		FsmEvent event = nextEvent();
 		{
@@ -84,10 +86,13 @@ PATH_FINDING_DECL {
 			bByte(event);
 			bPrint(5);
 		}
+		if (++cur % 5 == 0) {
+			LCDrefreshMap();
+		}
 		
 		#define Remember(name) Memory name; mapGetMemory(&name)
 		#define CHECK_FRONT(mem) \
-			if(mem.Forward <= 10){\
+			if(mem.Forward <= 50){\
 				stop(); \
 				turnCCW(90); \
 				currentstate = TURN_STALL; \
@@ -102,9 +107,10 @@ PATH_FINDING_DECL {
 						
 						CHECK_FRONT(mem)
 						else if((mem.Right1 > 30) && (mem.Right2 > 30)){
-							registerTickListener(15);
+							registerTickListener(400);
 							currentstate = WAIT_TICKS;
 						}
+						
 						break;
 					}
 					case TURN_COMPLETE:
@@ -133,7 +139,7 @@ PATH_FINDING_DECL {
 					case NEW_SENSOR_DATA:
 						break;
 					case TURN_COMPLETE:
-						moveForward(100);
+						GO_SLOW;
 						currentstate = WAIT_EVENT;
 						break;
 					case TICK_COUNTING_DONE:
@@ -163,7 +169,7 @@ PATH_FINDING_DECL {
 							turnCW(90);
 							currentstate = TURN_STALL;
 						} else {
-							moveForward(100);
+							GO_SLOW;
 							currentstate = WAIT_EVENT;
 						}
 						break;
@@ -176,7 +182,7 @@ PATH_FINDING_DECL {
 				}
 				break;
 			case END:
-				debug(0, "in end");
+				debug(1, "in end");
 				switch(event){
 					case NEW_SENSOR_DATA:
 						break;

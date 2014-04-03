@@ -5,7 +5,7 @@
 // Defines the "armunits" per map "tile" for use of discretization.
 //   It's a guess right now, but we need to choose a value that allows us
 //   to have a good balance of precision and memory/processing required.
-#define MAP_RESOLUTION 10
+#define MAP_RESOLUTION 20
 #define MAP_WIDTH 48
 
 typedef enum {
@@ -40,8 +40,15 @@ void mapReportTurn(int dir);
 void InitMind();
 
 typedef struct {
-	uint8_t data[MAP_WIDTH*MAP_WIDTH / 8];
+	uint8_t data[MAP_WIDTH*MAP_WIDTH / 4];
 } Map;
+
+// Returns the confidence of the rover that there is a wall in this map point between 0 and 3.
+//  Valid values for x and y are [0,MAP_WIDTH)
+int mapTest(int x, int y);
+
+// Same as mapTest, but reads from the given map
+int mapTestMap(Map*m, int x, int y);
 
 void mapGetMap(Map*dest);
 void mapGetMemory(Memory*dest);

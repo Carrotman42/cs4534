@@ -8,6 +8,7 @@ void StartLCD();
 // Blocks until a buffer is available
 SignalLCDMsg* LCDgetSignalBuffer();
 TextLCDMsg* LCDgetTextBuffer();
+void LCDrefreshMap();
 
 // May block if the LCD is busy
 void LCDcommitBuffer(void*aa);

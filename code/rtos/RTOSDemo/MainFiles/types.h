@@ -23,4 +23,5 @@ typedef struct {
 	char text[CHARS + 1];
 } TextLCDMsg;
 
+
 #endif

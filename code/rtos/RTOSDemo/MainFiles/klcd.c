@@ -19,9 +19,6 @@ typedef struct {
 static LCDBuf lcdCmd;
 
 #ifdef CHECKS
-// Note: this doesn't actually work to check to make sure things were initted
-//   because C doesn't initialize variables to be a specific value. But just in
-//   case I look into making them zeroed out initially I'm leaving them here.
 #define reqSig FAILIF(lcdCmd.toLCD == NULL && lcdCmd.freed == NULL)
 #else
 #define reqSig
@@ -40,6 +37,7 @@ typedef struct {
 	enum {
 		signal,
 		text,
+		map,
 	} type;
 } LCDMsg;
 
@@ -54,6 +52,15 @@ void StartLCD() {
 	MAKE_Q(lcdCmd.freed, LCDMsg*, 4);
 
 	StartLCDTask(&lcdCmd);
+}
+void LCDrefreshMap() {
+	reqSig;
+	
+	LCDMsg* ret;
+	RECV(lcdCmd.freed, ret);
+	
+	ret->type = map;
+	LCDcommitBuffer(ret);
 }
 
 TextLCDMsg* LCDgetTextBuffer() {
@@ -135,15 +142,45 @@ void LCDwriteLn(int line, char* data) {
 	LCDcommitBuffer(msg);
 }
 
+#include "map.h"
+void lcdMap() {
+	static Map last;
+	int a, b;
+	GLCD_WindowMax();
+	for (a = 0; a < MAP_WIDTH; a++) {
+		for (b = 0; b < MAP_WIDTH; b++) {
+			int cur = mapTest(a, b);
+			if (cur == mapTestMap(&last, a, b)) continue;
+			// only change the color if the thing changed so that it goes faster.
+			
+			int color;
+			switch (cur) {
+				case 0:	color = rgb(15,63, 0); break;
+				case 1: color = rgb(10,33,10); break;
+				case 2: color = rgb(10,10,10); break;
+				case 3: color = rgb( 31, 0, 0); break;
+				default:color = rgb(31, 0, 0); break;
+			}
+			GLCD_SetTextColor(color);
+			
+			int x = a*2 + 50;
+			int y = b*2 + 100;
+			GLCD_PutPixel(x+0, y+0);
+			GLCD_PutPixel(x+0, y+1);
+			GLCD_PutPixel(x+1, y+0);
+			GLCD_PutPixel(x+1, y+1);
+		}
+	}
+	mapGetMap(&last);
+}
+
 void lcdSignal(SignalLCDMsg* msg) {
 	DBGbit(0, 1);
 	GLCD_DisplayString(0, 1,0, (unsigned char*)"0.5V/div");
 	GLCD_DisplayString(60, 40,0, (unsigned char*)"20ms/div");
 	
 	GLCD_WindowMax();
-	// It's okay to have static vars: we're guarenteed to always be in the same task.
-	//   ps: I hope the memory model of freertos guarentees that... It seems appropriate
-	//          to assume.
+
 	static short last[LCDWIDTH];
 	char *data;
 	int x;
@@ -240,6 +277,7 @@ void lcdText(TextLCDMsg*text) {
 	//TODO: Add more params to the text message so we can support more things, like colorization and abs location.
 	int curLine = text->line;
 	//GLCD_ClearLn(curLine,1);
+	GLCD_SetTextColor(forecolor);
 	// show the text
 	GLCD_DisplayString(curLine,0,text->size,(unsigned char *)text->text);
 }
@@ -253,18 +291,11 @@ TASK_FUNC(LCDTask, LCDBuf, bufs) {
 
 	LCDMsg allocd[2];
 	int i;
-	// Use this to clear the screen:
-	{
-		char* d = allocd->signal.data;
-		for (i = 0; i < SIGNAL_SAMPLES; i++) {
-		 	d[i] = 0;
-		}
-		lcdSignal(&allocd->signal);
-	}
 	for (i = 0; i < sizeof allocd / sizeof(LCDMsg); i++) {
 	 	LCDMsg* h = &allocd[i];		
 		SEND(bufs->freed, h);
 	}
+	lcdMap();
 
 	while (1) {
 		LCDMsg* msg;
@@ -276,6 +307,9 @@ TASK_FUNC(LCDTask, LCDBuf, bufs) {
 				break;
 			case text:
 				lcdText(&msg->text);
+				break;
+			case map:
+				lcdMap();
 				break;
 			default:
 				FATAL(0);
