@@ -104,7 +104,6 @@ You should read the note above.
 // Include file for MTJ's LCD & i2cTemp tasks
 #include "vtUtilities.h"
 #include "vtI2C.h"
-#include "conductor.h"
 
 
 #include "tasks.h"
