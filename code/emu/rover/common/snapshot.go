@@ -44,20 +44,20 @@ func (m*Map) box(t, l, b, r int) {
 }
 
 func (m*Map) Init() {
-	for i := 10; i < (CourseSize - 10); i++ {
-		m.Course[i][10] = true
-		m.Course[i][CourseSize - 10] = true
-		m.Course[10][i] = true
-		m.Course[CourseSize - 10][i] = true
+	for i := 5; i < (CourseSize - 5); i++ {
+		m.Course[i][5] = true
+		m.Course[i][CourseSize - 5] = true
+		m.Course[5][i] = true
+		m.Course[CourseSize - 5][i] = true
 	}
 	
-	m.box(50, CourseSize-40, 70, CourseSize-10)
+	//m.box(50, CourseSize-40, 70, CourseSize-10)
 }
 
 const (
 	ArmUnitsPerTile = 10
 	
-	CourseSize = 100
+	CourseSize = 48
 )
 type Map struct {
 	Course [CourseSize][CourseSize]bool
@@ -73,7 +73,7 @@ func (m*Map) DistToWall(x, y, dir int) (int, bool) {
 		if q < 0 || q >= CourseSize || w < 0 || w >= CourseSize {
 			return 0, false
 		} else if m.Course[q][w] {
-			return i*ArmUnitsPerTile, true
+			return i*ArmUnitsPerTile + (ArmUnitsPerTile - (x%ArmUnitsPerTile)), true
 		}
 	}
 }

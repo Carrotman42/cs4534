@@ -61,7 +61,7 @@ func (r*Rover) Tick() {
 	r.FrameData.IR1 = r.CalcSensorDist(2, 5, 90)
 	r.FrameData.IR2 = r.CalcSensorDist(-2, 5, 90)
 	
-	d := uint16(r.Vel)
+	d := uint16(r.Vel * SPEED_SCALE)
 	r.FrameData.REnc += d
 	r.FrameData.LEnc += d
 	//r.FrameData.Ultrasonic = r.CalcSensorDist()
@@ -80,7 +80,7 @@ func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 	
 	x,y := mAdd(r.X, offx, cos), mAdd(r.Y, offy, sin)
 	v, ok := r.Map.DistToWall(x, y, offdir + r.Dir)
-	v /= 10
+	//v /= 10
 	if v > 255 || !ok {
 		v = 255
 	}
@@ -90,7 +90,7 @@ func (r*Rover) CalcSensorDist(offx, offy, offdir int) uint8 {
 func (r*Rover) FrameLoop() {
 	//r.Vel = 3
 	for {
-		time.Sleep(time.Second/30)
+		time.Sleep(time.Second/10)
 		
 		r.Lock()
 		
@@ -111,8 +111,7 @@ func (r*Rover) FrameLoop() {
 		y := r.Y / common.ArmUnitsPerTile
 		if x > cs-60 && x < cs-55 &&
 				y > cs-25 && y < cs-10 {
-			r.FinishLine()	
-			fmt.Println("         %%%%%%%%%%%%%%%%%%%5                       %%%%%%%%%%%%%%%%%%%%% ")
+			r.FinishLine()
 		}
 		
 		r.Unlock()
@@ -139,6 +138,7 @@ func (r*Rover) Loop() {
 			r.Vel = 0
 		} else if val, ok := cmd.CheckTurnCmd(); ok {
 			r.Dir += val
+			time.Sleep(time.Second/2)
 			r.TurnFinished()
 		} else {
 			fmt.Println("UNKNOWN CMD:", cmd)

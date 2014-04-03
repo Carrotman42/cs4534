@@ -11,7 +11,7 @@ import (
  import "math" 
  
  
- const SCALE = 0.5 
+ const SCALE = 1. 
  
 type GMapSlotConn struct {
 	D chan gMap
@@ -353,6 +353,8 @@ r := kgui . NewCanvasMaker ( )
  r . Text ( kgui . AFont , kgui . Point { 0 , 0 } , fmt . Sprint ( "Latest frame: " , sn . FrameData ) ) 
  p . Y += h 
  r . Text ( kgui . AFont , p , fmt . Sprint ( "Sending frame data: " , sn . SendFrames ) ) 
+ p . Y += h 
+ r . Text ( kgui . AFont , p , fmt . Sprint ( "Nearest wall in front: " , sn . X + float64 ( sn . Ultrasonic ) ) ) 
  p . Y += h 
  x , y := float64 ( sn . X ) * SCALE , float64 ( sn . Y ) * SCALE 
  y += p . Y 
