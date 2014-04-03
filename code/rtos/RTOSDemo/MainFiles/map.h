@@ -5,7 +5,7 @@
 // Defines the "armunits" per map "tile" for use of discretization.
 //   It's a guess right now, but we need to choose a value that allows us
 //   to have a good balance of precision and memory/processing required.
-#define MAP_RESOLUTION 20
+#define MAP_RESOLUTION 10
 #define MAP_WIDTH 48
 
 typedef enum {
