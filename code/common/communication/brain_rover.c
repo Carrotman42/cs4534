@@ -107,6 +107,11 @@ uint8 packTurningCompleteAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(HIGH_LEVEL_COMMANDS, 0x05, (Msg*) out, outlen, msgid);
 }
 
+uint8 packDoVictoryDanceAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(HIGH_LEVEL_COMMANDS, 0x06, (Msg*) out, outlen, msgid);
+}
+
+
 
 uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(ERROR_FLAG, 0x01, (Msg*) out, outlen, msgid);
@@ -160,8 +165,7 @@ static uint8 generateError(Msg* errorbuf, uint8 buflen, uint8 parameters, uint8 
     else
         errorbuf->messageid = i2c_messageid++;
     errorbuf->checksum = ERROR_FLAG + parameters + errorbuf->messageid + errorbuf->payloadLen;
-	int i;
-    for(i = 0; i < errorbuf->payloadLen; i++){
+    for(int i = 0; i < errorbuf->payloadLen; i++){
         errorbuf->checksum += errorbuf->payload[i]; //add frames if needed
     }
     return HEADER_MEMBERS + errorbuf->payloadLen;
@@ -364,6 +368,10 @@ uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid){
 
 uint8 generateColorSensorSensed(char* out, uint8 buflen, uint8 wifly){
     return generateHighLevelCommand(out, buflen, wifly, 0x04);
+}
+
+uint8 generateDoVictoryDance(char* out, uint8 buflen, uint8 wifly){
+    return generateHighLevelCommand(out, buflen, wifly, 0x06);
 }
 
 BrainMsg* unpackBrainMsg(char *buf){

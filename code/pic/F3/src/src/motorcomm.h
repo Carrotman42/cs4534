@@ -15,7 +15,7 @@ uint8 sendMotorAckResponse(uint8 parameters, uint8 messageid, uint8 wifly);
 void sendEncoderData(uint8 msgid);
 #endif
 
-#if defined(MASTER_PIC) || defined(ARM_EMU) || defined(PICMAN)
+#if defined(MASTER_PIC) || defined(ARM_EMU) || defined(PICMAN) || defined(MOTOR_PIC)
 void turnStarted();
 void turnCompleted();
 uint8 isTurnComplete();

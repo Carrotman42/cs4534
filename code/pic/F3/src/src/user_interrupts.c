@@ -170,6 +170,14 @@ void timer1_int_handler() {
                     break;
                 case 10:
                     length = generateTurnCCW(testArray, sizeof testArray, I2C_COMM, 0x08);
+                    temp++;
+                    break;
+                case 11:
+                    length = generateReadFrames(testArray, sizeof testArray, I2C_COMM);
+                    temp++;
+                    break;
+                case 12:
+                    length = generateDoVictoryDance(testArray, sizeof testArray, I2C_COMM);
                     temp = 0;
                     break;
             }

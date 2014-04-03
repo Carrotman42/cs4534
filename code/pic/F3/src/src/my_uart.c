@@ -60,7 +60,6 @@ void uart_recv_int_handler() {
 
         uc_ptr->buffer[pos] = recv;
         //We recieved the last byte of data
-        ;
         //Check the 5th byte recieved for payload length
         if(pos == PAYLOADLEN_POS){
             payload_length = recv;
@@ -77,7 +76,6 @@ void uart_recv_int_handler() {
         if (pos == payload_length+HEADER_MEMBERS-1){
             pos++;
             if(checksum_calc_value == checksum_recv_value){
-                //debugNum(4);
                 FromUARTInt_sendmsg(pos, MSGT_UART_DATA, (void *) uc_ptr->buffer);
             }
             else{ //Invalid Checksum

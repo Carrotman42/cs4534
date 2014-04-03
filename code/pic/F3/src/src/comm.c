@@ -50,32 +50,49 @@ void setRoverDataLP(char* msg){
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+    char command[6] = {0};
+    uint8 length = 0;
     switch(brain->flags){
         case MOTOR_COMMANDS:
-            if(brain->parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
-                sendEncoderData(brain->messageid);
-            }
-            else{
-                sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
+            switch(brain->parameters){
+                case 0x00:
+                case 0x01:
+                case 0x02:
+                    sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
+                    break;
+                case 0x03:
+                case 0x04:
+                    turnStarted();
+                    sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
+                    break;
+                case 0x05:
+                    sendEncoderData(brain->messageid);
+                    break;
+                default:
+                    break;
             }
             break;
         case HIGH_LEVEL_COMMANDS:
             if(brain->parameters == 0x05){ // this will only be called on the MOTOR PIC (M->Mo)
-                static uint8 ack = 0;
-                if(!ack){
-                    char command[6] = {0};
-                    uint8 length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
+                if(!isTurnComplete()){
+                    length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
 //                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
-                    ack = 1;
+#ifdef DEBUG_ON
+                    turnCompleted();
+#endif
                 }
                 else{
-                    char command[6] = {0};
-                    uint8 length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
+                    length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
 //                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
-                    ack = 0;
                 }
+            }
+            else if(brain->parameters == 0x06){
+                length = packDoVictoryDanceAck(command, sizeof command, brain->messageid);
+                start_i2c_slave_reply(length, command);
+                //Here is where we insert code to do a victory dance!
+                //DO A BARREL ROLL
             }
             break;
         default:
@@ -234,6 +251,9 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
             return 0;
         case HIGH_LEVEL_COMMANDS:
             sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
+            if(brain->parameters == 0x06){
+                return MOTOR_ADDR;
+            }
             break;
         default:
             break;
@@ -256,6 +276,12 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                     break;
                 case 0x03:
                     stopFrames();
+                    break;
+                case 0x06:
+                    length = repackBrainMsg(brain, payload, command, sizeof command, dest);
+                    if(length != 0){
+                        i2c_master_send(addr, length, command);
+                    }
                     break;
                 default:
                     break;
@@ -286,7 +312,6 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
     }
 }
 static void handleRoverData(RoverMsg* rover, char* payload){
-    //debugNum(4);
     char command[HEADER_MEMBERS] = {0};
     uint8 length = 0;
     switch(rover->flags){
@@ -390,6 +415,9 @@ void sendHighLevelAckResponse(uint8 parameters, uint8 messageid, uint8 wifly){
         case 0x03:
             bytes_packed = packStopFramesAck(outbuf, sizeof outbuf, messageid);
             break;
+        case 0x06:
+            bytes_packed = packDoVictoryDanceAck(outbuf, sizeof outbuf, messageid);
+            break;
         default:
             break;
     }
@@ -488,6 +516,10 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     sendData(command, length, I2C_COMM);
                     break;
                 };
+                case 0x06:
+                    length = packDoVictoryDanceAck(command, sizeof command, brain->messageid);
+                    sendData(command, length, I2C_COMM);
+                    break;
                 default:
                     sendHighLevelAckResponse(brain->parameters, brain->messageid, wifly);
                     break;
@@ -512,7 +544,8 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
         case HIGH_LEVEL_COMMANDS:
             switch(brain->parameters){
                 case 0x00:
-                case 0x03://start and stop frames are just packaged up and sent to master pic
+                case 0x03:
+                case 0x06://start and stop frames and victory dance are just packaged up and sent to master pic
                     length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                     break;
                 default:
@@ -557,7 +590,6 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     addEncoderData(payload[3], payload[4], payload[5], payload[6]);
                     break;
                 case 0x04:
-                    debugNum(8);
                     colorSensorTriggered();
                     if(timesColorSensorTriggered() == 2){ //this is the second time we've seen this message
                         //to handle a finish line differently, change this code here.

@@ -61,6 +61,7 @@ uint8 packFrameDataAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packColorSensedAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packTurningCompleteAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packDoVictoryDanceAck(char* out, uint8 outlen, uint8 msgid);
 
 uint8 packPICDetectErrorAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packSensorErrorAck(char* out, uint8 outlen, uint8 msgid);
@@ -100,6 +101,8 @@ uint8 generateTurnCompleteReq(char* out, uint8 buflen, uint8 wifly);
 uint8 generateTurnCompleteAck(char* out, uint8 buflen, uint8 msgid);
 uint8 generateTurnCompleteNack(char* out, uint8 buflen, uint8 msgid);
 uint8 generateColorSensorSensed(char* out, uint8 buflen, uint8 wifly);
+uint8 generateDoVictoryDance(char* out, uint8 buflen, uint8 wifly);
+
 
 int packEncoderData(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);
 int packSensorFrame(char* data, uint8 len, char* out, uint8 maxout, uint8 msgid);

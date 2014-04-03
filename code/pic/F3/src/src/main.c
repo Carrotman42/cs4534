@@ -397,7 +397,6 @@ void main(void) {
                 case MSGT_UART_DATA:
                 {
 #ifdef PICMAN
-                    //debugNum(1);
                     setRoverDataLP(msgbuffer);
                     handleRoverDataLP();
 #elif defined(MASTER_PIC) || defined(ROVER_EMU)
