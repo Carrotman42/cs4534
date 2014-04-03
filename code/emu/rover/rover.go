@@ -109,8 +109,9 @@ func (r*Rover) FrameLoop() {
 		cs := float64(common.CourseSize)
 		x := r.X / common.ArmUnitsPerTile
 		y := r.Y / common.ArmUnitsPerTile
-		if x > cs-60 && x < cs-55 &&
-				y > cs-25 && y < cs-10 {
+		
+		if x > 30 && x < 35 &&
+				y > cs-15 && y < cs-5 {
 			r.FinishLine()
 		}
 		
