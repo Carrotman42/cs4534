@@ -51,7 +51,7 @@ func (m*Map) Init() {
 		m.Course[CourseSize - 5][i] = true
 	}
 	
-	//m.box(50, CourseSize-40, 70, CourseSize-10)
+	m.box(5, 20, 15, 25)
 }
 
 const (

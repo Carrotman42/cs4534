@@ -409,6 +409,20 @@ func ConnectEthernet(addr string, port string) common.Protocol {
 	if conn, err := net.Dial("tcp", addr + ":" + port); err != nil {
 		panic(err)
 	} else {
+		conn.Write(([]byte)("GET /emu.shtml HTTP/1.0\r\n\r\n"))
+		var buf [1000]byte
+		pos := 0
+		for {
+			if n,err := conn.Read(buf[pos:]); err != nil {
+				panic(err)
+			} else {
+				pos += n
+				if pos >= 4 && string(buf[pos-4:pos]) == "\r\n\r\n" {
+					// wait for the end of the header
+					break
+				}
+			}
+		}
 		return &PicmanProtocol{Arm: SerialProtocol{conn}}
 	}
 }

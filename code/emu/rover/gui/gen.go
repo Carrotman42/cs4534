@@ -11,7 +11,7 @@ import (
  import "math" 
  
  
- const SCALE = 1. 
+ const SCALE = 0.9 
  
 type GMapSlotConn struct {
 	D chan gMap

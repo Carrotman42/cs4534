@@ -11,7 +11,7 @@ type mainG group {
 
 type Main impl {mainG}
 
-const SCALE = 1.
+const SCALE = 0.9
 
 %always (m*Main) (
 	m.Paint = func(sn m.Snap, pam m.Map) kgui.Canvas {
