@@ -22,6 +22,7 @@
 #ifdef SENSOR_PIC
 #include "my_adc.h"
 #include "sensorcomm.h"
+#include "my_ultrasonic.h"
 #endif
 
 
@@ -276,7 +277,7 @@ void main(void) {
 #ifdef __USE18F46J50
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
-    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+//    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #endif
 #endif
 
@@ -298,6 +299,10 @@ void main(void) {
 #ifdef SENSOR_PIC
     //resetAccumulators();
     init_adc();
+    initUS();
+
+//    INTCONbits.GIE = 1;
+//    INTCONbits.PEIE = 1;
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
@@ -388,16 +393,16 @@ void main(void) {
                     setRoverDataLP(msgbuffer);
                     handleRoverDataLP();
 #else
-                    setBrainDataLP(msgbuffer);
+//                    setBrainDataLP(msgbuffer);
 #endif
                     break;
                 };
                 case MSGT_I2C_RQST:
                 {
 #if defined(MOTOR_PIC) || defined(SENSOR_PIC)
-                    handleMessageLP(I2C_COMM, I2C_COMM);
+//                    handleMessageLP(I2C_COMM, I2C_COMM);
 #elif defined(PICMAN)
-                    handleMessageLP(I2C_COMM, UART_COMM);
+//                    handleMessageLP(I2C_COMM, UART_COMM);
 #endif
                     break;
                 };
@@ -469,8 +474,8 @@ void main(void) {
                     //uart_send_array(test, sizeof test);
                     //BrainMsg* msg = unpackBrainMsg((char*) msgbuffer);
                     //send ack
-                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
-                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+//                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+//                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
 
                     /*unsigned char addr;
                     if(msgbuffer[0] == 0x01)

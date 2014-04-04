@@ -3,6 +3,7 @@
 #include "user_interrupts.h"
 #include "messages.h"
 #include "my_adc.h"
+#include "my_ultrasonic.h"
 #include "debug.h"
 
 //----------------------------------------------------------------------------
@@ -102,6 +103,11 @@ void InterruptHandlerHigh() {
     }
 
     // here is where you would check other interrupt flags.
+    if (INTCONbits.INT0IF){
+        us_int_handler();
+        INTCONbits.INT0IF = 0; // clear the interrupt flag
+    }
+
 
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep

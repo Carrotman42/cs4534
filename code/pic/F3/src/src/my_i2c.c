@@ -503,7 +503,7 @@ void i2c_int_handler() {
         //debugNum(1);
         //#endif
         if(isHighPriority(ic_ptr->buffer)){
-            setBrainDataHP(ic_ptr->buffer);
+//            setBrainDataHP(ic_ptr->buffer);
         }
         else{
             ToMainHigh_sendmsg(ic_ptr->buflen, MSGT_I2C_DATA, (void *) ic_ptr->buffer);
@@ -525,9 +525,9 @@ void i2c_int_handler() {
         //start_i2c_slave_reply(5, outbuf);
         if(isHighPriority(ic_ptr->buffer)){
 #if defined(MOTOR_PIC) || defined(SENSOR_PIC)
-                    handleMessageHP(I2C_COMM, I2C_COMM);
+//                    handleMessageHP(I2C_COMM, I2C_COMM);
 #elif defined(PICMAN)
-                    handleMessageHP(I2C_COMM, UART_COMM);
+//                    handleMessageHP(I2C_COMM, UART_COMM);
 #endif
         }
         else{

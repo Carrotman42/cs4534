@@ -10,6 +10,7 @@
 #include "user_interrupts.h"
 #include "messages.h"
 #include "debug.h"
+#include "my_ultrasonic.h"
 #ifdef ROVER_EMU
 #include "../../../../common/communication/frames.h"
 #endif
@@ -18,7 +19,6 @@
 // This one does the action I wanted for this program on a timer0 interrupt
 
 void timer0_int_handler() {
-
 #ifdef MASTER_PIC
     //debugNum(2);
     static uint8 loop = 0;
@@ -62,6 +62,7 @@ void timer0_int_handler() {
     ADCON0bits.GO = 1;
 #ifdef SENSORMS3
     WriteTimer0(0xFFFF-3750);
+    pulseUS();
 #else
     WriteTimer0(0xFFFF-375);
 #endif
@@ -198,6 +199,16 @@ void timer1_int_handler() {
         }
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         //WriteTimer1(0x4000);
+
+#elif defined(SENSOR_PIC) && defined(SENSORMS3)
+        debugNum(16);
+        //Error -- Will need to send back OUT_OF_RANGE
+//        WriteTimer1(0xFFFF);
+        stopTimerUS();
+        TMR1H = 0xFF;
+        TMR1L = 0x6D;
+        TRISBbits.RB0 = 0;
+        LATBbits.LB0 = 0;
 #endif
 
 }
