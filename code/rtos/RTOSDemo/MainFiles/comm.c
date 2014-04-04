@@ -120,7 +120,6 @@ static xQueueHandle toRover;
 void InitComm() {
 	MAKE_Q(toRover, RoverCmd, 4);
 #if ETHER_EMU==1
-	StartEtherEmu();
 #else
 	FAILIF(vtI2CInit(&vtI2C0,0,mainI2CMONITOR_TASK_PRIORITY,I2C_Stack) != vtI2CInitSuccess);
 #endif
@@ -206,20 +205,15 @@ inline RoverAction nextCommand(int* len, char* outBuf) {
 	RoverCmd cmd;
 	//SLEEP(1000);
 	if (!TRY_RECV(toRover, cmd)) {
-		char *dbg;
 		if (turning) {
 			cmd.act = TurnAck;
-			dbg = "Send TurnAck";
 		} else if (invalid > 10) {
 			invalid = 0;
 			cmd.act = StartFrames;
-			dbg = "Send StartFrames";
 		} else {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
-			dbg = "Send ReadFrames";
 		}
-		LCDwriteLn(4, dbg);
 	}
 	*len = copyToBuf(cmd, outBuf);
 	return cmd.act;

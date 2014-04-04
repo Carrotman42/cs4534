@@ -342,11 +342,6 @@
               <FilePath>../FreeRTOS/Demo/CORTEX_LPC1768_GCC_Rowley/ParTest.c</FilePath>
             </File>
             <File>
-              <FileName>conductor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MainFiles/conductor.c</FilePath>
-            </File>
-            <File>
               <FileName>klcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/klcd.c</FilePath>
@@ -370,6 +365,11 @@
               <FileName>comm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MainFiles/comm.c</FilePath>
+            </File>
+            <File>
+              <FileName>fsm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MainFiles/fsm.c</FilePath>
             </File>
           </Files>
         </Group>

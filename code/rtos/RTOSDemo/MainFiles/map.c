@@ -130,7 +130,30 @@ char drawDir(Dir dir) {
 		default: return 'X';
 	}
 }
-
+static int epoch, lap1, lap2;
+void mapGetLap(char*l1, char*l2) {
+	if (!epoch) {
+		*l1 = *l2 = 0;
+	} else {
+		*l1 = ((lap1 ? lap1 : xTaskGetTickCount()) - epoch) / configTICK_RATE_HZ ;
+		*l2 = !lap1 ? 0 : ((lap2 ? lap2 : xTaskGetTickCount()) - lap1) / configTICK_RATE_HZ ;
+	}
+}
+int mapLap() {
+	if (!epoch) {
+		epoch = xTaskGetTickCount();
+		return 1;
+	} else if (!lap1) {
+		lap1 = xTaskGetTickCount();
+		return 2;
+	} else if (!lap2) {
+		lap2 = xTaskGetTickCount();
+		return 3;
+	} else {
+		LCDwriteLn(14, "Too many laps!");
+		return 4;
+	}
+}
 void mapReportNewFrame(int colorSensed, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
 	
@@ -197,6 +220,7 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	} else {
 		bStr("                   ");
 	}
+
 	bPrint(15);
 	// 'b' is reset correctly by above macro.
 	bChar('(');
@@ -224,25 +248,6 @@ void mapReportTurn(int dir) {
 	bPrint(12);
 }
 
-void mapStartTimer() {
-	int x, y;
-	LOCK
-		x = mem.X;
-		y = mem.Y;
-	UNLOCK
-	
-	
-	bBuf(100);
-	bStr("Timer started     started at (");
-	bWord(x);
-	bChar(',');
-	bWord(y);
-	bChar(')');
-	bPrint(9);
-}
-void mapStopTimer() {
-	LCDwriteLn(9, "Timer stopped");
-}
 void mapRegisterTick(int x) {
 	LOCK
 		mem.tCount = x;

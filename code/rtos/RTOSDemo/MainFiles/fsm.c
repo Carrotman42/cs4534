@@ -68,7 +68,6 @@ void debug(int line, char*msg) {
 #endif
 
 static int currentstate = WAIT_START_LINE;
-static int startCrossed = 0; //remember if the start has been initially crossed
 
 void debug(int line, char* info);
 
@@ -116,18 +115,19 @@ PATH_FINDING_DECL {
 						
 						break;
 					}
-					case COLOR_SENSOR_TRIGGERED:
-						if(!startCrossed){
-							mapStartTimer();
-							startCrossed = 1;
-							//stay in wait event state
-						}
-						else{
-							mapStopTimer();
+					case COLOR_SENSOR_TRIGGERED: {
+						int l = mapLap();
+						switch(l) {
+						case 2:
+						case 1:
+							break;
+						default:
+						case 3:
 							currentstate = END;
 							stop();
 						}
 						break;
+					}
 					default:
 						goto invalid;
 				}

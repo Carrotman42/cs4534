@@ -314,8 +314,17 @@ static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
 //static Map save;
 static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
 	PSOCK_BEGIN(&s->sout);
-	//mapGetMap(&save);
 	PSOCK_SEND(&s->sout, (char*)(mapMapPtr()), sizeof(Map));
+	static Memory m;
+	mapGetMemory(&m);
+	static struct {
+		char X, Y;
+		char lap1, lap2;
+	} toWrite;
+	toWrite.X = (char)(m.X / MAP_RESOLUTION);
+	toWrite.Y = (char)(m.Y / MAP_RESOLUTION);
+	mapGetLap(&toWrite.lap1, &toWrite.lap2);
+	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
 	PSOCK_END(&s->sout);
 }
 

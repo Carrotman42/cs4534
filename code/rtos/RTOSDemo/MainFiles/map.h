@@ -55,8 +55,8 @@ void mapGetMap(Map*dest);
 // Return the pointer to the real map. Do not modify this map!
 Map* mapMapPtr();
 void mapGetMemory(Memory*dest);
-void mapStartTimer();
-void mapStopTimer();
+int mapLap();
+void mapGetLap(char*lap1, char*lap2);
 void mapRegisterTick(int x);
 
 

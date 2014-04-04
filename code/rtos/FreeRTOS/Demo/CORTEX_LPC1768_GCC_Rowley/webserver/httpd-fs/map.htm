@@ -60,8 +60,6 @@ function tableCreate(){
 }
 
 function tableUpdate(data) {
-	// This is completely safe!
-	data = eval(data);
 	var n = 4, val = 0;
 	var cur = 0;
 	for (var i=0; i<Width; i++) {
@@ -83,6 +81,19 @@ function tableUpdate(data) {
 			n++
 		}
 	}
+	info = document.getElementById('info');
+	var to = "(X, Y) = (" + data[cur] + ", " + data[cur+1] + ")<br>"
+	var lap1 = data[cur+2];
+	if (lap1 > 0) {
+		to += "Lap 1: " + lap1 + "<br>";
+	}
+	var lap2 = data[cur+3];
+	if (lap2 > 0) {
+		to += "Lap 2: " + lap2 + "<br>";
+	}
+	
+	info.innerHTML = to;
+	tab[data[cur+1]][data[cur]].style.background = "#0000FF";
 }
 </script>
 <style>
@@ -90,7 +101,7 @@ function tableUpdate(data) {
 </style>
 </head>
 <body>
-
+<div id=info />
 <script>
 tableCreate();
 doAjaxGet("/map.bin",tableUpdate);
