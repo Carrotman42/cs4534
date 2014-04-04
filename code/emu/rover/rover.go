@@ -283,6 +283,8 @@ func (s SerialProtocol) ReadCmd() (ret common.InCmd) {
 	}
 	fmt.Println("Got packet:", cmd, param, mId, ll, check)
 	defer func() {
+		// sleep a little first so we don't flood the arm with messages
+		time.Sleep(time.Second/20)
 		if ret.Error() == nil {
 			// If there was no error make sure to ack the message (there are no synchronous commands expected)
 			s.writePacket(uint(cmd) | 0x20, param, nil)
@@ -454,6 +456,7 @@ func (s*PicmanProtocol) ReadCmd() (ret common.InCmd) {
 					s.lastOk = false
 				} else {
 					cmd |= 0x08
+					payload = nil
 				}
 				if s.finishLine && !s.flineSent {
 					s.flineSent = true
