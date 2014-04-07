@@ -83,6 +83,18 @@ uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(MOTOR_COMMANDS, 0x04, (Msg*) out, outlen, msgid);
 }
 
+uint8 packReadjustCWAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x06, (Msg*) out, outlen, msgid);
+}
+
+uint8 packReadjustCCWAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x07, (Msg*) out, outlen, msgid);
+}
+
+uint8 packGoForwardDistanceTurnAck(char* out, uint8 outlen, uint8 msgid){
+    return packAck(MOTOR_COMMANDS, 0x08, (Msg*) out, outlen, msgid);
+}
+
 //Out must always be (at least) 5 bytes
 uint8 packStartFramesAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(HIGH_LEVEL_COMMANDS, 0x00, (Msg*) out, outlen, msgid);
@@ -110,6 +122,7 @@ uint8 packTurningCompleteAck(char* out, uint8 outlen, uint8 msgid){
 uint8 packDoVictoryDanceAck(char* out, uint8 outlen, uint8 msgid){
     return packAck(HIGH_LEVEL_COMMANDS, 0x06, (Msg*) out, outlen, msgid);
 }
+
 
 
 
@@ -276,10 +289,10 @@ uint8 generateGetEncoderData(char* out, uint8 buflen){
 //turn degrees will be some integer and speed will never be 0
 static uint8 generateMotorCommand(char* out, uint8 buflen, uint8 wifly, uint8 parameters, uint8 payload){
     if(payload == 0) {
-        if (buflen < 5) return 0;
+        if (buflen < HEADER_MEMBERS) return 0;
     }
     else{
-        if(buflen < 6) return 0;
+        if(buflen < HEADER_MEMBERS + 1) return 0;
     }
     Msg* brainmsg = (Msg*) out;
     brainmsg->flags = MOTOR_COMMANDS;
@@ -321,6 +334,35 @@ uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
 
 uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees){
     return generateMotorCommand(out, buflen, wifly, 0x04, degrees);
+}
+
+uint8 generateReadjustCW(char* out, uint8 buflen, uint8 wifly){
+    return generateMotorCommand(out, buflen, wifly, 0x06, 0);
+}
+
+uint8 generateReadjustCCW(char* out, uint8 buflen, uint8 wifly){
+    return generateMotorCommand(out, buflen, wifly, 0x07, 0);
+}
+
+//This command is a special one.  We will handle it in the function
+//instead of calling the general motoc command function
+uint8 generateGoForwardDistanceTurn(char* out, uint8 buflen, uint8 wifly,
+        uint8 speed, uint8 distance, uint8 direction){
+    if (buflen < HEADER_MEMBERS + 3) return 0;
+    Msg* brainmsg = (Msg*) out;
+    brainmsg->flags = MOTOR_COMMANDS;
+    brainmsg->parameters = 0x08;
+    brainmsg->payload[0] = speed;
+    brainmsg->payload[1] = distance;
+    brainmsg->payload[2] = direction;
+    brainmsg->payloadLen = 3;
+    if(wifly)
+        brainmsg->messageid = wifly_messageid++;
+    else
+        brainmsg->messageid = i2c_messageid++;
+    brainmsg->checksum = MOTOR_COMMANDS + 0x08 + brainmsg->messageid + brainmsg->payloadLen + speed + distance + direction;
+
+    return HEADER_MEMBERS + 3;
 }
 
 

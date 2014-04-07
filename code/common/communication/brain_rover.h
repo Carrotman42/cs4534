@@ -56,6 +56,9 @@ uint8 packStartBackwardAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStopAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packTurnCWAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packTurnCCWAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packReadjustCWAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packReadjustCCWAck(char* out, uint8 outlen, uint8 msgid);
+uint8 packGoForwardDistanceTurnAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStartFramesAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packFrameDataAck(char* out, uint8 outlen, uint8 msgid);
 uint8 packStopFramesAck(char* out, uint8 outlen, uint8 msgid);
@@ -93,6 +96,10 @@ uint8 generateStartBackward(char* out, uint8 buflen, uint8 wifly, uint8 speed);
 uint8 generateStop(char* out, uint8 buflen, uint8 wifly);
 uint8 generateTurnCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
 uint8 generateTurnCCW(char* out, uint8 buflen, uint8 wifly, uint8 degrees);
+uint8 generateReadjustCW(char* out, uint8 buflen, uint8 wifly);
+uint8 generateReadjustCCW(char* out, uint8 buflen, uint8 wifly);
+uint8 generateGoForwardDistanceTurn(char* out, uint8 buflen, uint8 wifly,
+        uint8 speed, uint8 distance, uint8 direction);
 
 uint8 generateStartFrames(char* out, uint8 buflen, uint8 wifly);
 uint8 generateStopFrames(char* out, uint8 buflen, uint8 wifly);

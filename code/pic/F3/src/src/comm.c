@@ -50,7 +50,7 @@ void setRoverDataLP(char* msg){
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
 uint8 sendResponse(BrainMsg* brain, uint8 wifly){
-    char command[6] = {0};
+    char command[10] = {0};
     uint8 length = 0;
     switch(brain->flags){
         case MOTOR_COMMANDS:
@@ -63,6 +63,9 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     break;
                 case 0x03:
                 case 0x04:
+                case 0x06:
+                case 0x07:
+                case 0x08:
                     turnStarted();
                     sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
                     break;
@@ -263,7 +266,7 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 }
 
 static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 dest){
-    char command[6] = {0};
+    char command[10] = {0};
     uint8 length = 0;
     switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -298,6 +301,9 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                     case 0x03:
                     case 0x04:
+                    case 0x06:
+                    case 0x07:
+                    case 0x08:
                         turnStarted();
                         length = repackBrainMsg(brain, payload, command, sizeof command, dest);
                         break;
@@ -364,7 +370,10 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         case (ACK_FLAG | MOTOR_COMMANDS):
             switch(rover->parameters){
                 case 0x03: //one of the turns has been ack'd
-                case 0x04:{
+                case 0x04:
+                case 0x06:
+                case 0x07:
+                case 0x08:{
                     length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask if done
                     i2c_master_send(MOTOR_ADDR, length, command);
                     break;
@@ -430,6 +439,8 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
 }
 
 static void handleRoverData(RoverMsg* rover, char* payload){
+    char command[HEADER_MEMBERS] = {0};
+    uint8 length = 0;
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
             switch(rover->parameters){
@@ -437,8 +448,6 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     colorSensorTriggered();
                     break;
                 case 0x05:{//ack or nack back from turn complete
-                    char command[HEADER_MEMBERS] = {0};
-                    uint8 length = 0;
                     if(payload[0] == 0){ //nack
                         length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                         i2c_master_send(PICMAN_ADDR, length, command);
@@ -456,10 +465,11 @@ static void handleRoverData(RoverMsg* rover, char* payload){
         case (ACK_FLAG | MOTOR_COMMANDS):
             switch(rover->parameters){
                 case 0x03: //one of the turns has been ack'd
-                case 0x04:{
+                case 0x04:
+                case 0x06:
+                case 0x07:
+                case 0x08:{
                     turnStarted();
-                    char command[HEADER_MEMBERS] = {0};
-                    uint8 length = 0;
                     length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
                     //uart_send_array(command, length);
                     i2c_master_send(PICMAN_ADDR, length, command);
@@ -539,7 +549,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
 //    if(isColorSensorTriggered()){
 //        return; //don't care about propogating any commands
 //    }
-    char command[6] = {0};
+    char command[10] = {0};
     uint8 length = 0;
     switch(brain->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -563,6 +573,9 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
                         break;
                     case 0x03:
                     case 0x04:
+                    case 0x06:
+                    case 0x07:
+                    case 0x08:
                         if(wifly_setup){
                             turnStarted();//only start the turn if we know we have a connection.
                         }
@@ -581,7 +594,7 @@ static void propogateCommand(BrainMsg* brain, char* payload, uint8 addr, uint8 d
 }
 
 static void handleRoverData(RoverMsg* rover, char* payload){
-    char command[5] = {0};
+    char command[10] = {0};
     uint8 length = 0;
     switch(rover->flags){
         case HIGH_LEVEL_COMMANDS:
@@ -610,6 +623,9 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x03:
                 case 0x04:
+                case 0x06:
+                case 0x07:
+                case 0x08:
                     break;
                 default:
                     break;
