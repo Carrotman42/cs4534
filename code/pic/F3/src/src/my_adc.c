@@ -1,4 +1,5 @@
 #include "maindefs.h"
+#ifdef SENSOR_PIC
 #ifndef __XC8
 #include <adc.h>
 #else
@@ -16,6 +17,17 @@ static char chn0Data;
 static irBuffer buffer;
 static char count = 0;
 static char channel = 0;
+
+static float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
+static float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
+static float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
+static float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+
+static char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
+static char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
+
+static char ir0_distance = 0;
+static char ir1_distance = 0;
 
 static void addBuffer(char data){
     if(count < 7)
@@ -146,6 +158,50 @@ void transmitData(){
     sort(ir0);
     sort(ir1);
 
-    uart_send((char) ir0[4]);
-    uart_send((char) ir1[4]);
+    calculateDistance(ir0[4],ir1[4]);
+
+//    uart_send(ir0_distance);
+    uart_send(ir1_distance);
 }
+
+void calculateDistance(char ir0_rawData, char ir1_rawData){
+    uint8 ir0_index, ir1_index;
+    if(ir0_rawData >= ir0_voltageValues[0])
+        ir0_index = 0;
+    else if(ir0_rawData >= ir0_voltageValues[1])
+        ir0_index = 1;
+    else if(ir0_rawData >= ir0_voltageValues[2])
+        ir0_index = 2;
+    else if(ir0_rawData >= ir0_voltageValues[3])
+        ir0_index = 3;
+    else if(ir0_rawData >= ir0_voltageValues[4])
+        ir0_index = 4;
+    else if(ir0_rawData >= ir0_voltageValues[5])
+        ir0_index = 5;
+    else if(ir0_rawData >= ir0_voltageValues[6])
+        ir0_index = 6;
+    else if(ir0_rawData >= ir0_voltageValues[7])
+        ir0_index = 7;
+
+    if(ir1_rawData >= ir1_voltageValues[0])
+        ir1_index = 0;
+    else if(ir1_rawData >= ir1_voltageValues[1])
+        ir1_index = 1;
+    else if(ir1_rawData >= ir1_voltageValues[2])
+        ir1_index = 2;
+    else if(ir1_rawData >= ir1_voltageValues[3])
+        ir1_index = 3;
+    else if(ir1_rawData >= ir1_voltageValues[4])
+        ir1_index = 4;
+    else if(ir1_rawData >= ir1_voltageValues[5])
+        ir1_index = 5;
+    else if(ir1_rawData >= ir1_voltageValues[6])
+        ir1_index = 6;
+    else if(ir1_rawData >= ir1_voltageValues[7])
+        ir1_index = 7;
+
+
+    ir0_distance = (char) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
+    ir1_distance = (char) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
+}
+#endif

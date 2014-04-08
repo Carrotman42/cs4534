@@ -11,12 +11,13 @@ extern "C" {
         uint8 ir1Array[IRBUFFERSIZE];
         uint8 count;
     } irBuffer;
-
+    
     void init_adc();
     void adc_int_handler();
     void addDataToBuffer(char ir0Data, char ir1Data);
     void sort(uint8* array);
     void transmitData();
+    void calculateDistance(char ir0_rawData, char ir1_rawData);
 
 #ifdef	__cplusplus
 }
