@@ -13,11 +13,22 @@
 #ifdef ROVER_EMU
 #include "../../../../common/communication/frames.h"
 #endif
+#include <stdbool.h>
+#include "motor.h"
+#include "interrupts.h"
+
 
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
 
 unsigned char datareq = 0;
+
+ // motor 1 ticks for 1 revolution: 2750
+ // motor 2 ticks for 1 revolution: 2675
+ // target values: 1 interrupt = 25 ticks
+ // moved them to motor.h file
+ //int target1 = 610;     // 110 for 1 revolution
+ //int target2 = 108;     // 107 for 1 revolution
 
 void timer0_int_handler() {
     //debugNum(1);
@@ -89,6 +100,23 @@ void timer0_int_handler() {
     //ADCON0bits.GO = 1;
     //WriteTimer0(0xFFFF-375);
 #endif //SENSOR_PIC
+
+   // encoders for motor 0
+#ifdef MOTOR_PIC
+    motor1Ticks++;
+    if (motor1Ticks > target1)
+    {
+        //stop();
+        commandDone = true;
+        finalMotor1Ticks = target1 * 25;  // total ticks when task was complete
+        
+        // dont use, slipping errors occur, this is used to adjust speeds of
+        // each motor to be the same
+        //stopMotor1();    
+    }
+    WRITETIMER0(0x00E8);
+
+#endif
 }
 
 // A function called by the interrupt handler
@@ -266,5 +294,21 @@ void timer1_int_handler() {
 //        uart_send_array(command, length);
 //#endif
 
+#ifdef MOTOR_PIC
+
+       motor2Ticks++;
+       if ( motor2Ticks > target2)
+       {
+           // stop();
+           commandDone = true;
+           finalMotor2Ticks = target2 * 25;  // total ticks when task is complete
+           
+           // dont use, slipping errors occur, this is used to adjust speeds of
+           // each motor to be the same
+           //stopMotor2();      
+       }
+       WRITETIMER1(0xFFE8);
+       
+#endif
 
 }

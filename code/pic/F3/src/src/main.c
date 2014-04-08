@@ -18,6 +18,7 @@
 #include "timer0_thread.h"
 #include "debug.h"
 #include "comm.h"
+#include "motor.h"
 
 #ifdef SENSOR_PIC
 #include "my_adc.h"
@@ -244,8 +245,11 @@ void main(void) {
 
 #ifndef __USE18F26J50
     // set direction for PORTB to output
+#ifndef MOTOR_PIC
     TRISB = 0x0;
     LATB = 0x0;
+#endif
+
 #endif
 
     // how to set up PORTA for input (for the V4 board with the PIC2680)
@@ -259,7 +263,12 @@ void main(void) {
 
     // initialize Timers
 #ifndef MASTER_PIC
+
+#ifndef MOTOR_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
+#else
+	OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT );
+#endif
 #else
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
 #endif
@@ -271,7 +280,12 @@ void main(void) {
 #ifdef __USE18F46J50
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
+#ifndef MOTOR_PIC
     OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+#else
+	OpenTimer1(TIMER_INT_ON & T1_PS_1_1 & T1_16BIT_RW & T1_SOURCE_EXT & T1_OSC1EN_OFF  & T1_SYNC_EXT_OFF);
+    WRITETIMER1(0xFFE8);   // leave in here, encoder's for motor 2 doesn't work without it
+#endif
 #endif
 #endif
 
@@ -314,8 +328,15 @@ void main(void) {
         USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #else
 #ifdef __USE18F46J50
+
+#ifndef MOTOR_PIC
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
         USART_CONT_RX & USART_BRGH_LOW, 38);
+#else
+	Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
+        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+#endif
+
 #else
     OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
         USART_CONT_RX & USART_BRGH_HIGH, 38);
@@ -336,6 +357,20 @@ void main(void) {
     // that should get them.  Although the subroutines are not threads, but
     // they can be equated with the tasks in your task diagram if you
     // structure them properly.
+
+    //TODO: delete the test line
+//    calcRevMotor2(10);
+//    calcRevMotor1(10);
+//    forward();
+//    funFunc();
+
+//    readjustLeft();
+    
+//    calcRevMotor1(1);
+    turnLeft90_onSpot();
+//    turnRight90_onSpot();
+//    forwardMotor1();
+//    forward();
     while (1) {
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into

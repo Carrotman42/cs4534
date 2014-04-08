@@ -5,6 +5,7 @@
 #include "my_adc.h"
 #include "debug.h"
 #include "my_uart.h"
+#include "motor.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -101,6 +102,32 @@ void InterruptHandlerHigh() {
         // call whatever handler you want (this is "user" defined)
         timer0_int_handler();
     }
+    // check to see if we have an interrupt on timer 1
+    if (PIR1bits.TMR1IF) {
+        PIR1bits.TMR1IF = 0; //clear interrupt flag
+        timer1_int_handler();
+    }
+    
+    // ------------------------ motor external interrupts ---------------------
+
+//    if (INTCONbits.INT0IF )
+//    {
+//        INTCONbits.INT0IF = 0;  // clear flag
+//        // TODO: pass motor0ticks  and increment it here
+//        // incrementMotor0Ticks();       // wont work probably
+//        //motor0Ticks++;
+//        motor0_int_handler();
+//    }
+//
+//    if (INTCON3bits.INT1IF )
+//    {
+//        INTCON3bits.INT1IF  = 0;    // clear flag
+//        // TODO: pass motor1ticks  and increment it here
+//        // incrementMotor1Ticks();      // wont work probably
+//        //motor1Ticks++;
+//        motor1_int_handler();
+//
+//    }
 
     // here is where you would check other interrupt flags.
 
@@ -129,12 +156,6 @@ void InterruptHandlerLow() {
         adc_int_handler();
     }
     #endif //SENSOR_PIC
-
-    // check to see if we have an interrupt on timer 1
-    if (PIR1bits.TMR1IF) {
-        PIR1bits.TMR1IF = 0; //clear interrupt flag
-        timer1_int_handler();
-    }
 
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
