@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-    typedef enum  {FORWARDS, REVERSE, MOVE_FORWARDS, TURN, READJUSTMENT, FINISHED }STATES;
+    typedef enum  {FORWARDS, REVERSE, MOVE_FORWARDS, TURN, READJUSTMENT, FINISHED, IDLE }STATES;
     bool commandDone = false;
 
      extern uint16_t motor1Ticks;

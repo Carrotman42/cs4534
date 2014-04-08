@@ -160,12 +160,18 @@ void InterruptHandlerLow() {
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
+
+#if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
         if(wifly_setup){
             uart_recv_int_handler();
         }
         else{
+#endif
             uart_recv_wifly_debug_handler();
+#if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
         }
+#endif
+        
     }
     if (PIR1bits.TXIF && PIE1bits.TXIE)
     {

@@ -1,4 +1,5 @@
 #include "motor.h"
+#include "motorcomm.h"
 
 uint16_t motor1Ticks = 0;
 uint16_t motor2Ticks = 0;
@@ -9,16 +10,13 @@ uint16_t target2 = 107;
 int finalMotor1Ticks = -1;      // -1 if there was an error
 int finalMotor2Ticks = -1;      // -1 if there was an error
 // both motors in reverse
-void reverse()
-{
+void reverse(){
+    resetTicks();
     STATES state = REVERSE;
-    while (1)
-    {
-        switch (state)
-        {
+    while (state != IDLE){
+        switch (state) {
             case REVERSE:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     unsigned char test[2] = {0x05, 0x83};
                     uart_send_array(&test, 2);
                 }
@@ -31,6 +29,9 @@ void reverse()
                 break;
             case FINISHED:
                 stop();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
@@ -40,16 +41,13 @@ void reverse()
 }
 
 // both motors in forward
-void forward()
-{
+void forward(){
+    resetTicks();
     STATES state = FORWARDS;
-    while (1)
-    {
-        switch (state)
-        {
+    while (state != IDLE){
+        switch (state) {
             case FORWARDS:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     unsigned char test[2] = {0x52, 0xD0};
                     uart_send_array(&test, 2);
                 }
@@ -62,6 +60,9 @@ void forward()
                 break;
             case FINISHED:
                 stop();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
@@ -74,17 +75,13 @@ void forward()
 }
 
 // both motors in forward,  2nd fastest forward
-void forward2()
-{
-
+void forward2(){
+    resetTicks();
     STATES state = FORWARDS;
-    while (1)
-    {
-        switch (state)
-        {
+    while (state != IDLE){
+        switch (state){
             case FORWARDS:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     unsigned char test[2] = {0x62, 0xE0};
                     uart_send_array(&test, 2);
                 }
@@ -97,6 +94,9 @@ void forward2()
                 break;
             case FINISHED:
                 stop();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
@@ -106,16 +106,13 @@ void forward2()
 }
 
 // both motors in forward, fastest forward
-void forward3()
-{
+void forward3(){
+    resetTicks();
     STATES state = FORWARDS;
-    while (1)
-    {
-        switch (state)
-        {
+    while (state != IDLE){
+        switch (state){
             case FORWARDS:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     unsigned char test[2] = {0x7F, 0xFE};
                     uart_send_array(&test, 2);
                 }
@@ -128,6 +125,9 @@ void forward3()
                 break;
             case FINISHED:
                 stop();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
@@ -138,61 +138,53 @@ void forward3()
 }
 
 // motor 1 forwards, motor 2 stops
-void forwardMotor1()
-{
+void forwardMotor1(){
     // unsigned char test[2] = {0x6A, 0xC0};
     unsigned char test[2] = {0x50 , 0xC0};
     uart_send_array(&test, 2);
 }
 
 // motor 1 reverse, motor 2 stops
-void reverseMotor1()
-{
+void reverseMotor1(){
     unsigned char test[2] = {0x21, 0xC0};
     uart_send_array(&test, 2);
 }
 
 // motor 2 forwards, motor 1 stops
-void forwardMotor2()
-{
+void forwardMotor2(){
     //unsigned char test[2] = {0x40, 0xC5};     // REALLY SLOW
     unsigned char test[2] = {0x40, 0xD7};
     uart_send_array(&test, 2);
 }
 
 // motor 2 reverse, motor 1 stops
-void reverseMotor2()
-{
+void reverseMotor2(){
     unsigned char test[2] = {0x40, 0xB0};
     uart_send_array(&test, 2);
 }
 
 // stops both motors
-void stop()
-{
+void stop(){
     // 0x00 stops both wheels
     unsigned char test[2] = {0x40, 0xC0};
     uart_send_array(&test, 2);
 }
 
 // stops motor 1
-void stopMotor1()
-{
+void stopMotor1(){
     unsigned char test[1] = {0x40};
     uart_send_array(&test,1);
 }
 
 // stops motor 2
-void stopMotor2()
-{
+void stopMotor2(){
     unsigned char test[1] = {0xC0};
     uart_send_array(&test,1);
 }
 
 // calculate the target (motor 1) which is the desired number of ticks for x revolutions
 // x = number of revolutions
-void calcRevMotor1(int x)
-{
+void calcRevMotor1(int x){
     target1 = (110*x) + (15*x) - 15;
 }
 
@@ -204,11 +196,12 @@ void calcRevMotor2(int x)
 }
 
 // turns right 90 degrees on the spot
-void turnRight90_onSpot()
-{
+void turnRight90_onSpot(){
     // TODO: move forwards half a revolution before turning
+    stop();
+    resetTicks();
     STATES state = TURN;
-    while (1) {
+    while (state != IDLE) {
         switch (state) {
             case TURN:
                 if (!commandDone) {
@@ -240,8 +233,7 @@ void turnRight90_onSpot()
                 }
                 break;
             case MOVE_FORWARDS:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     calcRevMotor1(2);
                     calcRevMotor2(2);
                     forward();
@@ -255,6 +247,10 @@ void turnRight90_onSpot()
                 break;            
             case FINISHED:
                 stop();
+                turnCompleted();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
@@ -270,8 +266,9 @@ void turnRight90_onSpot()
 void turnLeft90_onSpot()
 {
     // TODO: move forwards half a revolution before turning
+    resetTicks();
     STATES state = TURN;
-    while (1) {
+    while (state != IDLE) {
         switch (state) {
             case TURN:
                 if (!commandDone) {
@@ -305,8 +302,7 @@ void turnLeft90_onSpot()
                 }
                 break;
             case MOVE_FORWARDS:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     calcRevMotor1(2);
                     calcRevMotor2(2);
                     forward();
@@ -320,29 +316,28 @@ void turnLeft90_onSpot()
                 break;
             case FINISHED:
                 stop();
+                turnCompleted();
+                state = IDLE;
+                break;
+            case IDLE:
                 break;
         }
     }
 }
 
 // readjusts the motor to the left by a little bit
-void readjustLeft()
-{
+void readjustLeft(){
     STATES state = READJUSTMENT;
-    while(1)
-    {
-        switch (state)
-        {
+    while(1){
+        switch (state){
             case READJUSTMENT:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     target1 = 5;
                     target2 = 5;
                     unsigned char test[2] = {0x18, 0xE0};
                     uart_send_array(&test, 2);
                 }
-                else
-                {
+                else{
                     stop();
                     resetTicks();
                     commandDone = false;
@@ -358,23 +353,18 @@ void readjustLeft()
 }
 
 // readjusts the motor to the right by a little bit
-void readjustRight()
-{
+void readjustRight(){
     STATES state = READJUSTMENT;
-    while(1)
-    {
-        switch (state)
-        {
+    while(1){
+        switch (state){
             case READJUSTMENT:
-                if (!commandDone)
-                {
+                if (!commandDone){
                     target1 = 5;
                     target2 = 5;
                     unsigned char test[2] = {0x62, 0xA0};
                     uart_send_array(&test, 2);
                 }
-                else
-                {
+                else{
                     stop();
                     resetTicks();
                     commandDone = false;
@@ -389,8 +379,7 @@ void readjustRight()
     }
 }
 
-void forwardHalfRev()
-{
+void forwardHalfRev(){
     target1 = 49;
     target2 = 55;
     unsigned char test[2] = {0x52, 0xD0};
@@ -398,25 +387,21 @@ void forwardHalfRev()
 }
 
 // spins in place for victory dance
-void funFunc()
-{
+void funFunc(){
     unsigned char test[2] = {0x7F, 0x80};
     uart_send_array(&test, 2);
 }
 
 // resets the ticks to 0
-void resetTicks()
-{
+void resetTicks(){
     motor1Ticks = 0;
     motor2Ticks = 0;
 }
 
-int getMotor1Ticks()
-{
+int getMotor1Ticks(){
     return finalMotor1Ticks;
 }
 
-int getMotor2Ticks()
-{
+int getMotor2Ticks(){
     return finalMotor2Ticks;
 }

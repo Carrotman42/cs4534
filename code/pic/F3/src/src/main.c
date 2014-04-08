@@ -359,6 +359,13 @@ void main(void) {
     // structure them properly.
 
     //TODO: delete the test line
+//    calcRevMotor1(20);
+//    calcRevMotor2(20);
+//    forward();
+
+    turnRight90_onSpot();
+
+
 //    calcRevMotor2(10);
 //    calcRevMotor1(10);
 //    forward();
