@@ -1,8 +1,9 @@
+#include "maindefs.h"
+#ifndef SENSOR_PIC
 #include "common.h"
 
 #include "testAD.h"
 #include "messages.h"
-#include "maindefs.h"
 #include "debug.h"
 uint8 timesreq = 0;
 uint8 sample1 = 0x01;
@@ -40,3 +41,4 @@ void reqADData(){
     timesreq = timesreq %4;
     ToMainHigh_sendmsg(numSamples, MSGT_AD, (char*) buf);
 }
+#endif

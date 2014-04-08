@@ -109,11 +109,11 @@ void init_adc(){
 }
 
 void adc_int_handler() {
-    unsigned int data;
+    uint8 data;
     //readNum(1);
 //    debugNum(4);
-    data = ReadADC();
-    data >>= 2;
+    data = ReadADC()>>2;
+//    data >>= 2;
 
     //if(data != 0xFF){
 //        addBuffer((char) data);
@@ -160,12 +160,14 @@ void transmitData(){
 
     calculateDistance(ir0[4],ir1[4]);
 
-//    uart_send(ir0_distance);
+    uart_send(ir0_distance);
     uart_send(ir1_distance);
 }
 
 void calculateDistance(char ir0_rawData, char ir1_rawData){
-    uint8 ir0_index, ir1_index;
+    uint8 ir0_index;
+    uint8 ir1_index;
+    
     if(ir0_rawData >= ir0_voltageValues[0])
         ir0_index = 0;
     else if(ir0_rawData >= ir0_voltageValues[1])
