@@ -4,9 +4,18 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+#define IRBUFFERSIZE 9
+
+    typedef struct{
+        uint8 ir0Array[IRBUFFERSIZE];
+        uint8 ir1Array[IRBUFFERSIZE];
+        uint8 count;
+    } irBuffer;
 
     void init_adc();
     void adc_int_handler();
+    void addDataToBuffer(char ir0Data, char ir1Data);
+    void sort(uint8* array);
 
 #ifdef	__cplusplus
 }
