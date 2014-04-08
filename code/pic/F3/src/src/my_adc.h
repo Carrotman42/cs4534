@@ -16,6 +16,7 @@ extern "C" {
     void adc_int_handler();
     void addDataToBuffer(char ir0Data, char ir1Data);
     void sort(uint8* array);
+    void transmitData();
 
 #ifdef	__cplusplus
 }

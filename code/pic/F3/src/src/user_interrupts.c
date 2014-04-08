@@ -13,6 +13,9 @@
 #ifdef ROVER_EMU
 #include "../../../../common/communication/frames.h"
 #endif
+#ifdef SENSOR_PIC
+#include "my_adc.h"
+#endif
 
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
@@ -260,6 +263,12 @@ void timer1_int_handler() {
         //i2c_master_send(MOTOR_ADDR, length, (char *) frameReq);
         //WriteTimer1(0x4000);
 #endif
+
+#ifdef SENSOR_PIC
+        debugNum(4);
+        transmitData();
+#endif
+
 
 //#if defined(PICMAN) && defined(DEBUG_ON)
 //        char command[6];

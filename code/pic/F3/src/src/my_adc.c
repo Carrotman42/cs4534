@@ -23,7 +23,7 @@ static void addBuffer(char data){
 }
 
 void addDataToBuffer(char ir0Data, char ir1Data){
-    debugNum(2);
+//    debugNum(2);
     buffer.ir0Array[buffer.count] = ir0Data;
     buffer.ir1Array[buffer.count++] = ir1Data;
 
@@ -35,7 +35,7 @@ void addDataToBuffer(char ir0Data, char ir1Data){
 }
 
 void sort(uint8* array){
-    debugNum(1);
+//    debugNum(1);
     char t = 0;
     for (char i = 0; i < IRBUFFERSIZE-1; i++){
         for (char j = 0; j < IRBUFFERSIZE-i-1;j++){
@@ -99,7 +99,7 @@ void init_adc(){
 void adc_int_handler() {
     unsigned int data;
     //readNum(1);
-    debugNum(4);
+//    debugNum(4);
     data = ReadADC();
     data >>= 2;
 
@@ -117,7 +117,7 @@ void adc_int_handler() {
         ADCON0bits.CHS = 1;
         channel = 1;
         ADCON0bits.GO = 1;
-        debugNum(1);
+//        debugNum(1);
     }
     else if(channel == 1){
         addDataToBuffer(chn0Data, (char) data);
@@ -132,4 +132,20 @@ void adc_int_handler() {
         debugNum(2);
         debugNum(2);
     }
+}
+
+void transmitData(){
+    char ir0[IRBUFFERSIZE];
+    char ir1[IRBUFFERSIZE];
+
+    for(char i = 0; i < IRBUFFERSIZE; i++){
+        ir0[i] = buffer.ir0Array[i];
+        ir1[i] = buffer.ir1Array[i];
+    }
+
+    sort(ir0);
+    sort(ir1);
+
+    uart_send((char) ir0[4]);
+    uart_send((char) ir1[4]);
 }
