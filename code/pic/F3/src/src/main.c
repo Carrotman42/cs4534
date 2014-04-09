@@ -292,7 +292,7 @@ void main(void) {
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     // Timer1 interrupt
-    IPR1bits.TMR1IP = 0;
+    IPR1bits.TMR1IP = 1;
     // USART RX interrupt
     IPR1bits.RCIP = 0;
     IPR1bits.TXIP = 0;
@@ -363,7 +363,7 @@ void main(void) {
 //    calcRevMotor2(20);
 //    forward();
 
-    turnRight90_onSpot();
+//    turnRight90_onSpot();
 
 
 //    calcRevMotor2(10);
@@ -374,7 +374,7 @@ void main(void) {
 //    readjustLeft();
     
 //    calcRevMotor1(1);
-    turnLeft90_onSpot();
+//    turnLeft90_onSpot();
 //    turnRight90_onSpot();
 //    forwardMotor1();
 //    forward();
