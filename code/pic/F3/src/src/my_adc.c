@@ -1,4 +1,5 @@
 #include "maindefs.h"
+//#define ADCCONFIG
 #ifdef SENSOR_PIC
 #ifndef __XC8
 #include <adc.h>
@@ -18,16 +19,29 @@ static irBuffer buffer;
 static char count = 0;
 static char channel = 0;
 
-static float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
-static float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
-static float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
-static float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+#ifndef ADCCONFIG
+//static float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
+//static float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
+//static float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
+//static float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+//
+//static char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
+//static char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
+//
+//static char ir0_distance = 0;
+//static char ir1_distance = 0;
 
-static char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
-static char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
+static const float ir0_m[7] = {-.1163,-.333,-.666,-1,-1.176,1.666,-.606};
+static const float ir0_b[7] = {31.279,52.333,74.666,92,99.411,4.166,93.939};
+static const float ir1_m[7] = {-.1333,-.3448,-.7407,-.9091,-1.666,-4,-.9091};
+static const float ir1_b[7] = {32.933,53.448,80.37,89.5455,122.5,210,101.8182};
 
-static char ir0_distance = 0;
-static char ir1_distance = 0;
+static const char ir0_voltageValues[8] = {183,97,67,52,42,38,34,23};
+static const char ir1_voltageValues[8] = {172,97,68,55,44,38,35,24};
+
+static volatile unsigned int ir0_distance = 0;
+static volatile unsigned int ir1_distance = 0;
+#endif
 
 static void addBuffer(char data){
     if(count < 7)
@@ -158,12 +172,19 @@ void transmitData(){
     sort(ir0);
     sort(ir1);
 
+#ifndef ADCCONFIG
     calculateDistance(ir0[4],ir1[4]);
 
     uart_send(ir0_distance);
     uart_send(ir1_distance);
+#endif
+#ifdef ADCCONFIG
+    uart_send((char) ir0[4]);
+    uart_send((char) ir1[4]);
+#endif
 }
 
+#ifndef ADCCONFIG
 void calculateDistance(char ir0_rawData, char ir1_rawData){
     uint8 ir0_index;
     uint8 ir1_index;
@@ -206,4 +227,5 @@ void calculateDistance(char ir0_rawData, char ir1_rawData){
     ir0_distance = (char) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
     ir1_distance = (char) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
 }
+#endif
 #endif
