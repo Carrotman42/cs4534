@@ -11,6 +11,7 @@
 #include "debug.h"
 
 #include "my_uart.h"  // REMOVE AFTER MS4
+//#include <math.h>
 
 static char ADCBuffer[5];
 static char distanceArray[2];
@@ -20,27 +21,25 @@ static char count = 0;
 static char channel = 0;
 
 #ifndef ADCCONFIG
-//static float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
-//static float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
-//static float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
-//static float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+static const float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
+static const float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
+static const float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
+static const float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+
+static const char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
+static const char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
+
+//KEEP
+//static const float ir0_m[7] = {-.1163,-.333,-.666,-1,-1.176,1.666,-.606};
+//static const float ir0_b[7] = {31.279,52.333,74.666,92,99.411,4.166,93.939};
+//static const float ir1_m[7] = {-.1333,-.3448,-.7407,-.9091,-1.666,-4,-.9091};
+//static const float ir1_b[7] = {32.933,53.448,80.37,89.5455,122.5,210,101.8182};
 //
-//static char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
-//static char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
-//
-//static char ir0_distance = 0;
-//static char ir1_distance = 0;
+//static const char ir0_voltageValues[8] = {183,97,67,52,42,38,34,23};
+//static const char ir1_voltageValues[8] = {172,97,68,55,44,38,35,24};
 
-static const float ir0_m[7] = {-.1163,-.333,-.666,-1,-1.176,1.666,-.606};
-static const float ir0_b[7] = {31.279,52.333,74.666,92,99.411,4.166,93.939};
-static const float ir1_m[7] = {-.1333,-.3448,-.7407,-.9091,-1.666,-4,-.9091};
-static const float ir1_b[7] = {32.933,53.448,80.37,89.5455,122.5,210,101.8182};
-
-static const char ir0_voltageValues[8] = {183,97,67,52,42,38,34,23};
-static const char ir1_voltageValues[8] = {172,97,68,55,44,38,35,24};
-
-static volatile unsigned int ir0_distance = 0;
-static volatile unsigned int ir1_distance = 0;
+static uint8 ir0_distance = 0;
+static uint8 ir1_distance = 0;
 #endif
 
 static void addBuffer(char data){
@@ -76,25 +75,25 @@ void sort(uint8* array){
 }
 
 void init_adc(){
-//    OpenADC(ADC_FOSC_2 & ADC_RIGHT_JUST & ADC_0_TAD,
-//            ADC_CH1 & ADC_INT_ON & ADC_VREFPLUS_EXT & ADC_VREFMINUS_EXT,
-//            0xC);
+    OpenADC(ADC_FOSC_2 & ADC_RIGHT_JUST & ADC_0_TAD,
+            ADC_CH0 & ADC_CH1 & ADC_INT_ON & ADC_VREFPLUS_EXT & ADC_VREFMINUS_EXT,
+            0xC);
 
-    ADCON0bits.CHS = 0;
-    ADCON0bits.ADON = 1;
-
-    ADCON1bits.VCFG1 = 1;
-    ADCON1bits.VCFG0 = 1;
-    ADCON1bits.PCFG = 0b1011;
-
-    ADCON2bits.ADFM = 1;
-    ADCON2bits.ACQT = 0b010;
-    ADCON2bits.ADCS = 0;
-
-    INTCONbits.GIE = 1;
-    PIR1bits.ADIF = 0;
-    INTCONbits.PEIE = 1;
-    PIE1bits.ADIE = 1;
+//    ADCON0bits.CHS = 0;
+//    ADCON0bits.ADON = 1;
+//
+//    ADCON1bits.VCFG1 = 1;
+//    ADCON1bits.VCFG0 = 1;
+//    ADCON1bits.PCFG = 0b1011;
+//
+//    ADCON2bits.ADFM = 1;
+//    ADCON2bits.ACQT = 0b010;
+//    ADCON2bits.ADCS = 0;
+//
+//    INTCONbits.GIE = 1;
+//    PIR1bits.ADIF = 0;
+//    INTCONbits.PEIE = 1;
+//    PIE1bits.ADIE = 1;
 
     //Setting AN0, AN1 as input
     TRISAbits.TRISA0 = 1;
@@ -175,8 +174,11 @@ void transmitData(){
 #ifndef ADCCONFIG
     calculateDistance(ir0[4],ir1[4]);
 
-    uart_send(ir0_distance);
-    uart_send(ir1_distance);
+    distanceArray[0] = ir0_distance;
+    distanceArray[1] = ir1_distance;
+
+    uart_send_array(distanceArray,2);
+
 #endif
 #ifdef ADCCONFIG
     uart_send((char) ir0[4]);
@@ -224,8 +226,16 @@ void calculateDistance(char ir0_rawData, char ir1_rawData){
         ir1_index = 7;
 
 
-    ir0_distance = (char) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
-    ir1_distance = (char) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
+    ir0_distance = (uint8) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
+    ir1_distance = (uint8) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
+
+//    //Convert ADC to voltage value
+//    float ir0_voltage = (ir0_rawData/1024)*3.4+0;
+//    float ir1_voltage = (ir1_rawData/1024)*3.4+0;
+//
+//    //Using equation suggested on sparkfun
+//    ir0_distance = (int) 41.543 * pow((ir0_voltage + 0.30221),-1.5281);
+//    ir1_distance = (int) 41.543 * pow((ir1_voltage + 0.30221),-1.5281);
 }
 #endif
 #endif
