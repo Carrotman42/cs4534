@@ -195,6 +195,7 @@ void vtI2C2Isr(void) {
 }
 
 #include "comm.h"
+#include "klcd.h"
 
 // This is the actual task that is run
 //   We expect only one to be run the entire time, ie we only support one I2C connection.
@@ -205,19 +206,12 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 	vtI2CStruct *devPtr = (vtI2CStruct *) pvParameters;
 	I2C_M_SETUP_Type tx;
 
-	RoverCmd cmd;
 	char outBuf[MAX_OUT_SIZE];
 	// All the space we need for header + frame size
 	char inBuf[15];
-
-	// Counts how many times it gets an invalid frame response so that it can request StartFrames
-	//    after a long gap of correct frames.
+	
 	for (;;) {
-		RoverAction act = nextCommand((int*)&tx.tx_length, outBuf);
-		
-		int len;
-		len = copyToBuf(cmd, outBuf);
-		tx.tx_length = len;
+		RoverAction last = nextCommand((int*)&tx.tx_length, outBuf);
 		tx.tx_data = (unsigned char*)outBuf;
 		
 		// TODO: See which ones of these I can hoist above the for loop
@@ -234,7 +228,7 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		 	// TODO: Check this value too?
 		}
 		
-		gotData(act, inBuf);
+		gotData(last, inBuf);
 	}
 }
 

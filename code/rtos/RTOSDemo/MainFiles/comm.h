@@ -23,7 +23,7 @@ typedef struct {
 #define MAX_OUT_SIZE 6
 
 // Returns the length. The dest must be at least MAX_OUT_SIZE bytes long.
-int copyToBuf(RoverCmd cmd, char* dest);
+//int copyToBuf(RoverCmd cmd, char* dest);
 
 extern char *Protocol[LASTROVER];
 

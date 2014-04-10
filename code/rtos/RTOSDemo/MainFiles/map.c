@@ -39,7 +39,7 @@ void mapInc(int x, int y) {
 	int prev = (b >> shift) & 3;
 	if (prev < 2) { // 3 means most confident already, don't modify it
 		// We don't need to lock because there is no "inconsistent" map. See other comment about same subject.
-		map.data[ind] = (b & (~3 << shift)) | ((prev + 1) << shift);
+		map.data[ind] = (b & (~(3 << shift))) | ((prev + 1) << shift);
 	}
 }
 
@@ -142,15 +142,19 @@ void mapGetLap(char*l1, char*l2) {
 int mapLap() {
 	if (!epoch) {
 		epoch = xTaskGetTickCount();
+		dbg(Lap, 1);
 		return 1;
 	} else if (!lap1) {
 		lap1 = xTaskGetTickCount();
+		dbg(Lap, 2);
 		return 2;
 	} else if (!lap2) {
 		lap2 = xTaskGetTickCount();
+		dbg(Lap, -1);
 		return 3;
 	} else {
 		LCDwriteLn(14, "Too many laps!");
+		dbg(Lap, 99);
 		return 4;
 	}
 }

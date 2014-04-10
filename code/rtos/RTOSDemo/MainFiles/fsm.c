@@ -116,13 +116,8 @@ PATH_FINDING_DECL {
 						break;
 					}
 					case COLOR_SENSOR_TRIGGERED: {
-						int l = mapLap();
-						switch(l) {
-						case 2:
-						case 1:
-							break;
-						default:
-						case 3:
+						// If at the beginnning of the 3rd lap, finish and stop
+						if (mapLap() == 3) {
 							currentstate = END;
 							stop();
 						}

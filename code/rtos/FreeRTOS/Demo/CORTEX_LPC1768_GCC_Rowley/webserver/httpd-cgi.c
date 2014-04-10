@@ -310,6 +310,7 @@ static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
 }
 
 #include "map.h"
+#include "kdbg.h"
 
 //static Map save;
 static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
@@ -325,6 +326,18 @@ static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
 	toWrite.Y = (char)(m.Y / MAP_RESOLUTION);
 	mapGetLap(&toWrite.lap1, &toWrite.lap2);
 	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
+	
+	static int len;
+	static DbgRecord* rec;
+	rec	= dbgGet(&len);
+	static struct {
+		char a1, a2;
+	} tt;
+	tt.a1 = (len>>8)&0xFF;
+	tt.a2 = len&0xFF;
+	PSOCK_SEND(&s->sout, (char*)(&tt), sizeof(tt));
+	PSOCK_SEND(&s->sout, (char*)rec, len*sizeof(DbgRecord));
+	
 	PSOCK_END(&s->sout);
 }
 

@@ -1,5 +1,6 @@
 
-#include "comm.h"
+#include "comm.h"	 
+#include "klcd.h"
 
 #define Prot(name, a, b, pay) \
 	enum { \
@@ -72,38 +73,6 @@ int copyToBuf(RoverCmd cmd, char* dest) {
 	}
 }
 
-/*
-// Returns 0 when that was the last byte to be written
-int writeByte(RoverCmd cmd, int byteIndex, char* dest) {
-	switch (byteIndex) {
-	case 0:
-	case 1:
-		*dest = protBytes[cmd.act][byteIndex];
-		return 1;
-	case 2:
-		*dest = 0; //msgid
-		return 1;
-	case 3:
-		*dest = protBytes[cmd.act][2];
-		return 1;
-	case 4: {
-		char temp = protBytes[cmd.act][3];
-		if (!protBytes[cmd.act][2]) {
-			*dest = temp;
-			return 0; // Done!
-		}
-		
-		*dest = temp + cmd.param;
-		return 1; // Still have one more byte: the payload itself
-	}
-	case 5: // If they ask for the 5th one, assume that this msg has a payload and send it over
-		*dest = cmd.param;
-		return 0; // All commands have at most one payload byte
-	}
-	FATAL(byteIndex);
-	return 0;
-}*/
-
 #if ETHER_EMU==1
 #define ETHER_TASKS
 
@@ -135,7 +104,6 @@ static int invalid = 0;
 static int turning = 0;
 
 
-#include "klcd.h"
  
 // Will check whether the message header matches an error message. In this case it prints
 //   it on the LCD. TODO: Tell the webserver that something is wrong.
@@ -148,6 +116,8 @@ inline void checkError(char* ret) {
 	bStr("ERR: ");
 	bByte(ret[1]);
 	bPrint(6);
+	
+	dbg(Error, ret[1]);
 }
 
 // outBuf was the message written to the picman
@@ -155,6 +125,8 @@ inline void checkError(char* ret) {
 inline void gotData(RoverAction last, char* ret) {
 	// TODO: Check checksum maybe
 	
+	// Remove any priorities because we treat all messages the same
+	ret[0] = ret[0] & ~HIGH_PRIORITY;
 	switch (last) {
 		case ReadFrames: {
 			checkError(ret);
@@ -214,7 +186,10 @@ inline RoverAction nextCommand(int* len, char* outBuf) {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
 		}
+	} else {
+		dbg(SendCmd, cmd.act);
 	}
+	
 	*len = copyToBuf(cmd, outBuf);
 	return cmd.act;
 }

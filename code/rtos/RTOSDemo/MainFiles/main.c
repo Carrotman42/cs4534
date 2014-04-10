@@ -219,6 +219,8 @@ int main( void )
 	
 	Start();
 	
+	dbg(Init, ETHER_EMU);
+	
 	/* Start the scheduler. */
 	vTaskStartScheduler(); // noreturn
 	

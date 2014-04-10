@@ -36,7 +36,7 @@ var Width = 64;
 var tab = [];
 
 function tableCreate(){
-	var body=document.getElementsByTagName('body')[0];
+	var body=document.getElementById('maparea');
 	var tbl=document.createElement('table');
 	tbl.setAttribute('border','0');
 	tbl.setAttribute('cellspacing','0');
@@ -81,7 +81,10 @@ function tableUpdate(data) {
 			n++
 		}
 	}
-	info = document.getElementById('info');
+	// Rover pos
+	tab[data[cur+1]][data[cur]].style.background = "#0000FF";
+	
+	// Lap timing
 	var to = "(X, Y) = (" + data[cur] + ", " + data[cur+1] + ")<br>"
 	var lap1 = data[cur+2];
 	if (lap1 > 0) {
@@ -91,9 +94,47 @@ function tableUpdate(data) {
 	if (lap2 > 0) {
 		to += "Lap 2: " + lap2 + "<br>";
 	}
+	document.getElementById('info').innerHTML = to;
 	
-	info.innerHTML = to;
-	tab[data[cur+1]][data[cur]].style.background = "#0000FF";
+	// Get to start of debug messages
+	cur += 6;
+	var len = (data[cur-2] << 8) | data[cur-1];
+	var msgs = "";
+	for (var i = 0; i < len; i++, cur+=2) {
+		var param = data[cur+1];
+		switch (data[cur]) {
+			case 1:
+				msgs += "<br>Initialized in mode " + param;
+				break;
+			case 2:
+				switch (param) {
+					case 0: param = "FORWARD"; break;
+					case 1: param = "LEFT"; break;
+					case 2: param = "RIGHT"; break;
+					case 3: param = "STOP"; break;
+				}
+				msgs += "<br>Command sent: " + param;
+				break;
+			case 3:
+				msgs += "<br>Debug messages overrun " + param + " time";
+				if (param != 1) param += "s";
+				break;
+			case 4:
+				if (param == 0xFF) {
+					msgs += "<br>Race finished, good job!";
+				} else {
+					msgs += "<br>Now on lap " + param;
+				}
+				break;
+			case 5:
+				msgs += "<br>Error: " + param;
+				break;
+			default:
+				msgs += "<br>Unknown debug message. ID=" + data[cur] + ", param=" + param;
+				break;
+		}
+	}
+	document.getElementById('dbg').innerHTML = msgs;
 }
 </script>
 <style>
@@ -101,11 +142,18 @@ function tableUpdate(data) {
 </style>
 </head>
 <body>
-<div id=info />
+<div id="info"></div>
+<div id="maparea"></div>
+<input type=checkbox onclick="tog(this.checked, 'dbg');">Show debug info</input>
+<div id="dbg" style="display: none"></div>
 <script>
 tableCreate();
 doAjaxGet("/map.bin",tableUpdate);
-setInterval(function(){doAjaxGet("/map.bin",tableUpdate)}, 2000);
+setInterval(function(){doAjaxGet("/map.bin",tableUpdate)}, 100);
+
+function tog(val, dest) {
+	document.getElementById(dest).style.display = val ? "block" : "none";
+}
 </script>
 </body>
 

@@ -10,7 +10,7 @@ void InitDBG() {
 
 void DBGbit(unsigned value, int on) {
 	if (value >= 2) {
-		FATALSTR("Too many bits required for debug function");
+		FATALSTR("Too many bits required for debug function", value);
 	}
 	if (on) {
 		GPIO_SetValue(0, 1<<value);
@@ -41,5 +41,37 @@ void ReportInvalidResponse(int last, char* orig, char* resp) {
 	D(resp);
 	bPrint(14);
 }
+
+DbgRecord dbgs[500];
+int curdbg = 0;
+
+void dbg(DebugType kind, int param) {
+	if (curdbg >= (sizeof(dbgs) / sizeof(dbgs[0]))) {
+		if (dbgs[0].k != Overrun) {
+			dbgs[0].k = Overrun;
+			dbgs[0].p = 0;
+		} else {
+			dbgs[0].p++;
+		}
+		curdbg = 1;
+	}
+	DbgRecord* dest = &dbgs[curdbg];
+	// I believe we have sequential consistency on this thing, so the order here matters.
+	dest->k = kind;
+	dest->p = param;
+	curdbg++;
+}
+DbgRecord* dbgGet(int*len) {
+	*len = curdbg;
+	return &dbgs[0];
+}
+
+
+
+
+
+
+
+
 
 
