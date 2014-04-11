@@ -299,11 +299,12 @@ void main(void) {
     
 #ifdef SENSOR_PIC
     //resetAccumulators();
-//    init_adc();
+    init_adc();
     initUS();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
+    
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
     i2c_configure_slave(SENSOR_ADDR << 1);//address 0x10
 #elif defined MOTOR_PIC

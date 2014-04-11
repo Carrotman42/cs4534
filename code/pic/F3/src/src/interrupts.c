@@ -5,6 +5,7 @@
 #include "my_adc.h"
 #include "debug.h"
 #include "my_uart.h"
+#include "my_ultrasonic.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -108,12 +109,17 @@ void InterruptHandlerHigh() {
         timer2_int_handler();
     }
 
+    if (INTCONbits.INT0IF){
+        INTCONbits.INT0IF = 0; // Clear the interrupt flag
+        us_int_handler();
+    }
+
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep
     // This code *DEPENDS* on the code in messages.c being
     // initialized using "init_queues()" -- if you aren't using
     // this, then you shouldn't have this call here
-    SleepIfOkay();
+//    SleepIfOkay();
 }
 
 //----------------------------------------------------------------------------

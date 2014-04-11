@@ -285,6 +285,6 @@ void timer1_int_handler() {
 
 #ifdef SENSOR_PIC
 void timer2_int_handler(){
-    debugNum(2);
+//    debugNum(4);
 }
 #endif
