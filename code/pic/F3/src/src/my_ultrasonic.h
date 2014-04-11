@@ -11,7 +11,6 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
     void initUS();
     void pulseUS();
     void startTimerUS();

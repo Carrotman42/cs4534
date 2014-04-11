@@ -11,6 +11,8 @@ void timer0_int_handler(void);
 
 void timer1_int_handler(void);
 
+void timer2_int_handler(void);
+
 // include the handler from my uart code
 #include "my_uart.h"
 

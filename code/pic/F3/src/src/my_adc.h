@@ -4,7 +4,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-#define IRBUFFERSIZE 9
+#define IRBUFFERSIZE 5
+#define HALFBUFFER IRBUFFERSIZE/2
 
     typedef struct{
         uint8 ir0Array[IRBUFFERSIZE];

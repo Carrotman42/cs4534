@@ -22,6 +22,7 @@
 #ifdef SENSOR_PIC
 #include "my_adc.h"
 #include "sensorcomm.h"
+#include "my_ultrasonic.h"
 #endif
 
 
@@ -260,7 +261,7 @@ void main(void) {
     // initialize Timers
 #ifndef MASTER_PIC
     #ifdef SENSOR_PIC
-        OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_8);
+        OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
     #else
         OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
     #endif
@@ -276,6 +277,8 @@ void main(void) {
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
 #else
     OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+//    T1CONbits.RD16 = 1;
+//    T1CONbits
 #endif
 #endif
 
@@ -296,7 +299,8 @@ void main(void) {
     
 #ifdef SENSOR_PIC
     //resetAccumulators();
-    init_adc();
+//    init_adc();
+    initUS();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;

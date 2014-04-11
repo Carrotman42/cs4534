@@ -103,6 +103,10 @@ void InterruptHandlerHigh() {
     }
 
     // here is where you would check other interrupt flags.
+    if (PIR1bits.TMR2IF){
+        PIR1bits.TMR2IF = 0; //Clear the interrupt flag
+        timer2_int_handler();
+    }
 
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep

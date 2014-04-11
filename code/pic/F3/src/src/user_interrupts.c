@@ -15,6 +15,7 @@
 #endif
 #ifdef SENSOR_PIC
 #include "my_adc.h"
+#include "my_ultrasonic.h"
 #endif
 
 // A function called by the interrupt handler
@@ -90,7 +91,8 @@ void timer0_int_handler() {
 
 #ifdef SENSOR_PIC
     ADCON0bits.GO = 1;
-    WriteTimer0(0xFFFF-1500);
+//    WriteTimer0(0xFFFF-1500);
+    WriteTimer0(0xFFFF-9375+1875);
     debugNum(8);
 #endif //SENSOR_PIC
 }
@@ -266,7 +268,9 @@ void timer1_int_handler() {
 
 #ifdef SENSOR_PIC
         debugNum(4);
-        transmitData();
+        pulseUS();
+//        transmitData();
+//        WriteTimer1(0xFFFF);
 #endif
 
 
@@ -278,3 +282,9 @@ void timer1_int_handler() {
 
 
 }
+
+#ifdef SENSOR_PIC
+void timer2_int_handler(){
+    debugNum(2);
+}
+#endif

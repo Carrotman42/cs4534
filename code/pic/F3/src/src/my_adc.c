@@ -71,7 +71,7 @@ void sort(uint8* array){
             }
         }
     }
-    debugNum(1);
+//    debugNum(1);
 }
 
 void init_adc(){
@@ -146,16 +146,16 @@ void adc_int_handler() {
     }
     else if(channel == 1){
         addDataToBuffer(chn0Data, (char) data);
-//        distanceArray[0] = buffer.ir0Array[4];
-//        distanceArray[1] = buffer.ir1Array[4];
+//        distanceArray[0] = buffer.ir0Array[HALFBUFFER];
+//        distanceArray[1] = buffer.ir1Array[HALFBUFFER];
 //        uart_send_array(distanceArray, 2);
-//        uart_send(buffer.ir0Array[4]);
-//        uart_send(buffer.ir1Array[4]);
+//        uart_send(buffer.ir0Array[HALFBUFFER]);
+//        uart_send(buffer.ir1Array[HALFBUFFER]);
 
         ADCON0bits.CHS = 0;
         channel = 0;
-        debugNum(2);
-        debugNum(2);
+//        debugNum(2);
+//        debugNum(2);
     }
 }
 
@@ -172,7 +172,7 @@ void transmitData(){
     sort(ir1);
 
 #ifndef ADCCONFIG
-    calculateDistance(ir0[4],ir1[4]);
+    calculateDistance(ir0[HALFBUFFER],ir1[HALFBUFFER]);
 
     distanceArray[0] = ir0_distance;
     distanceArray[1] = ir1_distance;
@@ -181,8 +181,8 @@ void transmitData(){
 
 #endif
 #ifdef ADCCONFIG
-    uart_send((char) ir0[4]);
-    uart_send((char) ir1[4]);
+    uart_send((char) ir0[HALFBUFFER]);
+    uart_send((char) ir1[HALFBUFFER]);
 #endif
 }
 
