@@ -300,7 +300,7 @@ void main(void) {
 #ifdef SENSOR_PIC
     //resetAccumulators();
     init_adc();
-    initUS();
+//    initUS();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
