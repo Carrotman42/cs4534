@@ -73,8 +73,8 @@ void us_int_handler(){
     }
 
     //Start of echo pulse
-//    debugNum(2);
-//    debugNum(2);
+    debugNum(2);
+    debugNum(2);
 
     if(INTCON2bits.INTEDG0 == 1){
         startTimerUS();
