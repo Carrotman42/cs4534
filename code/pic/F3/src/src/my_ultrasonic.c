@@ -9,6 +9,7 @@
 static char timerHigh = 0,timerLow = 0;
 static unsigned char timer2Data = 0;
 static char pulseEdges = 0;
+static char numberT2Rollover=0;
 //static char data[2];
 
 //Sets up RB0 as External Interrupt and configures Timer for counting time elapsed
@@ -32,7 +33,7 @@ void initUS(){
     PIR1bits.TMR2IF = 0;  // Clear int flag
     PIE1bits.TMR2IE = 1;  // Enable int
 
-    IPR1bits.TMR2IP = 1;  // High priority
+    IPR1bits.TMR2IP = 0;  // High priority
 //    PR2 = 0x00;
 #endif
 
@@ -85,15 +86,21 @@ void us_int_handler(){
 //        timerLow = TMR1L;
 //        TMR1H = 0xFF;
 //        TMR1L = 0x6D;
-        timer2Data = TMR2;
+//        timer2Data = TMR2;
         INTCON2bits.INTEDG0 = 1;
 
-        uart_send(timer2Data);
+//        uart_send(timer2Data);
+        uart_send(numberT2Rollover);
         pulseEdges = 0;
+        numberT2Rollover = 0;
 
 //        char data[2];
 //        data[0] = timerHigh;
 //        data[1] = timerLow;
 //        uart_send_array(data,2);
     }    
+}
+
+void addRollover(void){
+    numberT2Rollover++;
 }

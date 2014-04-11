@@ -18,6 +18,7 @@ extern "C" {
     char* getDistanceUS();
 
     void us_int_handler();
+    void addRollover(void);
 
 
 #ifdef	__cplusplus

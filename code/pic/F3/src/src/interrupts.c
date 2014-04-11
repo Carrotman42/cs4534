@@ -104,11 +104,6 @@ void InterruptHandlerHigh() {
     }
 
     // here is where you would check other interrupt flags.
-    if (PIR1bits.TMR2IF){
-        PIR1bits.TMR2IF = 0; //Clear the interrupt flag
-        timer2_int_handler();
-    }
-
     if (INTCONbits.INT0IF){
         INTCONbits.INT0IF = 0; // Clear the interrupt flag
         us_int_handler();
@@ -160,6 +155,11 @@ void InterruptHandlerLow() {
     {
         PIR1bits.TXIF = 0; // clear interrupt flag
         uart_send_int_handler();
+    }
+
+    if (PIR1bits.TMR2IF){
+        PIR1bits.TMR2IF = 0; //Clear the interrupt flag
+        timer2_int_handler();
     }
 }
 
