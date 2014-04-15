@@ -414,6 +414,10 @@ void main(void) {
                     i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
+                case MSGT_MASTER_SEND_NO_RAW_BUSY:
+                {
+                    i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
+                };
                 #endif
                 case MSGT_UART_TX_BUSY:
                 {

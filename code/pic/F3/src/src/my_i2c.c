@@ -44,6 +44,7 @@ void i2c_configure_master() {
     SSPCON1bits.SSPEN = 0x1; //Enable SDA/SCL
     SSPSTATbits.SMP = 0x1;
     SSPADD = (12000000 / (4*100000))-1; //should be 0x1D for a 12 MHz clock
+    ic_ptr->read_after_write = 1;
 }
 
 // Sending in I2C Master mode [slave write]
@@ -76,6 +77,41 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
         }
         return 0;
     }
+    ic_ptr->read_after_write = 1;
+    ic_ptr->status = I2C_STARTED;
+    ic_ptr->txnrx = 1;
+    ic_ptr->addr = addr;
+    char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits
+    ic_ptr->outbuffer[0] = buf_addr;
+    int i =1;
+    for(i; i < length + 1; i++){
+        ic_ptr->outbuffer[i] = msg[i-1];
+    }
+    ic_ptr->outbuflen = length + 1; //char length + addr byte
+    ic_ptr->outbufind = 0; //start at 0th pos.  addr will be written in after S int happens
+    SSPCON2bits.SEN = 1; //send start signal
+    return 1;
+}
+
+
+unsigned char i2c_master_send_no_raw(unsigned char addr, unsigned char length, unsigned char *msg) {
+    if(ic_ptr->status != I2C_IDLE){
+        //copy addr and msg into a single array
+        char tempbuf[MAX_I2C_SENSOR_DATA_LEN +1];
+        tempbuf[0] = addr;
+        int i = 1;
+        for(i; i < length+1; i++){
+            tempbuf[i] = msg[i-1];
+        }
+        if(in_main()){
+            FromMainHigh_sendmsg(length+1, MSGT_MASTER_SEND_NO_RAW_BUSY, tempbuf);
+        }
+        else{
+            FromI2CInt_sendmsg(length+1, MSGT_MASTER_SEND_NO_RAW_BUSY, tempbuf);
+        }
+        return 0;
+    }
+    ic_ptr->read_after_write = 0;
     ic_ptr->status = I2C_STARTED;
     ic_ptr->txnrx = 1;
     ic_ptr->addr = addr;
@@ -127,6 +163,7 @@ unsigned char i2c_master_recv(unsigned char addr) {
     return 1;
 }
 
+
 //load the i2c data into the buffer.
 unsigned char load_i2c_data(){
     if(ic_ptr->status == I2C_STARTED) ic_ptr->status = I2C_MASTER_SEND; //change the status to "sending data" on the next interrupt
@@ -173,7 +210,12 @@ void i2c_tx_handler(){
         case(I2C_STOPPED): //stop
             ic_ptr->status = I2C_IDLE;
             if(!ic_ptr->nack){
-                i2c_master_recv(ic_ptr->addr); //send a request for data (either ack or data)
+                if(ic_ptr->read_after_write){
+                    i2c_master_recv(ic_ptr->addr); //send a request for data (either ack or data)
+                }
+                else{
+                    ic_ptr->read_after_write = 1; //reset to 1 just in case
+                }
             }
             else{
                 char error[6];

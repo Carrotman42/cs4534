@@ -60,6 +60,7 @@
 #define MSGT_I2C_MASTER_RECV_FAILED 46
 #define MSGT_MASTER_RECV_BUSY 47
 #define MSGT_MASTER_SEND_BUSY 48
+#define MSGT_MASTER_SEND_NO_RAW_BUSY 49
 #define MSGT_COMM_BRAIN_BUSY 50
 #define MSGT_COMM_ROVER_BUSY 51
 
@@ -70,10 +71,10 @@
 //#define ARM_EMU //arm emulator (really simple, just sends commands on a timer)
 //#define ROVER_EMU //rover emulator (really simple, just sends dummy values back over uart and sends back frame data on a timer)
 
-#define PICMAN
+//#define PICMAN
 //#define SENSOR_PIC
 //#define MOTOR_PIC
-//#define MASTER_PIC
+#define MASTER_PIC
 
 
 #if defined(MASTER_PIC) || defined(ARM_EMU)
