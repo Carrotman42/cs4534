@@ -1,7 +1,6 @@
-#include "maindefs.h"
-
 #ifndef MOTORCOMM_H
 #define	MOTORCOMM_H
+#include "maindefs.h"
 
 #include "brain_rover.h"
 #include "comm.h"

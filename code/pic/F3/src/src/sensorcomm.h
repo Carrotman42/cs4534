@@ -1,7 +1,6 @@
-#include "maindefs.h"
-
 #ifndef SENSORCOMM_H
 #define	SENSORCOMM_H
+#include "maindefs.h"
 
 #include "common.h"
 #include "brain_rover.h"

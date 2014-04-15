@@ -4,34 +4,31 @@
  *
  * Created on March 2, 2014, 9:05 PM
  */
-
+#ifndef MOTOR_H
+#define	MOTOR_H
 #include "my_uart.h"
 #include <stdint.h>
 #include <stdbool.h>
-#ifndef MOTOR_H
-#define	MOTOR_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
 
-    typedef enum  {FORWARDS, REVERSE, MOVE_FORWARDS, TURN, READJUSTMENT, FINISHED, IDLE }STATES;
-    bool commandDone = false;
+    typedef enum  {FORWARDS, REVERSE, MOVE_FORWARDS, TURN, READJUSTMENT, FINISHED, IDLE, FUN }STATES;
 
-     extern uint16_t motor1Ticks;
-     extern uint16_t motor2Ticks;
-    extern int finalMotor1Ticks;      // -1 if there was an error
-    extern int finalMotor2Ticks;      // -1 if there was an error
-    // motor 1 ticks for 1 revolution: 2750
-    // motor 2 ticks for 1 revolution: 2675
-    // target values: 1 interrupt = 25 ticks
-     extern uint16_t target1;    // 110 for 1 revolution
-     extern uint16_t target2;    // 107 for 1 revolution but an offset of 1 in formula
+//    bool commandDone = false;
+//
+//    extern uint16_t motor1Ticks;
+//    extern uint16_t motor2Ticks;
+//    extern int finalMotor1Ticks;      // -1 if there was an error
+//    extern int finalMotor2Ticks;      // -1 if there was an error
+//    // motor 1 ticks for 1 revolution: 2750
+//    // motor 2 ticks for 1 revolution: 2675
+//    // target values: 1 interrupt = 25 ticks
+//    extern uint16_t target1;    // 110 for 1 revolution
+//    extern uint16_t target2;    // 107 for 1 revolution but an offset of 1 in formula
 
-    void reverse();
-    void forward();
-    void forward2();
-    void forward3();
+    void reverse(int rev);
+    void forward(int rev);
+    void forward2(int rev);
+    void forward3(int rev);
     void forwardMotor1();
     void reverseMotor1();
     void forwardMotor2();
@@ -44,18 +41,15 @@ extern "C" {
     void turnRight90_onSpot();
     void turnLeft90_onSpot();
     void forwardHalfRev();
-    void funFunc();
+    void funFunc(int rev);
     void readjustLeft();
     void readjustRight();
 
     void resetTicks();
     int getMotor1Ticks();
     int getMotor2Ticks();
-
-
-#ifdef	__cplusplus
-}
-#endif
+    void setKill();
+    void resetKill();
 
 #endif	/* MOTOR_H */
 
