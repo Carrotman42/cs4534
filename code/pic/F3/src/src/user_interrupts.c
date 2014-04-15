@@ -22,6 +22,18 @@
 // This one does the action I wanted for this program on a timer0 interrupt
 
 unsigned char datareq = 0;
+uint16_t motor1Ticks = 0;
+uint16_t motor2Ticks = 0;
+uint16_t target1 = 0;
+uint16_t target2 = 0;
+bool commandDone = false;
+
+// ticks sent to the ARM for arm unit calculations
+int finalMotor1Ticks = 0;
+int finalMotor2Ticks = 0;
+bool ticks1Sent = false;
+bool ticks2Sent = false;
+
 
  // motor 1 ticks for 1 revolution: 2750
  // motor 2 ticks for 1 revolution: 2675
@@ -104,11 +116,18 @@ void timer0_int_handler() {
    // encoders for motor 0
 #ifdef MOTOR_PIC
     motor1Ticks++;
+    if (ticks1Sent)
+    {
+        finalMotor1Ticks = 0;
+        ticks1Sent = true;
+    }
+    finalMotor1Ticks++;     // ticks to be sent to the ARM
     if (motor1Ticks > target1)
     {
-        //stop();
+        // stop it here and break it down to a function each and call multiple functions
+        // to get the job done
+        stop();
         commandDone = true;
-        finalMotor1Ticks = target1 * 25;  // total ticks when task was complete
         
         // dont use, slipping errors occur, this is used to adjust speeds of
         // each motor to be the same
@@ -297,12 +316,19 @@ void timer1_int_handler() {
 #ifdef MOTOR_PIC
 
        motor2Ticks++;
+       if (ticks2Sent)
+       {
+           finalMotor2Ticks = 0;
+           ticks2Sent = false;
+       }
+       finalMotor2Ticks++;
+       //resetDBG(0);
        if ( motor2Ticks > target2)
        {
-           // stop();
+           //setDBG(0);
+           stop();
            commandDone = true;
-           finalMotor2Ticks = target2 * 25;  // total ticks when task is complete
-           
+
            // dont use, slipping errors occur, this is used to adjust speeds of
            // each motor to be the same
            //stopMotor2();      
@@ -312,3 +338,41 @@ void timer1_int_handler() {
 #endif
 
 }
+
+void setM1Tick(uint16_t motor1) {
+    target1 = motor1;
+    
+}
+void setM2Tick(uint16_t motor2) {
+    target2 = motor2;
+}
+
+// set's commandDone to false
+void setCommandDone()
+{
+    commandDone = false;
+}
+
+// gets commandDone
+bool getCommandDone()
+{
+    return commandDone;
+}
+
+// each interrupt is triggered every 25 ticks so to get the total ticks you want
+// the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
+int getM1Ticks()
+{
+    ticks1Sent = true;
+    return (finalMotor1Ticks * 25);
+}
+
+
+// each interrupt is triggered every 25 ticks so to get the total ticks you want
+// the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
+int getM2Ticks()
+{
+    ticks2Sent = true;
+    return (finalMotor2Ticks * 25);
+}
+

@@ -97,13 +97,13 @@ void InterruptHandlerHigh() {
     }
 
     // check to see if we have an interrupt on timer 0
-    if (INTCONbits.TMR0IF) {
+    else if (INTCONbits.TMR0IF) {
         INTCONbits.TMR0IF = 0; // clear this interrupt flag
         // call whatever handler you want (this is "user" defined)
         timer0_int_handler();
     }
     // check to see if we have an interrupt on timer 1
-    if (PIR1bits.TMR1IF) {
+    else if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
     }
@@ -136,7 +136,7 @@ void InterruptHandlerHigh() {
     // This code *DEPENDS* on the code in messages.c being
     // initialized using "init_queues()" -- if you aren't using
     // this, then you shouldn't have this call here
-    SleepIfOkay();
+    //SleepIfOkay();
 }
 
 //----------------------------------------------------------------------------
@@ -173,10 +173,11 @@ void InterruptHandlerLow() {
 #endif
         
     }
-    if (PIR1bits.TXIF && PIE1bits.TXIE)
+    if (PIR1bits.TXIF)
     {
         PIR1bits.TXIF = 0; // clear interrupt flag
-        uart_send_int_handler();
+        if (PIE1bits.TXIE)
+            uart_send_int_handler();
     }
 }
 

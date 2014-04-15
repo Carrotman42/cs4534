@@ -1,7 +1,6 @@
-#include "maindefs.h"
-
 #ifndef FRAMES_H
 #define	FRAMES_H
+#include "maindefs.h"
 #include "sensor_types.h"
 #include "brain_rover.h"
 

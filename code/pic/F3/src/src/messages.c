@@ -2,7 +2,7 @@
 #include "interrupts.h"
 #include "messages.h"
 #include <string.h>
-#include <delays.h>
+#include <plib/delays.h>
 
 // The key to making this code safe for interrupts is that
 // each queue is filled by only one writer and read by one reader.

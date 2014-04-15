@@ -1,5 +1,6 @@
 #ifndef __user_interrupts
 #define __user_interrupts
+#include <stdbool.h>
 
 // interrupts defined by the "user" and that are called from
 // interrupts.c -- the "user" needs to insert these into
@@ -16,7 +17,14 @@ void timer1_int_handler(void);
 
 // include the i2c interrupt handler definitions
 #include "my_i2c.h"
+#include <stdint.h>
 
 extern unsigned char datareq;
+void setM1Tick(uint16_t motor1);
+void setM2Tick(uint16_t motor2);
+void setCommandDone();
+bool getCommandDone();
+int getM1Ticks();
+int getM2Ticks();
 
 #endif

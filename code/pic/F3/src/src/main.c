@@ -15,7 +15,7 @@
 #include "my_i2c.h"
 //#include "uart_thread.h"
 //#include "timer1_thread.h"
-#include "timer0_thread.h"
+//#include "timer0_thread.h"
 #include "debug.h"
 #include "comm.h"
 #include "motor.h"
@@ -198,9 +198,9 @@ void main(void) {
     uart_comm uc;
     i2c_comm ic;
     unsigned char msgbuffer[MSGLEN + 1];
-//    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
-//    uint8 to_send_len;
-//    int data_points_count = 0;
+    //    unsigned char to_send_buffer[MAX_I2C_SENSOR_DATA_LEN + HEADER_MEMBERS];
+    //    uint8 to_send_len;
+    //    int data_points_count = 0;
     //unsigned char i;
     //uart_thread_struct uthread_data; // info for uart_lthread
     //timer1_thread_struct t1thread_data; // info for timer1_lthread
@@ -224,21 +224,21 @@ void main(void) {
     OSCTUNEbits.PLLEN = 1;
 #else
     Something is messed up.
-    The PIC selected is not supported or the preprocessor directives are wrong.
+            The PIC selected is not supported or the preprocessor directives are wrong.
 #endif
 #endif
 #endif
 #endif
 
-    // initialize my uart recv handling code
+            // initialize my uart recv handling code
 
-    init_uart_recv(&uc);
+            init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
 
     // init the timer1 lthread
-//    init_timer1_lthread(&t1thread_data);
+    //    init_timer1_lthread(&t1thread_data);
 
     // initialize message queues before enabling any interrupts
     init_queues();
@@ -267,24 +267,24 @@ void main(void) {
 #ifndef MOTOR_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
-	OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT );
+    OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
 #endif
 #else
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
 #endif
-    
+
 #ifdef __USE18F26J50
     // MTJ added second argument for OpenTimer1()
-    OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
+    OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
 #else
 #ifdef __USE18F46J50
-    OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF,0x0);
+    OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
 #else
 #ifndef MOTOR_PIC
     OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #else
-	OpenTimer1(TIMER_INT_ON & T1_PS_1_1 & T1_16BIT_RW & T1_SOURCE_EXT & T1_OSC1EN_OFF  & T1_SYNC_EXT_OFF);
-    WRITETIMER1(0xFFE8);   // leave in here, encoder's for motor 2 doesn't work without it
+    OpenTimer1(TIMER_INT_ON & T1_PS_1_1 & T1_16BIT_RW & T1_SOURCE_EXT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+    WRITETIMER1(0xFFE8); // leave in here, encoder's for motor 2 doesn't work without it
 #endif
 #endif
 #endif
@@ -303,7 +303,7 @@ void main(void) {
     PIE1bits.SSPIE = 1;
 
 
-    
+
 #ifdef SENSOR_PIC
     //resetAccumulators();
     init_adc();
@@ -311,11 +311,11 @@ void main(void) {
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
-    i2c_configure_slave(SENSOR_ADDR << 1);//address 0x10
+    i2c_configure_slave(SENSOR_ADDR << 1); //address 0x10
 #elif defined MOTOR_PIC
-    i2c_configure_slave(MOTOR_ADDR << 1);//address 0x20
+    i2c_configure_slave(MOTOR_ADDR << 1); //address 0x20
 #elif defined PICMAN
-    i2c_configure_slave(PICMAN_ADDR << 1);//address 0x10,different bus from sensor
+    i2c_configure_slave(PICMAN_ADDR << 1); //address 0x10,different bus from sensor
 #elif defined I2C_MASTER
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
@@ -325,25 +325,25 @@ void main(void) {
     // configure the hardware USART device
 #ifdef __USE18F26J50
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+            USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #else
 #ifdef __USE18F46J50
 
 #ifndef MOTOR_PIC
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 38);
+            USART_CONT_RX & USART_BRGH_LOW, 38);
 #else
-	Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_LOW, 0x19);
+    Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
+            USART_CONT_RX & USART_BRGH_LOW, 0x19);
 #endif
 
 #else
     OpenUSART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT &
-        USART_CONT_RX & USART_BRGH_HIGH, 38);
-//    BAUDCONbits.BRG16 = 1;
-//    TXSTAbits.TXEN = 1;
-//    RCSTAbits.SPEN = 1;
-//    RCSTAbits.CREN = 1;
+            USART_CONT_RX & USART_BRGH_HIGH, 38);
+    //    BAUDCONbits.BRG16 = 1;
+    //    TXSTAbits.TXEN = 1;
+    //    RCSTAbits.SPEN = 1;
+    //    RCSTAbits.CREN = 1;
 #endif
 #endif
 
@@ -351,6 +351,7 @@ void main(void) {
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
     LATBbits.LB7 = 0;
+    WRITETIMER0(0x00FF);
 
     // loop forever
     // This loop is responsible for "handing off" messages to the subroutines
@@ -359,25 +360,41 @@ void main(void) {
     // structure them properly.
 
     //TODO: delete the test line
-//    calcRevMotor1(20);
-//    calcRevMotor2(20);
-//    forward();
+    //    calcRevMotor1(20);
+    //    calcRevMotor2(20);
+    //    forward();
 
-//    turnRight90_onSpot();
-
-
-//    calcRevMotor2(10);
-//    calcRevMotor1(10);
-//    forward();
-//    funFunc();
-
-//    readjustLeft();
+    //    turnRight90_onSpot();
     
-//    calcRevMotor1(1);
+//    doEverything(2, 1);    // turn left
+    //calcRevMotor1(10);
+    //calcRevMotor2(10);
+    //forward();
+    //forward2Rev();
+    //turnLeft();
+    //forward2Rev();
+
+
+//        calcRevMotor2(10);
+//        calcRevMotor1(10);
+//        forward2(1);
+ //   reverse(7);
 //    turnLeft90_onSpot();
-//    turnRight90_onSpot();
-//    forwardMotor1();
-//    forward();
+//        reverse(5);
+//        turnLeft90_onSpot();
+
+//        forward(0);
+        //for (int i = 0; i < 50; i++);
+        //setKill();
+//        reverse(4);
+//        funFunc(0);
+    //    funFunc();
+
+     //   readjustRight();
+
+    //    calcRevMotor1(1);
+    //    turnLeft90_onSpot();
+    //    turnRight90_onSpot();
     while (1) {
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into
@@ -396,10 +413,9 @@ void main(void) {
             if (length != MSGQUEUE_EMPTY) {
                 // This case be handled by your code.
             }
-        }
-        else{
-            switch(msgtype){
-                #ifdef I2C_MASTER
+        } else {
+            switch (msgtype) {
+#ifdef I2C_MASTER
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
@@ -411,7 +427,7 @@ void main(void) {
                 {
                     //retry
                     debugNum(8);
-                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                    i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
                 case MSGT_MASTER_SEND_NO_RAW_BUSY:
@@ -419,9 +435,11 @@ void main(void) {
                     i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
                 };
                 #endif
+#endif
                 case MSGT_UART_TX_BUSY:
                 {
-                    uart_send_array(msgbuffer, length);
+                    // TODO: take out for now
+                    //uart_send_array(msgbuffer, length);
                     break;
                 };
                 default:
@@ -435,9 +453,8 @@ void main(void) {
             if (length != MSGQUEUE_EMPTY) {
                 // This case be handled by your code.
             }
-        }
-        else{
-            switch(msgtype){
+        } else {
+            switch (msgtype) {
                 case MSGT_OVERRUN:
                     break;
                 case MSGT_UART_DATA:
@@ -446,7 +463,7 @@ void main(void) {
                     setRoverDataLP(msgbuffer);
                     handleRoverDataLP();
 #elif defined(MASTER_PIC) || defined(ROVER_EMU)
-                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+                    setBrainDataLP(msgbuffer); //pass data received and tell will pass over i2c
                     handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
 #endif
                     break;
@@ -461,7 +478,8 @@ void main(void) {
                 };
                 case MSGT_UART_TX_BUSY:
                 {
-                    uart_send_array(msgbuffer, length);
+                    // TODO: take out for now
+                    //uart_send_array(msgbuffer, length);
                     break;
                 };
                 default:
@@ -475,9 +493,8 @@ void main(void) {
             if (length != MSGQUEUE_EMPTY) {
                 // This case be handled by your code.
             }
-        }
-        else{
-            switch(msgtype){
+        } else {
+            switch (msgtype) {
                 case MSGT_I2C_DATA:
                 {
 #if defined(MASTER_PIC) || defined(ARM_EMU)
@@ -528,7 +545,7 @@ void main(void) {
                 {
                     //retry
                     debugNum(8);
-                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                    i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
 #endif
@@ -554,69 +571,69 @@ void main(void) {
                     //timer0_lthread(&t0thread_data, msgtype, length, msgbuffer);
                     break;
                 };
-//                #ifdef I2C_MASTER
-//                case MSGT_MASTER_RECV_BUSY:
-//                {
-//                    //retry
-//                    debugNum(4);
-//                    i2c_master_recv(msgbuffer[0]);
-//                    break;
-//                };
-//                case MSGT_MASTER_SEND_BUSY:
-//                {
-//                    //retry
-//                    debugNum(8);
-//                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
-//                    break;
-//                };
-//                #endif
-//                case MSGT_I2C_DATA:
-//                {
-//                    debugNum(4);
-//#if defined(MASTER_PIC) || defined(ARM_EMU)
-//                    //handle whatever data will come through via i2c
-//                    //msgbuffer can hold real data - error codes will be returned through the error cases
-//                    setRoverDataLP(msgbuffer);
-//                    handleRoverDataLP();
-//#else
-//                    setBrainDataLP(msgbuffer);
-//#endif
-//                    debugNum(4);
-//                    break;
-//                };
-//                case MSGT_I2C_RQST:
-//                {
-//#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
-//                    handleMessageLP(I2C_COMM, I2C_COMM);
-//#elif defined(PICMAN)
-//                    handleMessageLP(I2C_COMM, UART_COMM);
-//#endif
-//                    break;
-//                };
-//                case MSGT_I2C_DBG:
-//                {
-//                    // Here is where you could handle debugging, if you wanted
-//                    // keep track of the first byte received for later use (if desired)
-//                    last_reg_recvd = msgbuffer[0];
-//                    break;
-//                };
-//#ifdef MASTER_PIC
-//                case MSGT_I2C_MASTER_RECV_FAILED:
-//                {
-//                    uart_send_array(msgbuffer, length);
-//                    break;
-//                };
-//                case MSGT_I2C_MASTER_SEND_FAILED:
-//                {
-//                    uart_send_array(msgbuffer, length);
-//                    break;
-//                };
-//#endif
+                    //                #ifdef I2C_MASTER
+                    //                case MSGT_MASTER_RECV_BUSY:
+                    //                {
+                    //                    //retry
+                    //                    debugNum(4);
+                    //                    i2c_master_recv(msgbuffer[0]);
+                    //                    break;
+                    //                };
+                    //                case MSGT_MASTER_SEND_BUSY:
+                    //                {
+                    //                    //retry
+                    //                    debugNum(8);
+                    //                    i2c_master_send(msgbuffer[0], length-1, msgbuffer + 1); // point to second position (actual msg start)
+                    //                    break;
+                    //                };
+                    //                #endif
+                    //                case MSGT_I2C_DATA:
+                    //                {
+                    //                    debugNum(4);
+                    //#if defined(MASTER_PIC) || defined(ARM_EMU)
+                    //                    //handle whatever data will come through via i2c
+                    //                    //msgbuffer can hold real data - error codes will be returned through the error cases
+                    //                    setRoverDataLP(msgbuffer);
+                    //                    handleRoverDataLP();
+                    //#else
+                    //                    setBrainDataLP(msgbuffer);
+                    //#endif
+                    //                    debugNum(4);
+                    //                    break;
+                    //                };
+                    //                case MSGT_I2C_RQST:
+                    //                {
+                    //#if defined(MOTOR_PIC) || defined(SENSOR_PIC)
+                    //                    handleMessageLP(I2C_COMM, I2C_COMM);
+                    //#elif defined(PICMAN)
+                    //                    handleMessageLP(I2C_COMM, UART_COMM);
+                    //#endif
+                    //                    break;
+                    //                };
+                    //                case MSGT_I2C_DBG:
+                    //                {
+                    //                    // Here is where you could handle debugging, if you wanted
+                    //                    // keep track of the first byte received for later use (if desired)
+                    //                    last_reg_recvd = msgbuffer[0];
+                    //                    break;
+                    //                };
+                    //#ifdef MASTER_PIC
+                    //                case MSGT_I2C_MASTER_RECV_FAILED:
+                    //                {
+                    //                    uart_send_array(msgbuffer, length);
+                    //                    break;
+                    //                };
+                    //                case MSGT_I2C_MASTER_SEND_FAILED:
+                    //                {
+                    //                    uart_send_array(msgbuffer, length);
+                    //                    break;
+                    //                };
+                    //#endif
                 case MSGT_AD:
                 {
-                    #ifdef SENSOR_PIC
+#ifdef SENSOR_PIC
                     //addDataPoints(sensorADid, msgbuffer, length);
-                    #endif
+#endif
                     break;
                 };
 
@@ -639,9 +656,9 @@ void main(void) {
             switch (msgtype) {
                 case MSGT_AD:
                 {
-                    #ifdef SENSOR_PIC
+#ifdef SENSOR_PIC
                     //addDataPoints(sensorADid, msgbuffer, length);
-                    #endif
+#endif
                     break;
                 };
                 case MSGT_TIMER1:
@@ -649,27 +666,27 @@ void main(void) {
                     //timer1_lthread(&t1thread_data, msgtype, length, msgbuffer);
                     break;
                 };
-//                case MSGT_OVERRUN:
-//                    break;
-//                case MSGT_UART_DATA:
-//                {
-//#ifdef PICMAN
-//                    setRoverDataLP(msgbuffer);
-//                    handleRoverDataLP();
-//#elif defined(MASTER_PIC) || defined(ROVER_EMU)
-//                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
-//                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
-//#endif
-//                    break;
-//                };
-//                case MSGT_UART_RECV_FAILED:
-//                {
-//                    debugNum(1);
-//                    debugNum(2);
-//                    debugNum(1);
-//                    debugNum(2);
-//                    break;
-//                };
+                    //                case MSGT_OVERRUN:
+                    //                    break;
+                    //                case MSGT_UART_DATA:
+                    //                {
+                    //#ifdef PICMAN
+                    //                    setRoverDataLP(msgbuffer);
+                    //                    handleRoverDataLP();
+                    //#elif defined(MASTER_PIC) || defined(ROVER_EMU)
+                    //                    setBrainDataLP(msgbuffer);//pass data received and tell will pass over i2c
+                    //                    handleMessageLP(UART_COMM, I2C_COMM); //sends the response and then sets up the command handling
+                    //#endif
+                    //                    break;
+                    //                };
+                    //                case MSGT_UART_RECV_FAILED:
+                    //                {
+                    //                    debugNum(1);
+                    //                    debugNum(2);
+                    //                    debugNum(1);
+                    //                    debugNum(2);
+                    //                    break;
+                    //                };
                 default:
                 {
                     // Your code should handle this error
@@ -678,5 +695,5 @@ void main(void) {
             };
         }
     }
-
+//
 }
