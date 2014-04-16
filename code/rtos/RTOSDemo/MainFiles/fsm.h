@@ -11,6 +11,8 @@ typedef enum {
 	TURN_COMPLETE = 2,
 	TICK_COUNTING_DONE = 3,
 	COLOR_SENSOR_TRIGGERED = 4,
+	RESET_ROVER = 5,
+	START = 6,
 } FsmEvent;
 
 #ifndef FSM_TEST

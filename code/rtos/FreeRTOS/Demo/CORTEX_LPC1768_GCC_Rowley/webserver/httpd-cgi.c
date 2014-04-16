@@ -62,9 +62,12 @@ HTTPD_CGI_CALL(run, "run-time", run_time );
 HTTPD_CGI_CALL(io, "led-io", led_io );
 HTTPD_CGI_CALL(emureg, "emu-reg", register_emu );
 HTTPD_CGI_CALL(mapdump, "map-dump", dump_map );
+HTTPD_CGI_CALL(dbgdump, "dbg-dump", dump_dbg );
+HTTPD_CGI_CALL(cmdres, "cmd-reset", cmd_reset );
+HTTPD_CGI_CALL(cmdsta, "cmd-start", cmd_start );
 
 
-static const struct httpd_cgi_call *calls[] = { &mapdump, &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
+static const struct httpd_cgi_call *calls[] = { &mapdump, &dbgdump, &cmdres, &cmdsta, &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -310,6 +313,7 @@ static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
 }
 
 #include "map.h"
+#include "fsm.h"
 #include "kdbg.h"
 
 //static Map save;
@@ -338,6 +342,36 @@ static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
 	PSOCK_SEND(&s->sout, (char*)(&tt), sizeof(tt));
 	PSOCK_SEND(&s->sout, (char*)rec, len*sizeof(DbgRecord));
 	
+	PSOCK_END(&s->sout);
+}
+
+static PT_THREAD(dump_dbg(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	static Memory m;
+	mapGetMemory(&m);
+	static struct {
+		char f, r1, r2;
+	} toWrite;
+	toWrite.f = (char)(m.Forward);
+	toWrite.r1 = (char)(m.Right1);
+	toWrite.r2 = (char)(m.Right2);
+	
+	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
+	
+	PSOCK_END(&s->sout);
+}
+
+static PT_THREAD(cmd_reset(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	TriggerEvent(RESET_ROVER);
+	PSOCK_SEND(&s->sout, "ok", 2);
+	PSOCK_END(&s->sout);
+}
+
+static PT_THREAD(cmd_start(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	TriggerEvent(START);
+	PSOCK_SEND(&s->sout, "ok", 2);
 	PSOCK_END(&s->sout);
 }
 
