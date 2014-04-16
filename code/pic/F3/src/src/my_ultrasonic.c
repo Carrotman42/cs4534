@@ -3,7 +3,7 @@
 #include "messages.h"
 #include "debug.h"
 //#include "my_uart.h"
-#include <plib/portb.h>
+//#include <plib/portb.h>
 
 
 static char timerHigh = 0,timerLow = 0;

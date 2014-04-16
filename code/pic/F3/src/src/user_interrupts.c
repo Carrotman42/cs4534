@@ -115,7 +115,8 @@ void timer0_int_handler() {
 #endif
 
 #ifdef SENSOR_PIC
-    ADCON0bits.GO = 1;
+    ADCON0bits.GO = 1;  //Start ADC sampling
+    pulseUS();  //Start US Sampling
 //    WriteTimer0(0xFFFF-1500);
     WriteTimer0(0xFFFF-9375+1875);
     debugNum(8);
@@ -315,12 +316,12 @@ void timer1_int_handler() {
         //WriteTimer1(0x4000);
 #endif
 
-#ifdef SENSOR_PIC
-        debugNum(4);
-        pulseUS();
-//        transmitData();
-//        WriteTimer1(0xFFFF);
-#endif
+//#ifdef SENSOR_PIC
+////        debugNum(4);
+////        pulseUS();
+////        transmitData();
+////        WriteTimer1(0xFFFF);
+//#endif
 
 
 //#if defined(PICMAN) && defined(DEBUG_ON)

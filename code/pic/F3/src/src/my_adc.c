@@ -162,9 +162,9 @@ void adc_int_handler() {
     }
 }
 
-void transmitData(){
-    char ir0[IRBUFFERSIZE];
-    char ir1[IRBUFFERSIZE];
+char* transmitData(){
+    char ir0[IRBUFFERSIZE] = {0};
+    char ir1[IRBUFFERSIZE] = {0};
 
     for(char i = 0; i < IRBUFFERSIZE; i++){
         ir0[i] = buffer.ir0Array[i];
@@ -180,7 +180,8 @@ void transmitData(){
     distanceArray[0] = ir0_distance;
     distanceArray[1] = ir1_distance;
 
-    uart_send_array(distanceArray,2);
+    //uart_send_array(distanceArray,2);
+    return distanceArray;
 
 #endif
 #ifdef ADCCONFIG
