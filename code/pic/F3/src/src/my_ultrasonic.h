@@ -15,7 +15,7 @@ extern "C" {
     void pulseUS();
     void startTimerUS();
     void stopTimerUS();
-    char* getDistanceUS();
+    char getDistanceUS();
 
     void us_int_handler();
     void addRollover(void);

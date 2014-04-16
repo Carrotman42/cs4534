@@ -264,11 +264,10 @@ void main(void) {
 
     // initialize Timers
 #ifndef MASTER_PIC
-    #ifdef SENSOR_PIC
-        OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
-    #else
-        OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
-    #endif
+#ifdef SENSOR_PIC
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+#elif !defined(MOTOR_PIC)
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
     OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
 #endif

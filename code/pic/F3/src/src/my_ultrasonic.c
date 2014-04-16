@@ -2,7 +2,7 @@
 #include "my_ultrasonic.h"
 #include "messages.h"
 #include "debug.h"
-#include "my_uart.h"
+//#include "my_uart.h"
 #include <plib/portb.h>
 
 
@@ -10,6 +10,8 @@ static char timerHigh = 0,timerLow = 0;
 static unsigned char timer2Data = 0;
 static char pulseEdges = 0;
 static char numberT2Rollover=0;
+static char busyFlag = 0;
+char distanceArmUnits = 0;
 //static char data[2];
 
 //Sets up RB0 as External Interrupt and configures Timer for counting time elapsed
@@ -42,16 +44,20 @@ void initUS(){
 
 void pulseUS(){
     //Pulse Signal line
-    TRISBbits.TRISB0 = 0;
-//    LATBbits.LATB4 = 1;
-//    LATBbits.LATB4 = 0;
-    debugNum(1);   // THIS IS NOT A DEBUG STATEMENT -- HAS CORRECT PULSE WIDTH FOR US OPERATION!!
-    TRISBbits.TRISB0 = 1;
-//    debugNum(8)
+    if(!busyFlag){
+        numberT2Rollover = 0;
+        TRISBbits.TRISB0 = 0;
+    //    LATBbits.LATB4 = 1;
+    //    LATBbits.LATB4 = 01
+        debugNum(1);   // THIS IS NOT A DEBUG STATEMENT -- HAS CORRECT PULSE WIDTH FOR US OPERATION!!
+        TRISBbits.TRISB0 = 1;
+    //    debugNum(8)
 
-    //Enable edge selection interrupt
-//    INTCONbits.INT0IE = 1;
-//    INTCON2bits.INTEDG0 = 1;
+        //Enable edge selection interrupt
+    //    INTCONbits.INT0IE = 1;
+    //    INTCON2bits.INTEDG0 = 1;
+        busyFlag = 1;
+    }
 }
 void startTimerUS(){
     TMR2 = 0; //Clears Timer2
@@ -62,9 +68,9 @@ void stopTimerUS(){
     T2CONbits.TMR2ON = 0;  //Turn off Timer 2
 }
 
-//char* getDistanceUS(){
-//    return data;
-//}
+char getDistanceUS(){
+    return distanceArmUnits;
+}
 
 void us_int_handler(){
     if(pulseEdges == 0){
@@ -90,10 +96,15 @@ void us_int_handler(){
         INTCON2bits.INTEDG0 = 1;
 
 //        uart_send(timer2Data);
+//        float distance = ((float) numberT2Rollover/7.0) * 10;
+//        uart_send((uint8) distance);
+
         float distance = ((float) numberT2Rollover/7.0) * 10;
-        uart_send((uint8) distance);
+        distanceArmUnits = (uint8) ((distance/3.04) + 0.5);
+
+
         pulseEdges = 0;
-        numberT2Rollover = 0;
+        busyFlag = 0;
 
 //        char data[2];
 //        data[0] = timerHigh;
