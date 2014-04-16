@@ -268,8 +268,8 @@ void timer1_int_handler() {
 
 #ifdef SENSOR_PIC
         debugNum(4);
-//        pulseUS();
-        transmitData();
+        pulseUS();
+//        transmitData();
 //        WriteTimer1(0xFFFF);
 #endif
 

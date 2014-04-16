@@ -90,7 +90,8 @@ void us_int_handler(){
         INTCON2bits.INTEDG0 = 1;
 
 //        uart_send(timer2Data);
-        uart_send(numberT2Rollover);
+        float distance = ((float) numberT2Rollover/7.0) * 10;
+        uart_send((uint8) distance);
         pulseEdges = 0;
         numberT2Rollover = 0;
 

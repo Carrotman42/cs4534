@@ -11,7 +11,7 @@
 #include "debug.h"
 
 #include "my_uart.h"  // REMOVE AFTER MS4
-//#include <math.h>
+#include <math.h>
 
 static char ADCBuffer[5];
 static char distanceArray[2];
@@ -19,15 +19,16 @@ static char chn0Data;
 static irBuffer buffer;
 static char count = 0;
 static char channel = 0;
+static char error = 0;
 
 #ifndef ADCCONFIG
-static const float ir0_m[7] = {-0.0935,-1.111,-1,-.625,-5,-2.222,-1.1765};
-static const float ir0_b[7] = {28.037,115.555,107,81.87,305,168.88,122.35};
-static const float ir1_m[7] = {-0.130,-0.339,-0.74,-0.7692,-2,-1.25,2};
-static const float ir1_b[7] = {32.6144,52.7119,79.6296,81.1538,131,104.3750,15};
+static const float ir0_m[7] = {-0.1163,-0.2703,-0.7143,-0.9091,-1.1111,-10.0000,-3.3333};
+static const float ir0_b[7] = {30.9302,45.4054,70.7143,79.0909,85.5556,290.0000,143.3333};
+static const float ir1_m[7] = {-0.1235,-0.2857,-0.5882,-1.0000,-1.1111,-1.6667,-5.0000};
+static const float ir1_b[7] = {31.3580,46.2857,63.5294,80.0000,83.3333,95.0000,145.0000};
 
-static const char ir0_voltageValues[8] = {193,86,77,67,51,49,44,6};
-static const char ir1_voltageValues[8] = {173,96,67,53,40,35,27,32,};
+static const char ir0_voltageValues[8] = {180,94,57,43,32,23,21,19};
+static const char ir1_voltageValues[8] = {173,92,57,40,30,21,15,13};
 
 //KEEP
 //static const float ir0_m[7] = {-.1163,-.333,-.666,-1,-1.176,1.666,-.606};
@@ -75,25 +76,25 @@ void sort(uint8* array){
 }
 
 void init_adc(){
-    OpenADC(ADC_FOSC_2 & ADC_RIGHT_JUST & ADC_0_TAD,
-            ADC_CH0 & ADC_CH1 & ADC_INT_ON & ADC_VREFPLUS_EXT & ADC_VREFMINUS_EXT,
-            0xC);
+//    OpenADC(ADC_FOSC_2 & ADC_RIGHT_JUST & ADC_0_TAD,
+//            ADC_CH0 & ADC_CH1 & ADC_INT_ON & ADC_VREFPLUS_EXT & ADC_VREFMINUS_EXT,
+//            0xC);
 
-//    ADCON0bits.CHS = 0;
-//    ADCON0bits.ADON = 1;
-//
-//    ADCON1bits.VCFG1 = 1;
-//    ADCON1bits.VCFG0 = 1;
-//    ADCON1bits.PCFG = 0b1011;
-//
-//    ADCON2bits.ADFM = 1;
-//    ADCON2bits.ACQT = 0b010;
-//    ADCON2bits.ADCS = 0;
-//
+    ADCON0bits.CHS = 0;
+    ADCON0bits.ADON = 0;
+
+    ADCON1bits.VCFG1 = 1;
+    ADCON1bits.VCFG0 = 1;
+    ADCON1bits.PCFG = 0xC;
+
+    ADCON2bits.ADFM = 1;
+    ADCON2bits.ACQT = 0b001;
+    ADCON2bits.ADCS = 0;
+
 //    INTCONbits.GIE = 1;
-//    PIR1bits.ADIF = 0;
-//    INTCONbits.PEIE = 1;
-//    PIE1bits.ADIE = 1;
+    PIR1bits.ADIF = 0;
+    PIE1bits.ADIE = 1;
+    INTCONbits.PEIE = 1;
 
     //Setting AN0, AN1 as input
     TRISAbits.TRISA0 = 1;
@@ -105,6 +106,8 @@ void init_adc(){
 //        buffer.ir1Array[i] = 0xFF;
 //    }
     buffer.count = 0;
+
+    ADCON0bits.ADON = 1;
 
     /*
     // Configure ADC
@@ -190,7 +193,7 @@ void transmitData(){
 void calculateDistance(char ir0_rawData, char ir1_rawData){
     uint8 ir0_index;
     uint8 ir1_index;
-    
+
     if(ir0_rawData >= ir0_voltageValues[0])
         ir0_index = 0;
     else if(ir0_rawData >= ir0_voltageValues[1])
@@ -229,13 +232,59 @@ void calculateDistance(char ir0_rawData, char ir1_rawData){
     ir0_distance = (uint8) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
     ir1_distance = (uint8) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
 
-//    //Convert ADC to voltage value
-//    float ir0_voltage = (ir0_rawData/1024)*3.4+0;
-//    float ir1_voltage = (ir1_rawData/1024)*3.4+0;
+    //Convert ADC to voltage value
+//    float ir0_voltage = ((((unsigned int) ir0_rawData)<<2)/1024)*3.4+0;
+//    float ir1_voltage = ((((unsigned int) ir1_rawData)<<2)/1024)*3.4+0;
 //
 //    //Using equation suggested on sparkfun
 //    ir0_distance = (int) 41.543 * pow((ir0_voltage + 0.30221),-1.5281);
 //    ir1_distance = (int) 41.543 * pow((ir1_voltage + 0.30221),-1.5281);
+//    debugNum(4);
+
+//    error = 0;
+//    float ir0_cu = ir0_rawData*ir0_rawData*ir0_rawData;
+//    float ir0_sq = ir0_rawData*ir0_rawData;
+//    float ir1_cu = ir1_rawData*ir1_rawData*ir1_rawData;
+//    float ir1_sq = ir1_rawData*ir1_rawData;
+//
+//    //Using cubic polynomial fits
+//    if(ir0_rawData < 13)
+//        error = -1;
+//    else if(ir0_rawData < 15)
+//        ir0_distance = 0.36*ir0_cu - 0.3*ir0_sq - 5.83*ir0_rawData + 80;
+//    else if(ir0_rawData < 21)
+//        ir0_distance = -0.02*ir0_cu + 0.3*ir0_sq - 2.73*ir0_rawData + 70;
+//    else if(ir0_rawData < 30)
+//        ir0_distance = 0.05*ir0_sq - 1.35*ir0_rawData + 60;
+//    else if(ir0_rawData < 40)
+//        ir0_distance =  -0.01*ir0_sq - 1.05*ir0_rawData + 50;
+//    else if(ir0_rawData < 57)
+//        ir0_distance =  0.01*ir0_sq - 0.76*ir0_rawData + 40;
+//    else if(ir0_rawData < 92)
+//        ir0_distance =  -0.4*ir0_rawData + 30;
+//    else if(ir0_rawData < 173)
+//        ir0_distance =  -0.18*ir0_rawData + 20;
+//    else
+//        error = 1;
+//
+//    if(ir1_rawData < 13)
+//        error = -1;
+//    else if(ir1_rawData < 15)
+//        ir1_distance = 0.36*ir1_cu - 0.3*ir1_sq - 5.83*ir1_rawData + 80;
+//    else if(ir1_rawData < 21)
+//        ir1_distance = -0.02*ir1_cu + 0.3*ir1_sq - 2.73*ir1_rawData + 70;
+//    else if(ir1_rawData < 30)
+//        ir1_distance = 0.05*ir1_sq - 1.35*ir1_rawData + 60;
+//    else if(ir1_rawData < 40)
+//        ir1_distance =  -0.01*ir1_sq - 1.05*ir1_rawData + 50;
+//    else if(ir1_rawData < 57)
+//        ir1_distance =  0.01*ir1_sq - 0.76*ir1_rawData + 40;
+//    else if(ir1_rawData < 92)
+//        ir1_distance =  -0.4*ir1_rawData + 30;
+//    else if(ir1_rawData < 173)
+//        ir1_distance =  -0.18*ir1_rawData + 20;
+//    else
+//        error = 1;
 }
 #endif
 #endif
