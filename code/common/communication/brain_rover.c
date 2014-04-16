@@ -493,3 +493,13 @@ uint8 isColorSensed(char* buf){
     return (m->flags & COLOR_SENSED) == COLOR_SENSED;
 }
 
+uint8 isMovementCommand(char* buf){
+    Msg* m = (Msg*) buf;
+    return (m->flags == MOTOR_COMMANDS) && (m->parameters != 0x05);
+}
+
+uint8 isHighLevelCommand(char* buf) {
+    Msg* m = (Msg*) buf;
+    return m->flags == HIGH_LEVEL_COMMANDS;
+}
+

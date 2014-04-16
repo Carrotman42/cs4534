@@ -2,7 +2,6 @@
 
 #include "sensor_types.h"
 #include "common.h"
-#include "testAD.h"
 #include "debug.h"
 #include "my_i2c.h"
 

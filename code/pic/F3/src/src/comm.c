@@ -1,6 +1,11 @@
 #include "comm.h"
 #include "error.h"
 #include "user_interrupts.h" //used for extern var
+#include "messages.h"
+
+#ifdef MOTOR_PIC
+#include "motor.h"
+#endif
 
 #define payloadSize 10
 static BrainMsg LPBrainMsgRecv;
@@ -56,24 +61,48 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
         case MOTOR_COMMANDS:
             switch(brain->parameters){
                 case 0x00:
-                    saveError(0x0a);
+                    switch (brain->payload[0]){
+                        case 1:
+                            forward(0);
+                            break;
+                        case 2:
+                            forward2(0);
+                            break;
+                        case 3:
+                            forward3(0);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
                 case 0x01:
+                    reverse(0);
+                    break;
                 case 0x02:
-                    sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
                     break;
                 case 0x03:
+                    turnStarted();
+                    break;
                 case 0x04:
+                    turnStarted();
+                    break;
                 case 0x06:
+                    turnStarted();
+                    break;
                 case 0x07:
+                    turnStarted();
+                    break;
                 case 0x08:
                     turnStarted();
-                    sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
                     break;
                 case 0x05:
                     sendEncoderData(brain->messageid);
                     break;
                 default:
                     break;
+            }
+            if(brain->parameters != 0x05){ //anything but send encoder data
+                sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
             }
             break;
         case HIGH_LEVEL_COMMANDS:

@@ -9,6 +9,10 @@
 #define highByte(c) (c >> 8)
 #define lowByte(c) (c & 0xFF)
 
+#ifdef MOTOR_PIC
+void setResetEncoderData();
+#endif
+
 //every pic has its own definition of a frame
 #if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)
 typedef struct {

@@ -124,6 +124,8 @@ uint8 isInvalidData(char* buf);
 void flagColorSensed(char* buf);
 uint8 isColorSensed(char* buf);
 
+uint8 isMovementCommand(char* buf);
+uint8 isHighLevelCommand(char* buf);
 
 
 

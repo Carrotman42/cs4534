@@ -369,7 +369,8 @@ void main(void) {
 //    doEverything(2, 1);    // turn left
     //calcRevMotor1(10);
     //calcRevMotor2(10);
-    //forward();
+    forward(0);
+    debugNum(1);
     //forward2Rev();
     //turnLeft();
     //forward2Rev();
@@ -434,7 +435,6 @@ void main(void) {
                 {
                     i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
                 };
-                #endif
 #endif
                 case MSGT_UART_TX_BUSY:
                 {
