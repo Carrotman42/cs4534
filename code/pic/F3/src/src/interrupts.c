@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "my_uart.h"
 #include "my_ultrasonic.h"
+#include "motor.h"
 
 //----------------------------------------------------------------------------
 // Note: This code for processing interrupts is configured to allow for high and
@@ -97,11 +98,37 @@ void InterruptHandlerHigh() {
     }
 
     // check to see if we have an interrupt on timer 0
-    if (INTCONbits.TMR0IF) {
+    else if (INTCONbits.TMR0IF) {
         INTCONbits.TMR0IF = 0; // clear this interrupt flag
         // call whatever handler you want (this is "user" defined)
         timer0_int_handler();
     }
+    // check to see if we have an interrupt on timer 1
+    else if (PIR1bits.TMR1IF) {
+        PIR1bits.TMR1IF = 0; //clear interrupt flag
+        timer1_int_handler();
+    }
+    
+    // ------------------------ motor external interrupts ---------------------
+
+//    if (INTCONbits.INT0IF )
+//    {
+//        INTCONbits.INT0IF = 0;  // clear flag
+//        // TODO: pass motor0ticks  and increment it here
+//        // incrementMotor0Ticks();       // wont work probably
+//        //motor0Ticks++;
+//        motor0_int_handler();
+//    }
+//
+//    if (INTCON3bits.INT1IF )
+//    {
+//        INTCON3bits.INT1IF  = 0;    // clear flag
+//        // TODO: pass motor1ticks  and increment it here
+//        // incrementMotor1Ticks();      // wont work probably
+//        //motor1Ticks++;
+//        motor1_int_handler();
+//
+//    }
 
     // here is where you would check other interrupt flags.
     if (INTCONbits.INT0IF){
@@ -114,7 +141,8 @@ void InterruptHandlerHigh() {
     // This code *DEPENDS* on the code in messages.c being
     // initialized using "init_queues()" -- if you aren't using
     // this, then you shouldn't have this call here
-//    SleepIfOkay();
+
+    //SleepIfOkay();
 }
 
 //----------------------------------------------------------------------------
@@ -135,26 +163,27 @@ void InterruptHandlerLow() {
     }
     #endif //SENSOR_PIC
 
-    // check to see if we have an interrupt on timer 1
-    if (PIR1bits.TMR1IF) {
-        PIR1bits.TMR1IF = 0; //clear interrupt flag
-        timer1_int_handler();
-    }
-
     // check to see if we have an interrupt on USART RX
     if (PIR1bits.RCIF) {
         PIR1bits.RCIF = 0; //clear interrupt flag
+
+#if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
         if(wifly_setup){
             uart_recv_int_handler();
         }
         else{
+#endif
             uart_recv_wifly_debug_handler();
+#if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
         }
+#endif
+        
     }
-    if (PIR1bits.TXIF && PIE1bits.TXIE)
+    if (PIR1bits.TXIF)
     {
         PIR1bits.TXIF = 0; // clear interrupt flag
-        uart_send_int_handler();
+        if (PIE1bits.TXIE)
+            uart_send_int_handler();
     }
 
     if (PIR1bits.TMR2IF){

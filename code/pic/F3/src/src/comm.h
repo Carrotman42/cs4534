@@ -1,7 +1,6 @@
-#include "maindefs.h"
-
 #ifndef COMM_H
 #define	COMM_H
+#include "maindefs.h"
 
 #include "common.h"
 #include "sensor_types.h"

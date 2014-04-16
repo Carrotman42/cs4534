@@ -23,25 +23,65 @@
 #define _m2S(x) #x
 #define m2S(x) _m2S(x)
 
+// staticf (Static string format) functions
+#define aBuf(name, len) char name##name[len], *name = name##name;
+
+#define aStr(dest, str) {   \
+		char* s = str, c;	\
+		while ((c = *s)) {	\
+		 	aChar(dest, c);	\
+			s++;			\
+		}					\
+	}
+
+#define aWord(dest, w) \
+	aByte(dest, (w >> 8) & 0xFF);\
+	aByte(dest, w & 0xFF);
+
+#define aByte(dest, val) {         \
+		int t = (val);             \
+		aNib(dest, (t / 16) % 16); \
+		aNib(dest, (t     ) % 16); \
+	}
+
+#define aNib(dest, val) \
+	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
+
+#define aChar(dest, ch) *dest++ = (ch)
+// Also resets the pointer to the beginning of the buffer so that it
+//   can be reused easily
+#define aPrint(name, line) LCDwriteLn(line, name##name); name = name##name
+
+// Convenience functions for naming the buffer 'b'. Also don't require you to a char(0) before printing
+#define bBuf(p)   aBuf(b, p)
+#define bStr(p)   aStr(b, p)
+#define bByte(p)  aByte(b, p)
+#define bWord(p)  aWord(b, p)
+#define bNib(p)   aNib(b, p)
+#define bChar(p)  aChar(b, p)
+#define bPrint(p) aChar(b, 0); aPrint(b, p)
+
+
 #ifdef CHECKS
-// Note: This won't work if the LCD fails, so if you think that could be happening
-//    then take out the LCDwriteLn
-// TODO: Include line number too.
-#define FATAL(x) FATALSTR("FAIL: " __FILE__ ":" m2S(__LINE__))
+#define FATAL(x) FATALSTR("FAIL: " __FILE__ ":" m2S(__LINE__) ", val: ", x)
 #else
 #define FATAL(x) VT_HANDLE_FATAL_ERROR(x)
 #endif
 
-#define FATALSTR(str) { \
+#define FATALSTR(str, p) { \
 		/* Only write to the LCD if the scheduler has started */ \
 		if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) { \
 			void LCDwriteLn(int line, char* data); \
-			LCDwriteLn(8, str); \
+			bBuf(100); \
+			bStr(str); \
+			bByte(p); \
+			bPrint(8); \
 			/* Hacky way to help make sure the LCD will draw this */ \
 			vTaskDelay(1000/portTICK_RATE_MS); \
 		} \
 		VT_HANDLE_FATAL_ERROR(0); \
 	}
+
 
 // This macro helps with checking return codes
 #define FAILIF(x) if ((x)) FATAL(0);
@@ -124,43 +164,5 @@
 		FATAL(0); \
 	}
 
-
-// staticf (Static string format) functions
-#define aBuf(name, len) char name##name[len], *name = name##name;
-
-#define aStr(dest, str) {   \
-		char* s = str, c;	\
-		while ((c = *s)) {	\
-		 	aChar(dest, c);	\
-			s++;			\
-		}					\
-	}
-
-#define aWord(dest, w) \
-	aByte(dest, (w >> 8) & 0xFF);\
-	aByte(dest, w & 0xFF);
-
-#define aByte(dest, val) {         \
-		int t = (val);             \
-		aNib(dest, (t / 16) % 16); \
-		aNib(dest, (t     ) % 16); \
-	}
-
-#define aNib(dest, val) \
-	aChar(dest, (val < 10) ? '0' + val : 'A' + val - 10)
-
-#define aChar(dest, ch) *dest++ = (ch)
-// Also resets the pointer to the beginning of the buffer so that it
-//   can be reused easily
-#define aPrint(name, line) LCDwriteLn(line, name##name); name = name##name
-
-// Convenience functions for naming the buffer 'b'. Also don't require you to a char(0) before printing
-#define bBuf(p)   aBuf(b, p)
-#define bStr(p)   aStr(b, p)
-#define bByte(p)  aByte(b, p)
-#define bWord(p)  aWord(b, p)
-#define bNib(p)   aNib(b, p)
-#define bChar(p)  aChar(b, p)
-#define bPrint(p) aChar(b, 0); aPrint(b, p)
 
 #endif

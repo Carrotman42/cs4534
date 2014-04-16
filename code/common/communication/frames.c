@@ -8,6 +8,13 @@ static uint8 sensorDataSet;
 #ifndef SENSOR_PIC
 static uint8 encoderDataSet;
 #endif
+#ifdef MOTOR_PIC
+static uint8 resetEncoderData;
+void setResetEncoderData(){
+    resetEncoderData = 1;
+}
+#endif
+
 
 #if defined(MASTER_PIC) || defined(ROVER_EMU) || defined(PICMAN)
 static uint8 framesRequested = 0;
@@ -26,6 +33,12 @@ void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2){
 
 #if defined(MOTOR_PIC) || defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
 void addEncoderData(uint8 encoderRightHB, uint8 encoderRightLB, uint8 encoderLeftHB, uint8 encoderLeftLB){
+#ifdef MOTOR_PIC
+    if(resetEncoderData){
+        clearFrameData(); //do not accummulate
+        resetEncoderData = 0;
+    }
+#endif
     int rightNew = makeInt(encoderRightHB, encoderRightLB);
     int leftNew = makeInt(encoderLeftHB, encoderLeftLB);
     int rightOld = makeInt(frame.encoderRight[0], frame.encoderRight[1]);
@@ -108,7 +121,9 @@ void sendFrameData(uint8 msgid){
 #endif
         //only way this will get called is if it's an i2c response (from arm or master pic)
         start_i2c_slave_reply(length, packedFrameMessage);
+#ifndef MOTOR_PIC //the motor pic won't reset when sending because it'll send in the interrupt handler
         clearFrameData(); //data sent - prepare for next sending
+#endif
     }
 }
 #endif
@@ -133,7 +148,10 @@ uint8 frameDataReady(){
 //the frames won't be sent or used unless these values are 1
 //effectively, the frames are reset since they'll  be rewritten before used next.
 void clearFrameData(){
-#if defined(PICMAN) || defined(SENSOR_PIC) || defined(MASTER_PIC) ||defined(ROVER_EMU)
+#ifdef MASTER_PIC //The master pic does not want to set the sensor frame to 0.  
+    sensorDataSet = 0;
+#endif
+#if defined(PICMAN) || defined(SENSOR_PIC) ||defined(ROVER_EMU)
     addSensorFrame(0,0,0);
     sensorDataSet = 0;
 #endif

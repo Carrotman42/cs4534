@@ -1,7 +1,6 @@
-#include "maindefs.h"
-
 #ifndef FRAMES_H
 #define	FRAMES_H
+#include "maindefs.h"
 #include "sensor_types.h"
 #include "brain_rover.h"
 
@@ -9,6 +8,10 @@
 #define makeInt(high, low) (((int) high) << 8 | (low))
 #define highByte(c) (c >> 8)
 #define lowByte(c) (c & 0xFF)
+
+#ifdef MOTOR_PIC
+void setResetEncoderData();
+#endif
 
 //every pic has its own definition of a frame
 #if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)

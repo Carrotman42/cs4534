@@ -43,10 +43,10 @@
 		   
 #include "httpd-fsdata.c"			   
 							 
-#if HTTPD_FS_STATISTICS
+#if HTTPD_FS_STATISTICS		
 static u16_t count[HTTPD_FS_NUMFILES];
 #endif /* HTTPD_FS_STATISTICS */
-				 
+				 	 
 /*-----------------------------------------------------------------------------------*/
 static u8_t
 httpd_fs_strcmp(const char *str1, const char *str2)
@@ -57,7 +57,7 @@ httpd_fs_strcmp(const char *str1, const char *str2)
 
   if(str2[i] == 0 ||
      str1[i] == '\r' ||
-     str1[i] == '\n') {
+     str1[i] == '\n') {							   
     return 0;
   }
 

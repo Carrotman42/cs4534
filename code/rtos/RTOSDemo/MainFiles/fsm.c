@@ -8,6 +8,7 @@
 //3) tick counting done (from registerTickListener(int x)), 
 //4) color sensor triggered
 
+#define INIT 0
 #define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
 #define L_TURN_STALL 3
@@ -73,8 +74,8 @@ void debug(int line, char* info);
 
 PATH_FINDING_DECL {
 	#define GO_SLOW moveForward(50)
-	GO_SLOW; //always start moving forward initially.
-	currentstate = WAIT_EVENT;
+	
+	currentstate = INIT;
 	int cur = 0;
 	for(;;){
 		FsmEvent event = nextEvent();
@@ -89,6 +90,10 @@ PATH_FINDING_DECL {
 		if (++cur % 5 == 0) {
 			LCDrefreshMap();
 		}
+		if (event == RESET_ROVER) {
+			currentstate = INIT;
+			continue;
+		}
 		
 		#define Remember(name) Memory name; mapGetMemory(&name)
 		#define CHECK_FRONT(mem) \
@@ -102,6 +107,12 @@ PATH_FINDING_DECL {
 		
 		//debug(event, "Got event");
 		switch(currentstate){
+			case INIT:
+				if (event == START) {
+					currentstate = WAIT_EVENT;
+					GO_SLOW;
+				}
+				break;
 			case WAIT_EVENT:
 				switch(event){
 					case NEW_SENSOR_DATA: {
@@ -116,13 +127,8 @@ PATH_FINDING_DECL {
 						break;
 					}
 					case COLOR_SENSOR_TRIGGERED: {
-						int l = mapLap();
-						switch(l) {
-						case 2:
-						case 1:
-							break;
-						default:
-						case 3:
+						// If at the beginnning of the 3rd lap, finish and stop
+						if (mapLap() == 3) {
 							currentstate = END;
 							stop();
 						}

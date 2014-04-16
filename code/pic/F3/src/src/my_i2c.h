@@ -27,10 +27,12 @@ typedef struct __i2c_comm {
     unsigned char addr;
     unsigned char nack; //0 if last was ack, 1 if last was nack
     unsigned char checksum_failed; //boolean to see if the checksum failed
+    unsigned char read_after_write; //0 if normal operation, 1 if we want to request a read after a write
 } i2c_comm;
 
 void i2c_configure_master();
 unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned char *msg);
+unsigned char i2c_master_send_no_raw(unsigned char addr, unsigned char length, unsigned char *msg);
 unsigned char i2c_master_recv(unsigned char addr);
 unsigned char load_i2c_data();
 void handle_repeat_start();
