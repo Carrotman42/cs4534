@@ -421,33 +421,6 @@ BrainMsg* unpackBrainMsg(char *buf){
     return (BrainMsg*) buf;
 }
 
-// Usually called on the ARM. Will move the data along to the next method for processing
-int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler) {
-	RoverMsg* msg = (RoverMsg*)in;
-	len -= sizeof(RoverMsg);
-	// Validate the internal structure of the packet
-	//if (len != msg->payloadLen) return -3;
-	
-	len = msg->payloadLen;
-	/*char buf[10];
-	buf[0] = '0' + len;
-	buf[1] = '0' + msg->sensorID;
-	buf[2] = 0;
-	LCDwriteLn(2, buf);*/
-	if (msg->flags & SENSOR_COMMANDS) {
-		switch (msg->parameters) {
-			case sensorADid:
-				return handler->adFunc((sensorADData*)(msg->payload), len/sizeof(sensorADData));
-			default:
-				// Unknown sensor
-				return -2;
-		}
-	} else {
-		// Unknown msg
-		return -1;
-	}
-}
-
 void makeHighPriority(char* buf){
     if(isHighPriority(buf))
         return;

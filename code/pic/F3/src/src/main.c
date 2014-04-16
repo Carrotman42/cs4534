@@ -369,8 +369,8 @@ void main(void) {
 //    doEverything(2, 1);    // turn left
     //calcRevMotor1(10);
     //calcRevMotor2(10);
-    forward(0);
-    debugNum(1);
+//    forward(0);
+//    debugNum(1);
     //forward2Rev();
     //turnLeft();
     //forward2Rev();

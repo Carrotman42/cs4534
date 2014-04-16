@@ -59,11 +59,15 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
     uint8 length = 0;
     switch(brain->flags){
         case MOTOR_COMMANDS:
+            if(brain->parameters != 0x05){ //anything but send encoder data
+                sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
+            }
             switch(brain->parameters){
                 case 0x00:
                     switch (brain->payload[0]){
                         case 1:
                             forward(0);
+                            debugNum(1);
                             break;
                         case 2:
                             forward2(0);
@@ -79,20 +83,63 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     reverse(0);
                     break;
                 case 0x02:
+                    stop();
                     break;
                 case 0x03:
+                    if(brain->payload[0] == 90){
+                        turnRight90_onSpot();
+                    }
+                    else if(brain->payload[0] > 90){
+                        turnRight90_onSpot();
+                        readjustRight();
+                    }
+                    else{
+                        readjustRight();
+                    }
                     turnStarted();
                     break;
                 case 0x04:
+                    if(brain->payload[0] == 90){
+                        turnLeft90_onSpot();
+                    }
+                    else if(brain->payload[0] > 90){
+                        turnLeft90_onSpot();
+                        readjustLeft();
+                    }
+                    else{
+                        readjustLeft();
+                    }
                     turnStarted();
                     break;
                 case 0x06:
+                    readjustRight();
                     turnStarted();
                     break;
                 case 0x07:
+                    readjustLeft();
                     turnStarted();
                     break;
                 case 0x08:
+                    switch (brain->payload[0]){
+                        case 1:
+                            forward(brain->payload[1]);
+                            debugNum(1);
+                            break;
+                        case 2:
+                            forward2(brain->payload[1]);
+                            break;
+                        case 3:
+                            forward3(brain->payload[1]);
+                            break;
+                        default:
+                            break;
+                    }
+                    if(brain->payload[2]){
+                        turnLeft90_onSpot();
+                    }
+                    else{
+                        turnRight90_onSpot();
+                    }
                     turnStarted();
                     break;
                 case 0x05:
@@ -100,9 +147,6 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     break;
                 default:
                     break;
-            }
-            if(brain->parameters != 0x05){ //anything but send encoder data
-                sendMotorAckResponse(brain->parameters, brain->messageid, wifly);
             }
             break;
         case HIGH_LEVEL_COMMANDS:

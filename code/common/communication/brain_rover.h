@@ -35,7 +35,6 @@ typedef struct {
 
 // Should only use the functions prototyped out here
 int packADData(sensorADData* data, int len, char* out, int maxout);
-int unpackRoverMsg(char* in, int len, RoverMsgRouter* handler);
 void packBrainMsgRequest(BrainMsg* dest, uint8 sensorMask);
 BrainMsg* unpackBrainMsg(char *buf);
 
