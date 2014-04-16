@@ -1,4 +1,5 @@
 #include "maindefs.h"
+#ifdef SENSOR_PIC
 #include "my_ultrasonic.h"
 #include "messages.h"
 #include "debug.h"
@@ -116,3 +117,4 @@ void us_int_handler(){
 void addRollover(void){
     numberT2Rollover++;
 }
+#endif

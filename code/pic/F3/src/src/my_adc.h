@@ -4,6 +4,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+#include "maindefs.h"
+#ifdef SENSOR_PIC
 #define IRBUFFERSIZE 5
 #define HALFBUFFER IRBUFFERSIZE/2
 
@@ -19,7 +21,7 @@ extern "C" {
     void sort(uint8* array);
     char* transmitData();
     void calculateDistance(char ir0_rawData, char ir1_rawData);
-
+#endif
 #ifdef	__cplusplus
 }
 #endif

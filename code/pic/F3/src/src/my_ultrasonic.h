@@ -11,6 +11,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+#include "maindefs.h"
+#ifdef SENSOR_PIC
     void initUS();
     void pulseUS();
     void startTimerUS();
@@ -19,7 +21,7 @@ extern "C" {
 
     void us_int_handler();
     void addRollover(void);
-
+#endif
 
 #ifdef	__cplusplus
 }
