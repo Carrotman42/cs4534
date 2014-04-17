@@ -28,8 +28,6 @@
 
     void reverse(int rev);
     void forward(int rev, int speed);
-    void forward2(int rev);
-    void forward3(int rev);
     void forwardMotor1();
     void reverseMotor1();
     void forwardMotor2();
@@ -41,8 +39,7 @@
     void calcRevMotor1(int x);
     void calcRevMotor2(int x);
     void turnRight();
-    void turnRight90_onSpot();
-    void turnLeft90_onSpot();
+    void turnLeft();
     void forwardHalfRev();
     void funFunc(int rev);
     void readjustLeft();

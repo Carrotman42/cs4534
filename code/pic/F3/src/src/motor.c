@@ -21,40 +21,29 @@ int finalMotor2Ticks = -1; // -1 if there was an error
 // if the kill command is true, than we will stop and break out of this function
 
 void reverse(int rev) {
-    STATES state = REVERSE;
+    // initialize variables
+    resetTicks();
+    setCommandDone();
+
+    // reverse
+    calcRevMotor1(rev);
+    calcRevMotor2(rev);
+    unsigned char test[2] = {0x05, 0x83};
+    uart_send_array(&test, 2);
+
+    // wait for reverse to finish or kill command to come in
+    while (!getCommandDone() || !killCommand);
+
     resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case REVERSE:
-                if (!getCommandDone()) {
-                    calcRevMotor1(rev);
-                    calcRevMotor2(rev);
-                    unsigned char test[2] = {0x05, 0x83};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                //resetTicks();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop(); // try while(1) with a return; here.... doesnt work
-                //resetTicks();
-                break;
-        }
-    }
+    stop();
+                
 }
 
 // both motors in forward, slowest speed
 // if rev = 0 then it goes in forward infinitely
 // if the kill command is true, than we will stop and break out of this function
+// speed == 2... 2nd fastest speed
+// speed == 3... 3rd fastest speed
 
 void forward(int rev, int speed)
 {
@@ -66,13 +55,13 @@ void forward(int rev, int speed)
     calcRevMotor1(rev);
     calcRevMotor2(rev);
     // 2nd fastest speed
-    if (speed == 1)
+    if (speed == 2)
     {
         unsigned char test[2] = {0x62, 0xE0};
         uart_send_array(&test, 2);
     }
 
-    else if (speed == 2)
+    else if (speed == 3)
     {
         // 3rd fastest speed
         unsigned char test[2] = {0x7F, 0xFE};
@@ -85,113 +74,12 @@ void forward(int rev, int speed)
         uart_send_array(&test, 2);
     }
 
-    while (!getCommandDone());          // wait for it to be done
+    while (!getCommandDone() || !killCommand);          // wait for it to be done
 
+    resetKill();
     stop();
 
 }
-
-//void forward(int rev) {
-//    STATES state = FORWARDS;
-//    resetKill();
-//    while (state != IDLE && !killCommand) {
-//        switch (state) {
-//            case FORWARDS:
-//                if (!getCommandDone()) {
-//                    calcRevMotor1(rev);
-//                    calcRevMotor2(rev);
-//                    unsigned char test[2] = {0x51, 0xD0};
-//                    uart_send_array(&test, 2);
-//                } else {
-//                    //stop();
-//                    //resetTicks();
-//                    //setCommandDone();
-//                    //commandDone = false;
-//                    state = FINISHED;
-//                }
-//                break;
-//            case FINISHED:
-//                //stop();
-//                state = IDLE;
-//                break;
-//            case IDLE:
-//                stop();
-//                break;
-//        }
-//    }
-//    stop();
-//}
-
-// both motors in forward,  2nd fastest forward
-// if rev = 0 then it goes in forward infinitely
-// if the kill command is true, than we will stop and break out of this function
-
-void forward2(int rev) {
-    STATES state = FORWARDS;
-    resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case FORWARDS:
-                if (!getCommandDone()) {
-                    calcRevMotor1(rev);
-                    calcRevMotor2(rev);
-                    unsigned char test[2] = {0x62, 0xE0};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
-}
-
-// both motors in forward, fastest forward
-// if rev = 0 then it goes in forward infinitely
-// if the kill command is true, than we will stop and break out of this function
-
-void forward3(int rev) {
-    STATES state = FORWARDS;
-    resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case FORWARDS:
-                if (!getCommandDone()) {
-                    calcRevMotor1(rev);
-                    calcRevMotor2(rev);
-                    unsigned char test[2] = {0x7F, 0xFE};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
-}
-
-// test function
-// motor 1 forwards, motor 2 stops
 
 void forwardMotor1() {
     // unsigned char test[2] = {0x6A, 0xC0};
@@ -224,7 +112,9 @@ void reverseMotor2() {
     uart_send_array(&test, 2);
 }
 
-void killAndStop(){
+// resets kill flag to false and stops
+void killAndStop()
+{
     resetKill();
     stop();
 }
@@ -345,213 +235,93 @@ void turnRight()
      uart_send_array(test, 2);
 
      while (!getCommandDone());     // wait for the 2 revolutions to be done
-
+  
      stop();            // done with turning
 
-}
-
-void turnRight90_onSpot() {
-    resetKill();
-    // TODO: move forwards half a revolution before turning
-    // newCommand = false;
-    STATES state = TURN;
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case TURN:
-                if (!getCommandDone()) {
-                    // Turn 90 Degrees to the right
-                    target1 = 110;
-                    target2 = 107;
-                    unsigned char test[2] = {0x62, 0xA1};
-                    uart_send_array(test, 2);
-                    debugNum(1);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    state = MOVE_FORWARDS;
-                    //state = READJUSTMENT;  // doesn't need it it seems
-                }
-                break;
-                // NOTE: not needed for right turn
-                //            case READJUSTMENT:
-                //                // readjustment code
-                //                if (!getCommandDone()) {
-                //                    // readjust 1 angle for 90 degrees perfectly
-                //                    target1 = 2;
-                //                    target2 = 2;
-                //                    unsigned char test[2] = {0x62, 0xA1};
-                //                    uart_send_array(&test, 2);
-                //                } else {
-                //                    stop();
-                //                    resetTicks();
-                //                    setCommandDone();
-                //                    state = MOVE_FORWARDS;
-                //                }
-                //                break;
-            case MOVE_FORWARDS:
-                if (!getCommandDone()) {
-                    calcRevMotor1(2);
-                    calcRevMotor2(2);
-                    unsigned char test[2] = {0x51, 0xD0};
-                    uart_send_array(test, 2);
-                } else {
-                    //stop();
-                    resetTicks();
-                    //setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                setCommandDone();
-                turnCompleted();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
 }
 
 // turns left 90 degrees on the spot
 // moves forwards 2 revolutios to pick up sensor data from the walls/bricks
 // stops after both steps are taken
+void turnLeft()
+{
+    // initialize variables for the new command to start
+    setCommandDone();
+    resetTicks();
 
-void turnLeft90_onSpot() {
-    resetKill();
-    // TODO: move forwards half a revolution before turning
-    STATES state = TURN;
-    while (state != IDLE) {
-        switch (state) {
-            case TURN:
-                if (!getCommandDone()) {
-                    // Turn 90 Degrees to the left
-                    target1 = 110;
-                    target2 = 107;
-                    unsigned char test[2] = {0x18, 0xE0};
-                    uart_send_array(test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone(); // set's command to false
-                    //commandDone = false;
-                    state = READJUSTMENT;
-                }
-                break;
-            case READJUSTMENT:
-                if (!getCommandDone()) {
-                    // readjust 1 angle for 90 degrees perfectly
-                    target1 = 2;
-                    target2 = 2;
-                    unsigned char test[2] = {0x62, 0xA0};
-                    uart_send_array(test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone(); // set to false
-                    //commandDone = false;
-                    state = MOVE_FORWARDS;
-                }
-                break;
-            case MOVE_FORWARDS:
-                if (!getCommandDone()) {
-                    calcRevMotor1(2);
-                    calcRevMotor2(2);
-                    unsigned char test[2] = {0x51, 0xD0};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                turnCompleted();
-                setCommandDone();
-                //commandDone = false;
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                //commandDone = false;
-                state = IDLE;
-                break;
-        }
-    }
+    // Turn 90 Degrees to the left
+    target1 = 110;
+    target2 = 107;
+    unsigned char test[2] = {0x18, 0xE0};
+    uart_send_array(test, 2);
+
+    while (!getCommandDone());      // wait for the turn to complete
+    setCommandDone();               // turn flag to false for next command
+    resetTicks();                   // reset the ticks for the next command
+
+
+    // readjust so the turn is as close as possible
+    target1 = 2;
+    target2 = 2;
+    unsigned char test[2] = {0x62, 0xA0};
+    uart_send_array(test, 2);
+
+    while (!getCommandDone());      // wait for readjustment to be complete
+    setCommandDone();
+    resetTicks();
+
+
+    // move forwards 2 revolutions
+     calcRevMotor1(2);
+     calcRevMotor2(2);
+     unsigned char test[2] = {0x51, 0xD0};
+     uart_send_array(test, 2);
+
+     while (!getCommandDone());     // wait for the 2 revolutions to be done
+
+     stop();            // done with turning
 }
 
-
 // readjusts the rover to the left by a little bit, approx. 1-2 degrees
+// no kill possible here
 
 void readjustLeft() {
-    STATES state = READJUSTMENT;
+    // initialize variables
     resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case READJUSTMENT:
-                if (!getCommandDone()) {
-                    target1 = 2;
-                    target2 = 2;
-                    unsigned char test[2] = {0x18, 0xE0};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
+    resetTicks();
+    setCommandDone();
+
+    target1 = 2;
+    target2 = 2;
+    unsigned char test[2] = {0x18, 0xE0};
+    uart_send_array(&test, 2);
+
+    while (!getCommandDone());      // wait for the readjustment to be done
+
+    stop();
 }
 
 // readjusts the rover to the right by a little bit, approx. 1-2 degrees
 
 void readjustRight() {
-    STATES state = READJUSTMENT;
+
+    // initialize variables
     resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case READJUSTMENT:
-                if (!getCommandDone()) {
-                    target1 = 2;
-                    target2 = 2;
-                    unsigned char test[2] = {0x62, 0xA0};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = FINISHED;
-                }
-                break;
-            case FINISHED:
-                stop();
-                state = IDLE;
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
+    resetTicks();
+    setCommandDone();
+
+    target1 = 2;
+    target2 = 2;
+    unsigned char test[2] = {0x62, 0xA0};
+    uart_send_array(&test, 2);
+
+    while (!getCommandDone());      // wait for the readjustment to be done
+
+    stop();
+
 }
 
-// test function
+// test function (NOT USED)
 // moves the rover forwards by half a revolution
 
 void forwardHalfRev() {
@@ -566,29 +336,20 @@ void forwardHalfRev() {
 // stops once the kill command is true or the given revolutions is done
 
 void funFunc(int rev) {
-    STATES state = FUN;
+    resetTicks();
+    setCommandDone();
+
+    // dance function
+    calcRevMotor1(rev);
+    calcRevMotor2(rev);
+    unsigned char test[2] = {0x7F, 0x80};
+    uart_send_array(&test, 2);
+
+    // wait for the kill command or the command to be done
+    while (!getCommandDone() || !killCommand);
+
     resetKill();
-    while (state != IDLE && !killCommand) {
-        switch (state) {
-            case FUN:
-                if (!getCommandDone()) {
-                    calcRevMotor1(rev);
-                    calcRevMotor2(rev);
-                    unsigned char test[2] = {0x7F, 0x80};
-                    uart_send_array(&test, 2);
-                } else {
-                    stop();
-                    resetTicks();
-                    setCommandDone();
-                    //commandDone = false;
-                    state = IDLE;
-                }
-                break;
-            case IDLE:
-                stop();
-                break;
-        }
-    }
+    stop();
 }
 
 // resets the ticks to 0

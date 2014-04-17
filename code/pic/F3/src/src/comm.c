@@ -64,19 +64,20 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
             }
             switch(brain->parameters){
                 case 0x00:
-                    switch (payload[0]){
-                        case 1:
-                            forward(0, 5);
-                            break;
-                        case 2:
-                            forward2(0);
-                            break;
-                        case 3:
-                            forward3(0);
-                            break;
-                        default:
-                            break;
-                    }
+                    forward(payload[1], payload[0]);
+//                    switch (payload[0]){
+//                        case 1:
+//                            forward(0, 5);
+//                            break;
+//                        case 2:
+//                            forward2(0);
+//                            break;
+//                        case 3:
+//                            forward3(0);
+//                            break;
+//                        default:
+//                            break;
+//                    }
                     break;
                 case 0x01:
                     reverse(0);
@@ -91,7 +92,7 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
                         turnRight();
                     }
                     else if(payload[0] > 90){
-                        turnRight90_onSpot();
+                        turnRight();
                         readjustRight();
                     }
                     else{
@@ -101,45 +102,52 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
                 case 0x04:
                     turnStarted();
                     if(payload[0] == 90){
-                        turnLeft90_onSpot();
+                        turnLeft();
                     }
                     else if(payload[0] > 90){
-                        turnLeft90_onSpot();
+                        turnLeft();
                         readjustLeft();
                     }
                     else{
                         readjustLeft();
                     }
+                    turnCompleted();
                     break;
                 case 0x06:
                     turnStarted();
                     readjustRight();
+                    turnCompleted();
                     break;
                 case 0x07:
                     turnStarted();
                     readjustLeft();
+                    turnCompleted();
                     break;
                 case 0x08:
                     turnStarted();
-                    switch (payload[0]){
-                        case 1:
-                            forward(payload[1], 5);
-                            break;
-                        case 2:
-                            forward2(payload[1]);
-                            break;
-                        case 3:
-                            forward3(payload[1]);
-                            break;
-                        default:
-                            break;
-                    }
+                    // 1st parameter: # of revolutions: 0 = infinite
+                    // 2nd parameter: speed: 1 = slow, 2 = medium, 3 = fast, 4+ slow
+                    forward(payload[1], payload[0]);
+//                    switch (payload[0]){
+//                        case 1:
+//                            forward(payload[1], 5);
+//                            break;
+//                        case 2:
+//                            forward2(payload[1]);
+//                            break;
+//                        case 3:
+//                            forward3(payload[1]);
+//                            break;
+//                        default:
+//                            break;
+//                    }
                     if(payload[2]){
-                        turnLeft90_onSpot();
+                        turnLeft();
                     }
                     else{
-                        turnRight90_onSpot();
+                        turnRight();
                     }
+                    turnCompleted();
                     break;
                 case 0x05:
                     sendEncoderData(brain->messageid);
