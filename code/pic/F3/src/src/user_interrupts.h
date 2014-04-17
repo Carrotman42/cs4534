@@ -12,6 +12,8 @@ void timer0_int_handler(void);
 
 void timer1_int_handler(void);
 
+void timer2_int_handler(void);
+
 // include the handler from my uart code
 #include "my_uart.h"
 
@@ -20,11 +22,15 @@ void timer1_int_handler(void);
 #include <stdint.h>
 
 extern unsigned char datareq;
+
+
+#ifdef MOTOR_PIC
 void setM1Tick(uint16_t motor1);
 void setM2Tick(uint16_t motor2);
 void setCommandDone();
 bool getCommandDone();
 int getM1Ticks();
 int getM2Ticks();
+#endif
 
 #endif

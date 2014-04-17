@@ -129,8 +129,8 @@ void uart_recv_int_handler() {
 }
 
 void init_uart_recv(uart_comm *uc) {
-    uc_ptr->status = UART_IDLE;
     uc_ptr = uc;
+    uc_ptr->status = UART_IDLE;
     uc_ptr->buflen = 0;
     payload_length = 0;
     checksum_recv_value = 0;
@@ -138,6 +138,7 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send_array(char* data, char length) {
+
 #if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
     if(!wifly_setup) return; //just return
 #endif

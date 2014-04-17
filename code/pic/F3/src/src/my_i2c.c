@@ -9,12 +9,13 @@
 #include "my_uart.h"
 #include "interrupts.h"
 
-#ifdef DEBUG_ON
-#include "testAD.h"
-#endif
 
 #ifdef SENSOR_PIC
 #include "sensorcomm.h"
+#endif
+
+#ifdef MOTOR_PIC
+#include "motor.h"
 #endif
 
 
@@ -547,6 +548,14 @@ void i2c_int_handler() {
     }
 
     if (msg_ready) {
+#ifdef MOTOR_PIC
+        if(isMovementCommand(ic_ptr->buffer)){
+            setKill();
+        }
+        else{ //either "done request" or encoder data request
+            makeHighPriority(ic_ptr->buffer);
+        }
+#endif
         if(isHighPriority(ic_ptr->buffer)){
             setBrainDataHP(ic_ptr->buffer);
         }
@@ -562,15 +571,15 @@ void i2c_int_handler() {
         ic_ptr->error_count = 0;
     }
     if (msg_to_send) {
-
-        //unsigned char outbuff[8] = {0x01,0x0,0x0,0x0a,0x3, 0x04,0x01,0x02};
-        //start_i2c_slave_reply(8, outbuff);
-
-        //char outbuf[5] = {1,0,0,1,0};
-        //start_i2c_slave_reply(5, outbuf);
+#ifdef MOTOR_PIC
+        if(!isMovementCommand(ic_ptr->buffer)){ //either "done quest" or encoder data request
+            makeHighPriority(ic_ptr->buffer);
+        }
+#endif
+        
         if(isHighPriority(ic_ptr->buffer)){
 #if defined(MOTOR_PIC) || defined(SENSOR_PIC)
-                    handleMessageHP(I2C_COMM, I2C_COMM);
+            handleMessageHP(I2C_COMM, I2C_COMM);
 #elif defined(PICMAN)
                     handleMessageHP(I2C_COMM, UART_COMM);
 #endif

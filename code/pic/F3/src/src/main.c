@@ -23,6 +23,7 @@
 #ifdef SENSOR_PIC
 #include "my_adc.h"
 #include "sensorcomm.h"
+#include "my_ultrasonic.h"
 #endif
 
 
@@ -232,7 +233,7 @@ void main(void) {
 
             // initialize my uart recv handling code
 
-            init_uart_recv(&uc);
+    init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
@@ -248,6 +249,11 @@ void main(void) {
 #ifndef MOTOR_PIC
     TRISB = 0x0;
     LATB = 0x0;
+#else
+    TRISBbits.RB0 = 0;
+    TRISBbits.RB1 = 0;
+    TRISBbits.RB2 = 0;
+    TRISBbits.RB3 = 0;
 #endif
 
 #endif
@@ -263,8 +269,9 @@ void main(void) {
 
     // initialize Timers
 #ifndef MASTER_PIC
-
-#ifndef MOTOR_PIC
+#ifdef SENSOR_PIC
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+#elif !defined(MOTOR_PIC)
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
     OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
@@ -307,9 +314,11 @@ void main(void) {
 #ifdef SENSOR_PIC
     //resetAccumulators();
     init_adc();
+    initUS();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
+    
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
     i2c_configure_slave(SENSOR_ADDR << 1); //address 0x10
 #elif defined MOTOR_PIC
@@ -351,6 +360,10 @@ void main(void) {
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
     LATBbits.LB7 = 0;
+    LATBbits.LB0 = 0;
+    LATBbits.LB1 = 0;
+    LATBbits.LB2 = 0;
+    LATBbits.LB3 = 0;
     WRITETIMER0(0x00FF);
 
     // loop forever
@@ -358,43 +371,6 @@ void main(void) {
     // that should get them.  Although the subroutines are not threads, but
     // they can be equated with the tasks in your task diagram if you
     // structure them properly.
-
-    //TODO: delete the test line
-    //    calcRevMotor1(20);
-    //    calcRevMotor2(20);
-    //    forward();
-
-    //    turnRight90_onSpot();
-    
-//    doEverything(2, 1);    // turn left
-    //calcRevMotor1(10);
-    //calcRevMotor2(10);
-    //forward();
-    //forward2Rev();
-    //turnLeft();
-    //forward2Rev();
-
-
-//        calcRevMotor2(10);
-//        calcRevMotor1(10);
-//        forward2(1);
- //   reverse(7);
-//    turnLeft90_onSpot();
-//        reverse(5);
-//        turnLeft90_onSpot();
-
-//        forward(0);
-        //for (int i = 0; i < 50; i++);
-        //setKill();
-//        reverse(4);
-//        funFunc(0);
-    //    funFunc();
-
-     //   readjustRight();
-
-    //    calcRevMotor1(1);
-    //    turnLeft90_onSpot();
-    //    turnRight90_onSpot();
     while (1) {
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into
@@ -419,14 +395,14 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(4);
+                    //debugNum(4);
                     i2c_master_recv(msgbuffer[0]);
                     break;
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-                    debugNum(8);
+                    //debugNum(8);
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
@@ -434,7 +410,6 @@ void main(void) {
                 {
                     i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
                 };
-                #endif
 #endif
                 case MSGT_UART_TX_BUSY:
                 {

@@ -15,7 +15,11 @@ void setBrainDataHP(char* msg);
 void setRoverDataHP(char* msg);
 void setBrainDataLP(char* msg);
 void setRoverDataLP(char* msg);
+#ifndef MOTOR_PIC
 uint8 sendResponse(BrainMsg* brain, uint8 wifly);
+#else
+uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly);
+#endif
 void sendData(char* outbuf, uint8 buflen, uint8 wifly);
 void handleMessageHP(uint8 source, uint8 dest);
 void handleMessageLP(uint8 source, uint8 dest);

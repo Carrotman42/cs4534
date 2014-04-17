@@ -5,6 +5,7 @@
 #include "my_adc.h"
 #include "debug.h"
 #include "my_uart.h"
+#include "my_ultrasonic.h"
 #include "motor.h"
 
 //----------------------------------------------------------------------------
@@ -108,34 +109,21 @@ void InterruptHandlerHigh() {
         timer1_int_handler();
     }
     
-    // ------------------------ motor external interrupts ---------------------
-
-//    if (INTCONbits.INT0IF )
-//    {
-//        INTCONbits.INT0IF = 0;  // clear flag
-//        // TODO: pass motor0ticks  and increment it here
-//        // incrementMotor0Ticks();       // wont work probably
-//        //motor0Ticks++;
-//        motor0_int_handler();
-//    }
-//
-//    if (INTCON3bits.INT1IF )
-//    {
-//        INTCON3bits.INT1IF  = 0;    // clear flag
-//        // TODO: pass motor1ticks  and increment it here
-//        // incrementMotor1Ticks();      // wont work probably
-//        //motor1Ticks++;
-//        motor1_int_handler();
-//
-//    }
-
+#ifdef SENSOR_PIC
     // here is where you would check other interrupt flags.
+    if (INTCONbits.INT0IF){
+        INTCONbits.INT0IF = 0; // Clear the interrupt flag
+        us_int_handler();
+    }
+
+#endif
 
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep
     // This code *DEPENDS* on the code in messages.c being
     // initialized using "init_queues()" -- if you aren't using
     // this, then you shouldn't have this call here
+
     //SleepIfOkay();
 }
 
@@ -179,5 +167,12 @@ void InterruptHandlerLow() {
         if (PIE1bits.TXIE)
             uart_send_int_handler();
     }
+
+#ifdef SENSOR_PIC
+    if (PIR1bits.TMR2IF){
+        PIR1bits.TMR2IF = 0; //Clear the interrupt flag
+        timer2_int_handler();
+    }
+#endif
 }
 
