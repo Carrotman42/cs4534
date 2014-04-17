@@ -126,7 +126,7 @@ void init_adc(){
 
 void adc_int_handler() {
     uint8 data;
-//    debugNum(4);
+    debugNum(4);
     data = ReadADC()>>2;
 //    data >>= 2;
 

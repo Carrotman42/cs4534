@@ -49,7 +49,6 @@ bool ticks2Sent = false;
  //int target2 = 108;     // 107 for 1 revolution
 
 void timer0_int_handler() {
-    //debugNum(1);
 #ifdef MASTER_PIC
 #ifdef DEBUG_ON
     static int colorSensorCounter = 0;
