@@ -740,7 +740,7 @@ send_slar:
 			if ((txrx_setup->rx_data != NULL) && (txrx_setup->rx_count < txrx_setup->rx_length)){
 				uint8_t recv = (I2Cx->I2DAT & I2C_I2DAT_BITMASK);
 				*(uint8_t *)(txrx_setup->rx_data + txrx_setup->rx_count) = recv;
-				if (++txrx_setup->rx_count == HEADER_MEMBERS) {
+				if (++txrx_setup->rx_count == HEADER_MEMBERS - 1) {
 					// This byte says how much *more* data we should receive
 					txrx_setup->rx_length = HEADER_MEMBERS + recv;
 				}

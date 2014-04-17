@@ -13,6 +13,7 @@
 #define WAIT_EVENT 2
 #define L_TURN_STALL 3
 #define R_TURN_STALL 4
+#define ADJ_TURN_STALL 8
 #define WAIT_TICKS 5
 #define END 7 //picman handles stop frame data and stop moving
 
@@ -72,8 +73,25 @@ static int currentstate = WAIT_START_LINE;
 
 void debug(int line, char* info);
 
+
+#if ETHER_EMU==1
+
+#define TOO_FAR 60
+#define TOO_CLOSE 20
+#define TOO_CLOSE_FRONT 50
+#define GO_SLOW moveForward(50)
+
+#else
+
+// TODO: Fix these when we get a rover (when it eventually gets built...)
+#define TOO_FAR 255
+#define TOO_CLOSE 0
+#define TOO_CLOSE_FRONT 15
+#define GO_SLOW moveForward(50)
+
+#endif
+
 PATH_FINDING_DECL {
-	#define GO_SLOW moveForward(50)
 	
 	currentstate = INIT;
 	int cur = 0;
@@ -97,13 +115,12 @@ PATH_FINDING_DECL {
 		
 		#define Remember(name) Memory name; mapGetMemory(&name)
 		#define CHECK_FRONT(mem) \
-			if(mem.Forward <= 50){\
+			if(mem.Forward <= TOO_CLOSE_FRONT){\
 				stop(); \
 				turnCCW(90); \
 				currentstate = L_TURN_STALL; \
 				registerTickListener(0); \
 			}
-		#define TOO_FAR 60
 		
 		//debug(event, "Got event");
 		switch(currentstate){
@@ -122,6 +139,11 @@ PATH_FINDING_DECL {
 						else if((mem.Right1 > TOO_FAR) && (mem.Right2 > TOO_FAR)){
 							registerTickListener(30);
 							currentstate = WAIT_TICKS;
+						} else if ((mem.Right1 < TOO_CLOSE) && (mem.Right2 < TOO_CLOSE)) {
+							currentstate = ADJ_TURN_STALL;
+							// Slightly left
+							stop();
+							turnCCW(10);
 						}
 						
 						break;
@@ -146,6 +168,21 @@ PATH_FINDING_DECL {
 					case TURN_COMPLETE:
 						GO_SLOW;
 						currentstate = WAIT_EVENT;
+						break;
+					default:
+						goto invalid;
+				}
+				break;
+			case ADJ_TURN_STALL:
+				switch(event){
+					case NEW_SENSOR_DATA:
+						// Ignore sensor data here
+						break;
+					case TURN_COMPLETE:
+						GO_SLOW;
+						// Just turned slightly, go back to normal
+						currentstate = WAIT_EVENT;
+						// Maybe? registerTickListener(30);
 						break;
 					default:
 						goto invalid;

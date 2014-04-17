@@ -175,7 +175,6 @@ inline void gotData(RoverAction last, char* ret) {
 
 inline RoverAction nextCommand(int* len, char* outBuf) {
 	RoverCmd cmd;
-	//SLEEP(1000);
 	if (!TRY_RECV(toRover, cmd)) {
 		if (turning) {
 			cmd.act = TurnAck;
@@ -186,9 +185,15 @@ inline RoverAction nextCommand(int* len, char* outBuf) {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
 		}
+		SLEEP(500);
 	} else {
 		dbg(SendCmd, cmd.act);
 	}
+	
+	/*{
+		RECV(toRover, cmd);
+		dbg(SendCmd, cmd.act);
+	}*/
 	
 	*len = copyToBuf(cmd, outBuf);
 	return cmd.act;
