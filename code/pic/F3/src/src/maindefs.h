@@ -74,8 +74,8 @@
 
 //#define PICMAN
 //#define SENSOR_PIC
-#define MOTOR_PIC
-//#define MASTER_PIC
+//#define MOTOR_PIC
+#define MASTER_PIC
 
 
 #if defined(MASTER_PIC) || defined(ARM_EMU)

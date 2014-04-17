@@ -53,21 +53,21 @@ bool ticks2Sent = false;
 void timer0_int_handler() {
     //debugNum(1);
 #ifdef MASTER_PIC
-#ifdef DEBUG_ON
-    static int colorSensorCounter = 0;
-    static uint8 in_progress = 0;
-    if(colorSensorCounter == 100){
-        colorSensorCounter = 0;
-        char command[5] = {0};
-        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
-        uart_send_array(command, length);
-        in_progress++;
-        //debugNum(1);
-    }
-    else if(in_progress < 2){
-        colorSensorCounter++;
-    }
-#endif
+//#ifdef DEBUG_ON
+//    static int colorSensorCounter = 0;
+//    static uint8 in_progress = 0;
+//    if(colorSensorCounter == 100){
+//        colorSensorCounter = 0;
+//        char command[5] = {0};
+//        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
+//        uart_send_array(command, length);
+//        in_progress++;
+//        //debugNum(1);
+//    }
+//    else if(in_progress < 2){
+//        colorSensorCounter++;
+//    }
+//#endif
     static uint8 loop = 0;
 
     char data[10] = {0};
@@ -78,24 +78,12 @@ void timer0_int_handler() {
     if(!datareq){
         switch(loop){
             case 0:
-                //length = generateGetSensorFrame(data, sizeof data);
+                length = generateGetSensorFrame(data, sizeof data);
                 loop++;
                 addr = SENSOR_ADDR;
                 break;
             case 1:
-                i++;
-                debugNum(i);
-                if(i == 2){
-
-                    //length = generateTurnCW(data, sizeof data, I2C_COMM, 90);
-                    length = generateStartForward(data, sizeof data, I2C_COMM, 1);
-                }
-                else if(i == 5){
-                    //length = generateStartForward(data, sizeof data, I2C_COMM, 1);
-                    length = generateTurnCCW(data, sizeof data, I2C_COMM, 90);
-                }
-                else
-                    length = generateGetEncoderData(data, sizeof data);
+                length = generateGetEncoderData(data, sizeof data);
                 loop = 0;
                 addr = MOTOR_ADDR;
                 break;

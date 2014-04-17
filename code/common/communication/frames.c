@@ -133,7 +133,7 @@ void sendFrameData(uint8 msgid){
 //0 if either hasnt been set yet
 uint8 frameDataReady(){
 #if defined(MASTER_PIC) ||defined(ROVER_EMU)
-    return framesRequested && sensorDataSet && encoderDataSet;
+    return /*framesRequested && */sensorDataSet && encoderDataSet;
 #elif defined(PICMAN)
     return sensorDataSet && encoderDataSet;
 #elif defined(MOTOR_PIC)
