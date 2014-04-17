@@ -32,7 +32,7 @@ void reverse(int rev) {
     uart_send_array(&test, 2);
 
     // wait for reverse to finish or kill command to come in
-    while (!getCommandDone() || !killCommand);
+    while (!getCommandDone() && !killCommand);
 
     resetKill();
     stop();
@@ -74,7 +74,8 @@ void forward(int rev, int speed)
         uart_send_array(&test, 2);
     }
 
-    while (!getCommandDone() || !killCommand);          // wait for it to be done
+    // wait for it to be done or the kill flag to be true
+    while (!getCommandDone() && !killCommand);
 
     resetKill();
     stop();
@@ -346,7 +347,7 @@ void funFunc(int rev) {
     uart_send_array(&test, 2);
 
     // wait for the kill command or the command to be done
-    while (!getCommandDone() || !killCommand);
+    while (!getCommandDone() && !killCommand);
 
     resetKill();
     stop();

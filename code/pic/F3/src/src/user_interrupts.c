@@ -80,10 +80,13 @@ void timer0_int_handler() {
                 i++;
                 debugNum(i);
                 if(i == 2){
-                    length = generateTurnCW(data, sizeof data, I2C_COMM, 90);
+
+                    //length = generateTurnCW(data, sizeof data, I2C_COMM, 90);
+                    length = generateStartForward(data, sizeof data, I2C_COMM, 1);
                 }
                 else if(i == 5){
-                    length = generateStartForward(data, sizeof data, I2C_COMM, 1);
+                    //length = generateStartForward(data, sizeof data, I2C_COMM, 1);
+                    length = generateTurnCCW(data, sizeof data, I2C_COMM, 90);
                 }
                 else
                     length = generateGetEncoderData(data, sizeof data);

@@ -64,6 +64,7 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
             }
             switch(brain->parameters){
                 case 0x00:
+                    debugNum(1);
                     forward(payload[1], payload[0]);
 //                    switch (payload[0]){
 //                        case 1:
@@ -162,9 +163,9 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
                     length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
 //                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
-#ifdef DEBUG_ON
-                    turnCompleted();
-#endif
+//#ifdef DEBUG_ON
+//                    turnCompleted();
+//#endif
                 }
                 else{
                     length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
