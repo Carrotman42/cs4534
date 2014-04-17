@@ -22,6 +22,7 @@
 // This one does the action I wanted for this program on a timer0 interrupt
 
 unsigned char datareq = 0;
+#ifdef MOTOR_PIC
 uint16_t motor1Ticks = 0;
 uint16_t motor2Ticks = 0;
 uint16_t target1 = 0;
@@ -33,6 +34,7 @@ int finalMotor1Ticks = 0;
 int finalMotor2Ticks = 0;
 bool ticks1Sent = false;
 bool ticks2Sent = false;
+#endif
 
 
  // motor 1 ticks for 1 revolution: 2750
@@ -54,7 +56,7 @@ void timer0_int_handler() {
         uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
         uart_send_array(command, length);
         in_progress++;
-        debugNum(1);
+        //debugNum(1);
     }
     else if(in_progress < 2){
         colorSensorCounter++;
@@ -62,20 +64,29 @@ void timer0_int_handler() {
 #endif
     static uint8 loop = 0;
 
-    char data[5] = {0};
+    char data[10] = {0};
     uint8 length = 0;
     uint8 addr;
     static uint8 datareq_loop = 0;
-    
+    static int i = 0;
     if(!datareq){
         switch(loop){
             case 0:
-                length = generateGetSensorFrame(data, sizeof data);
+                //length = generateGetSensorFrame(data, sizeof data);
                 loop++;
                 addr = SENSOR_ADDR;
                 break;
             case 1:
-                length = generateGetEncoderData(data, sizeof data);
+                i++;
+                debugNum(i);
+                if(i == 2){
+                    length = generateTurnCW(data, sizeof data, I2C_COMM, 90);
+                }
+                else if(i == 5){
+                    length = generateStartForward(data, sizeof data, I2C_COMM, 1);
+                }
+                else
+                    length = generateGetEncoderData(data, sizeof data);
                 loop = 0;
                 addr = MOTOR_ADDR;
                 break;
@@ -85,7 +96,9 @@ void timer0_int_handler() {
         }
         //uart_send_array(encoderDataReq, length);
         datareq = 1;
-        i2c_master_send(addr, length, data);
+        if(length != 0){
+            i2c_master_send(addr, length, data);
+        }
     }
     else{
         datareq_loop++;
@@ -124,9 +137,10 @@ void timer0_int_handler() {
     finalMotor1Ticks++;     // ticks to be sent to the ARM
     if (motor1Ticks > target1)
     {
+           debugNum(8);
         // stop it here and break it down to a function each and call multiple functions
         // to get the job done
-        stop();
+        //stop();
         commandDone = true;
         
         // dont use, slipping errors occur, this is used to adjust speeds of
@@ -325,8 +339,8 @@ void timer1_int_handler() {
        //resetDBG(0);
        if ( motor2Ticks > target2)
        {
-           //setDBG(0);
-           stop();
+           debugNum(8);
+           //stop();
            commandDone = true;
 
            // dont use, slipping errors occur, this is used to adjust speeds of
@@ -338,6 +352,8 @@ void timer1_int_handler() {
 #endif
 
 }
+
+#ifdef MOTOR_PIC
 
 void setM1Tick(uint16_t motor1) {
     target1 = motor1;
@@ -376,3 +392,4 @@ int getM2Ticks()
     return (finalMotor2Ticks * 25);
 }
 
+#endif
