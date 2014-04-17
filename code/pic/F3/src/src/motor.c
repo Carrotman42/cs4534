@@ -13,8 +13,6 @@ uint16_t target2 = 107;
 bool commandDone = false;
 bool killCommand = false;
 
-int finalMotor1Ticks = -1; // -1 if there was an error
-int finalMotor2Ticks = -1; // -1 if there was an error
 
 // both motors in reverse
 // if rev = 0 then it goes in reverse infinitely
@@ -364,16 +362,14 @@ void resetTicks() {
 // to grab whenever
 
 int getMotor1Ticks() {
-    finalMotor1Ticks = getM1Ticks();
-    return finalMotor1Ticks;
+    return getM1Ticks();
 }
 
 // gets the ticks from user_interrupts and stores them here for the ARM
 // to grab whenever
 
 int getMotor2Ticks() {
-    finalMotor2Ticks = getM2Ticks();
-    return finalMotor2Ticks;
+    return getM2Ticks();
 }
 
 // sets the kill command to true, stops most functions

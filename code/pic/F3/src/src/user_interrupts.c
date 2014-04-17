@@ -132,15 +132,9 @@ void timer0_int_handler() {
    // encoders for motor 0
 #ifdef MOTOR_PIC
     motor1Ticks++;
-    if (ticks1Sent)
-    {
-        finalMotor1Ticks = 0;
-        ticks1Sent = true;
-    }
     finalMotor1Ticks++;     // ticks to be sent to the ARM
     if (motor1Ticks > target1)
     {
-           debugNum(8);
         // stop it here and break it down to a function each and call multiple functions
         // to get the job done
         //stop();
@@ -333,16 +327,10 @@ void timer1_int_handler() {
 #ifdef MOTOR_PIC
 
        motor2Ticks++;
-       if (ticks2Sent)
-       {
-           finalMotor2Ticks = 0;
-           ticks2Sent = false;
-       }
        finalMotor2Ticks++;
        //resetDBG(0);
        if ( motor2Ticks > target2)
        {
-           debugNum(8);
            //stop();
            commandDone = true;
 
@@ -382,8 +370,9 @@ bool getCommandDone()
 // the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
 int getM1Ticks()
 {
-    ticks1Sent = true;
-    return (finalMotor1Ticks * 25);
+    int tempTicks = finalMotor1Ticks;
+    finalMotor1Ticks = 0;
+    return tempTicks;
 }
 
 
@@ -391,8 +380,9 @@ int getM1Ticks()
 // the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
 int getM2Ticks()
 {
-    ticks2Sent = true;
-    return (finalMotor2Ticks * 25);
+    int tempTicks = finalMotor2Ticks;
+    finalMotor2Ticks = 0;
+    return tempTicks;
 }
 
 #endif
