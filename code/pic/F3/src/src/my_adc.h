@@ -20,7 +20,7 @@ extern "C" {
     void addDataToBuffer(char ir0Data, char ir1Data);
     void sort(uint8* array);
     char* transmitData();
-    void calculateDistance(char ir0_rawData, char ir1_rawData);
+    void calculateDistance();
 #endif
 #ifdef	__cplusplus
 }

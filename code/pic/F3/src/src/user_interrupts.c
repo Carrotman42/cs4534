@@ -118,7 +118,7 @@ void timer0_int_handler() {
     pulseUS();  //Start US Sampling
 //    WriteTimer0(0xFFFF-1500);
     WriteTimer0(0xFFFF-9375+1875);
-//    debugNum(8);
+    debugNum(8);
 #endif //SENSOR_PIC
 
    // encoders for motor 0

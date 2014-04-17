@@ -139,14 +139,15 @@ void adc_int_handler() {
     //}
 
     if(channel == 0){
+        debugNum(1);
 //        dataArray[0] = data;
         chn0Data = (char) data;
         ADCON0bits.CHS = 1;
         channel = 1;
         ADCON0bits.GO = 1;
-//        debugNum(1);
     }
     else if(channel == 1){
+        debugNum(2);
         addDataToBuffer(chn0Data, (char) data);
 //        distanceArray[0] = buffer.ir0Array[HALFBUFFER];
 //        distanceArray[1] = buffer.ir1Array[HALFBUFFER];
@@ -156,25 +157,36 @@ void adc_int_handler() {
 
         ADCON0bits.CHS = 0;
         channel = 0;
+
+//        calculateDistance();
+//        sort(buffer.ir0Array);
+//        sort(buffer.ir1Array);
+
+        debugNum(4);
+        debugNum(4);
+        calculateDistance();
+//        calculateDistance(buffer.ir0Array[HALFBUFFER],buffer.ir1Array[HALFBUFFER]);
+        debugNum(4);
+        debugNum(4);
 //        debugNum(2);
 //        debugNum(2);
     }
 }
 
 char* transmitData(){
-    char ir0[IRBUFFERSIZE] = {0};
-    char ir1[IRBUFFERSIZE] = {0};
-
-    for(char i = 0; i < IRBUFFERSIZE; i++){
-        ir0[i] = buffer.ir0Array[i];
-        ir1[i] = buffer.ir1Array[i];
-    }
-
-    sort(ir0);
-    sort(ir1);
+//    char ir0[IRBUFFERSIZE] = {0};
+//    char ir1[IRBUFFERSIZE] = {0};
+//
+//    for(char i = 0; i < IRBUFFERSIZE; i++){
+//        ir0[i] = buffer.ir0Array[i];
+//        ir1[i] = buffer.ir1Array[i];
+//    }
+//
+//    sort(ir0);
+//    sort(ir1);
 
 #ifndef ADCCONFIG
-    calculateDistance(ir0[HALFBUFFER],ir1[HALFBUFFER]);
+//    calculateDistance(ir0[HALFBUFFER],ir1[HALFBUFFER]);
 
     distanceArray[0] = ir0_distance;
     distanceArray[1] = ir1_distance;
@@ -190,7 +202,22 @@ char* transmitData(){
 }
 
 #ifndef ADCCONFIG
-void calculateDistance(char ir0_rawData, char ir1_rawData){
+void calculateDistance(){
+    char ir0[IRBUFFERSIZE] = {0};
+    char ir1[IRBUFFERSIZE] = {0};
+
+    for(char i = 0; i < IRBUFFERSIZE; i++){
+        ir0[i] = buffer.ir0Array[i];
+        ir1[i] = buffer.ir1Array[i];
+    }
+
+    sort(ir0);
+    sort(ir1);
+
+    char ir0_rawData = ir0[HALFBUFFER];
+    char ir1_rawData = ir1[HALFBUFFER];
+
+
     uint8 ir0_index;
     uint8 ir1_index;
 
@@ -229,8 +256,8 @@ void calculateDistance(char ir0_rawData, char ir1_rawData){
         ir1_index = 7;
 
 
-    ir0_distance = (uint8) ((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index]);
-    ir1_distance = (uint8) ((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index]);
+    ir0_distance = (uint8) (((ir0_m[ir0_index] * ir0_rawData) + ir0_b[ir0_index])+.5);
+    ir1_distance = (uint8) (((ir1_m[ir1_index] * ir1_rawData) + ir1_b[ir1_index])+.5);
 
     //Convert ADC to voltage value
 //    float ir0_voltage = ((((unsigned int) ir0_rawData)<<2)/1024)*3.4+0;
