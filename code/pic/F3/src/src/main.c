@@ -277,7 +277,7 @@ void main(void) {
     OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
 #endif
 #else
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
 #endif
 
 #ifdef __USE18F26J50
