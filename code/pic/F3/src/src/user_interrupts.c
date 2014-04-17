@@ -119,7 +119,7 @@ void timer0_int_handler() {
     pulseUS();  //Start US Sampling
 //    WriteTimer0(0xFFFF-1500);
     WriteTimer0(0xFFFF-9375+1875);
-    debugNum(8);
+//    debugNum(8);
 #endif //SENSOR_PIC
 
    // encoders for motor 0
@@ -151,6 +151,7 @@ void timer0_int_handler() {
 // This one does the action I wanted for this program on a timer1 interrupt
 
 void timer1_int_handler() {
+    debugNum(4);
 //    unsigned int result;
     // read the timer and then send an empty message to main()
 #ifdef __USE18F2680

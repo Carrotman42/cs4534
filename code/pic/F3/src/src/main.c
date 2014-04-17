@@ -261,11 +261,11 @@ void main(void) {
             // Only for 40-pin version of this chip CMCON = 0x07;	// turn the comparator off
             TRISA = 0x0F;	// set RA3-RA0 to inputs
      */
-
     // initialize Timers
 #ifndef MASTER_PIC
 #ifdef SENSOR_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+    
 #elif !defined(MOTOR_PIC)
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else

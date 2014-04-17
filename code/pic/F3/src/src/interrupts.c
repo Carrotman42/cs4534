@@ -104,10 +104,12 @@ void InterruptHandlerHigh() {
         timer0_int_handler();
     }
     // check to see if we have an interrupt on timer 1
+#ifdef MOTOR_PIC
     else if (PIR1bits.TMR1IF) {
         PIR1bits.TMR1IF = 0; //clear interrupt flag
         timer1_int_handler();
     }
+#endif
     
     // ------------------------ motor external interrupts ---------------------
 
@@ -129,12 +131,13 @@ void InterruptHandlerHigh() {
 //        motor1_int_handler();
 //
 //    }
-
+#ifdef SENSOR_PIC
     // here is where you would check other interrupt flags.
     if (INTCONbits.INT0IF){
         INTCONbits.INT0IF = 0; // Clear the interrupt flag
         us_int_handler();
     }
+#endif
 
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep
@@ -185,10 +188,18 @@ void InterruptHandlerLow() {
         if (PIE1bits.TXIE)
             uart_send_int_handler();
     }
+#ifndef MOTOR_PIC
+    if (PIR1bits.TMR1IF) {
+        PIR1bits.TMR1IF = 0; //clear interrupt flag
+        timer1_int_handler();
+    }
+#endif
 
+#ifdef SENSOR_PIC
     if (PIR1bits.TMR2IF){
         PIR1bits.TMR2IF = 0; //Clear the interrupt flag
         timer2_int_handler();
     }
+#endif
 }
 

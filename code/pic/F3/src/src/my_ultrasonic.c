@@ -41,6 +41,7 @@ void initUS(){
 #endif
 
     timer2Data = 0;
+    busyFlag = 0;
 }
 
 void pulseUS(){
@@ -48,8 +49,6 @@ void pulseUS(){
     if(!busyFlag){
         numberT2Rollover = 0;
         TRISBbits.TRISB0 = 0;
-    //    LATBbits.LATB4 = 1;
-    //    LATBbits.LATB4 = 01
         debugNum(1);   // THIS IS NOT A DEBUG STATEMENT -- HAS CORRECT PULSE WIDTH FOR US OPERATION!!
         TRISBbits.TRISB0 = 1;
     //    debugNum(8)

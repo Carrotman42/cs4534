@@ -91,7 +91,7 @@ void init_adc(){
     ADCON2bits.ACQT = 0b001;
     ADCON2bits.ADCS = 0;
 
-//    INTCONbits.GIE = 1;
+    INTCONbits.GIE = 1;
     PIR1bits.ADIF = 0;
     PIE1bits.ADIE = 1;
     INTCONbits.PEIE = 1;
@@ -126,7 +126,6 @@ void init_adc(){
 
 void adc_int_handler() {
     uint8 data;
-    //readNum(1);
 //    debugNum(4);
     data = ReadADC()>>2;
 //    data >>= 2;
