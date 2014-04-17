@@ -23,6 +23,7 @@
 #ifdef SENSOR_PIC
 #include "my_adc.h"
 #include "sensorcomm.h"
+#include "my_ultrasonic.h"
 #endif
 
 
@@ -268,7 +269,9 @@ void main(void) {
 
     // initialize Timers
 #ifndef MASTER_PIC
-#ifndef MOTOR_PIC
+#ifdef SENSOR_PIC
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+#elif !defined(MOTOR_PIC)
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
     OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
@@ -311,9 +314,11 @@ void main(void) {
 #ifdef SENSOR_PIC
     //resetAccumulators();
     init_adc();
+    initUS();
 
     // must specifically enable the I2C interrupts
     IPR1bits.ADIP = 0;
+    
     // configure the hardware i2c device as a slave (0x9E -> 0x4F) or (0x9A -> 0x4D)
     i2c_configure_slave(SENSOR_ADDR << 1); //address 0x10
 #elif defined MOTOR_PIC
@@ -366,44 +371,6 @@ void main(void) {
     // that should get them.  Although the subroutines are not threads, but
     // they can be equated with the tasks in your task diagram if you
     // structure them properly.
-
-    //TODO: delete the test line
-    //    calcRevMotor1(20);
-    //    calcRevMotor2(20);
-    //    forward();
-
-    //    turnRight90_onSpot();
-    
-//    doEverything(2, 1);    // turn left
-    //calcRevMotor1(10);
-    //calcRevMotor2(10);
-//    forward(0);
-//    debugNum(1);
-    //forward2Rev();
-    //turnLeft();
-    //forward2Rev();
-
-
-//        calcRevMotor2(10);
-//        calcRevMotor1(10);
-//        forward2(1);
- //   reverse(7);
-//    turnLeft90_onSpot();
-//        reverse(5);
-//        turnLeft90_onSpot();
-
-//        forward(0);
-        //for (int i = 0; i < 50; i++);
-        //setKill();
-//        reverse(4);
-//        funFunc(0);
-    //    funFunc();
-
-     //   readjustRight();
-
-    //    calcRevMotor1(1);
-    //    turnLeft90_onSpot();
-    //    turnRight90_onSpot();
     while (1) {
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into
