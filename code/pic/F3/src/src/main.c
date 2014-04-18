@@ -410,6 +410,29 @@ void main(void) {
                 {
                     i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
                 };
+                case MSGT_TURN_CHECK:
+                {
+                    //check IR sensors
+                    unsigned char frame[FRAME_MEMBERS] = {0};
+                    packFrame(frame, sizeof frame);
+                    //frame[1] is ir1 and frame[2] is ir2
+                    frame[1] = 1;//just for now, provide these dummy values
+                    frame[2] = 1;
+                    if((frame[1] > frame[2]) && (frame[1] - frame[2]) > 1){
+                        //readjust right
+                        // no need to call waitForSensorFrame() again
+                    }
+                    else if((frame[2] > frame[1]) && (frame[2] - frame[1]) > 1){
+                        //readjust left
+                        // no need to call waitForSensorFrame() again
+                    }
+                    else{
+                        char command[HEADER_MEMBERS] = {0};
+                        uint8 len = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        uart_send_array(command, len);
+                        turnCompleted();
+                    }
+                };
 #endif
                 case MSGT_UART_TX_BUSY:
                 {

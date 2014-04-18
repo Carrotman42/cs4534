@@ -442,9 +442,10 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
-                        length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
-                        uart_send_array(command, length);
-                        turnCompleted();
+                        //length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        //uart_send_array(command, length);
+                        //turnCompleted();
+                        waitForSensorFrame();
                     }
                     break;
                 default:

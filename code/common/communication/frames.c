@@ -22,12 +22,25 @@ static uint8 framesRequested = 0;
 static Frame frame;
 
 
+#ifdef MASTER_PIC
+static uint8 turnCheckSensorReq = 0; //used to make
+void waitForSensorFrame(){
+    turnCheckSensorReq = 1;
+}
+#endif
+
 #if defined(SENSOR_PIC) || defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
 void addSensorFrame(uint8 ultrasonic, uint8 IR1, uint8 IR2){
     frame.ultrasonic = ultrasonic;
     frame.IR1 = IR1;
     frame.IR2 = IR2;
     sensorDataSet = 1;
+#ifdef MASTER_PIC
+    if(turnCheckSensorReq){
+        FromMainHigh_sendmsg(0, MSGT_TURN_CHECK ,(void*) 0);
+        turnCheckSensorReq = 0;
+    }
+#endif
 }
 #endif
 

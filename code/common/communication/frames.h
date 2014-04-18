@@ -13,6 +13,7 @@
 void setResetEncoderData();
 #endif
 
+
 //every pic has its own definition of a frame
 #if defined(PICMAN) || defined(MASTER_PIC) || defined(ARM_EMU) || defined(ROVER_EMU) || defined(ARM)
 typedef struct {
@@ -55,6 +56,9 @@ void stopFrames();
 void sendFrameData();
 #endif
 
+#ifdef MASTER_PIC
+void waitForSensorFrame();
+#endif
 
 #if defined(PICMAN) || defined(MOTOR_PIC) || defined(SENSOR_PIC)
 void sendFrameData(uint8 msgid);

@@ -63,7 +63,7 @@
 #define MSGT_MASTER_SEND_NO_RAW_BUSY 49
 #define MSGT_COMM_BRAIN_BUSY 50
 #define MSGT_COMM_ROVER_BUSY 51
-#define MSGT_MOVEMENT 60
+#define MSGT_TURN_CHECK 60
 
 
 
@@ -74,8 +74,8 @@
 
 //#define PICMAN
 //#define SENSOR_PIC
-#define MOTOR_PIC
-//#define MASTER_PIC
+//#define MOTOR_PIC
+#define MASTER_PIC
 
 
 #if defined(MASTER_PIC) || defined(ARM_EMU)
