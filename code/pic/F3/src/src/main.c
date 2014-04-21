@@ -233,7 +233,7 @@ void main(void) {
 
             // initialize my uart recv handling code
 
-            init_uart_recv(&uc);
+    init_uart_recv(&uc);
 
     // initialize the i2c code
     init_i2c(&ic);
@@ -249,6 +249,11 @@ void main(void) {
 #ifndef MOTOR_PIC
     TRISB = 0x0;
     LATB = 0x0;
+#else
+    TRISBbits.RB0 = 0;
+    TRISBbits.RB1 = 0;
+    TRISBbits.RB2 = 0;
+    TRISBbits.RB3 = 0;
 #endif
 
 #endif
@@ -272,7 +277,7 @@ void main(void) {
     OpenTimer0(TIMER_INT_ON & T0_8BIT & T0_PS_1_1 & T0_SOURCE_EXT);
 #endif
 #else
-    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_32);
+    OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
 #endif
 
 #ifdef __USE18F26J50
@@ -361,6 +366,10 @@ void main(void) {
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
     LATBbits.LB7 = 0;
+    LATBbits.LB0 = 0;
+    LATBbits.LB1 = 0;
+    LATBbits.LB2 = 0;
+    LATBbits.LB3 = 0;
     WRITETIMER0(0x00FF);
 
     // loop forever
@@ -368,44 +377,6 @@ void main(void) {
     // that should get them.  Although the subroutines are not threads, but
     // they can be equated with the tasks in your task diagram if you
     // structure them properly.
-
-    //TODO: delete the test line
-    //    calcRevMotor1(20);
-    //    calcRevMotor2(20);
-    //    forward();
-
-    //    turnRight90_onSpot();
-    
-//    doEverything(2, 1);    // turn left
-    //calcRevMotor1(10);
-    //calcRevMotor2(10);
-//    forward(0);
-//    debugNum(1);
-    //forward2Rev();
-    //turnLeft();
-    //forward2Rev();
-
-
-//        calcRevMotor2(10);
-//        calcRevMotor1(10);
-//        forward2(1);
- //   reverse(7);
-//    turnLeft90_onSpot();
-//        reverse(5);
-//        turnLeft90_onSpot();
-
-//        forward(0);
-        //for (int i = 0; i < 50; i++);
-        //setKill();
-//        reverse(4);
-//        funFunc(0);
-    //    funFunc();
-
-     //   readjustRight();
-
-    //    calcRevMotor1(1);
-    //    turnLeft90_onSpot();
-    //    turnRight90_onSpot();
     while (1) {
         // Call a routine that blocks until either on the incoming
         // messages queues has a message (this may put the processor into
@@ -430,20 +401,47 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(4);
+                    //debugNum(4);
                     i2c_master_recv(msgbuffer[0]);
                     break;
                 };
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
+<<<<<<< HEAD
 //                    debugNum(8);
+=======
+                    //debugNum(8);
+>>>>>>> master
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
                 case MSGT_MASTER_SEND_NO_RAW_BUSY:
                 {
                     i2c_master_send_no_raw(msgbuffer[0], length-1, msgbuffer + 1);
+                };
+                case MSGT_TURN_CHECK:
+                {
+                    //check IR sensors
+                    unsigned char frame[FRAME_MEMBERS] = {0};
+                    packFrame(frame, sizeof frame);
+                    //frame[1] is ir1 and frame[2] is ir2
+                    frame[1] = 1;//just for now, provide these dummy values
+                    frame[2] = 1;
+                    if((frame[1] > frame[2]) && (frame[1] - frame[2]) > 1){
+                        //readjust right
+                        // no need to call waitForSensorFrame() again
+                    }
+                    else if((frame[2] > frame[1]) && (frame[2] - frame[1]) > 1){
+                        //readjust left
+                        // no need to call waitForSensorFrame() again
+                    }
+                    else{
+                        char command[HEADER_MEMBERS] = {0};
+                        uint8 len = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        uart_send_array(command, len);
+                        turnCompleted();
+                    }
                 };
 #endif
                 case MSGT_UART_TX_BUSY:

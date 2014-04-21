@@ -46,13 +46,13 @@
 #if HTTPD_FS_STATISTICS		
 static u16_t count[HTTPD_FS_NUMFILES];
 #endif /* HTTPD_FS_STATISTICS */
-				 	 
+				 	  
 /*-----------------------------------------------------------------------------------*/
 static u8_t
 httpd_fs_strcmp(const char *str1, const char *str2)
 {							  
-  u8_t i;
-  i = 0;
+  u8_t i;			  
+  i = 0;														
  loop:			 
 
   if(str2[i] == 0 ||

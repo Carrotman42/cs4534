@@ -9,8 +9,9 @@
 #include "my_uart.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include "maindefs.h"
 
-
+#ifdef MOTOR_PIC
     typedef enum  {FORWARDS, REVERSE, MOVE_FORWARDS, TURN, READJUSTMENT, FINISHED, IDLE, FUN }STATES;
 
 //    bool commandDone = false;
@@ -26,20 +27,19 @@
 //    extern uint16_t target2;    // 107 for 1 revolution but an offset of 1 in formula
 
     void reverse(int rev);
-    void forward(int rev);
-    void forward2(int rev);
-    void forward3(int rev);
+    void forward(int rev, int speed);
     void forwardMotor1();
     void reverseMotor1();
     void forwardMotor2();
     void reverseMotor2();
+    void killAndStop();
     void stop();
     void stopMotor1();
     void stopMotor2();
     void calcRevMotor1(int x);
     void calcRevMotor2(int x);
-    void turnRight90_onSpot();
-    void turnLeft90_onSpot();
+    void turnRight();
+    void turnLeft();
     void forwardHalfRev();
     void funFunc(int rev);
     void readjustLeft();
@@ -50,6 +50,8 @@
     int getMotor2Ticks();
     void setKill();
     void resetKill();
+
+#endif
 
 #endif	/* MOTOR_H */
 

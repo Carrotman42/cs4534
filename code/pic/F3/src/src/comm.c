@@ -54,7 +54,7 @@ void setRoverDataLP(char* msg){
 //the return value dictates whether or not the information needs to be passed to the slave PICs
 //0 is "no information needs to be passed"
 //Otherwise, the addres is returned
-uint8 sendResponse(BrainMsg* brain, uint8 wifly){
+uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
     char command[10] = {0};
     uint8 length = 0;
     switch(brain->flags){
@@ -64,83 +64,91 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
             }
             switch(brain->parameters){
                 case 0x00:
-                    switch (brain->payload[0]){
-                        case 1:
-                            forward(0);
-                            debugNum(1);
-                            break;
-                        case 2:
-                            forward2(0);
-                            break;
-                        case 3:
-                            forward3(0);
-                            break;
-                        default:
-                            break;
-                    }
+                    debugNum(1);
+                    forward(payload[1], payload[0]);
+//                    switch (payload[0]){
+//                        case 1:
+//                            forward(0, 5);
+//                            break;
+//                        case 2:
+//                            forward2(0);
+//                            break;
+//                        case 3:
+//                            forward3(0);
+//                            break;
+//                        default:
+//                            break;
+//                    }
                     break;
                 case 0x01:
                     reverse(0);
                     break;
                 case 0x02:
-                    stop();
+                    killAndStop();
                     break;
                 case 0x03:
-                    if(brain->payload[0] == 90){
-                        turnRight90_onSpot();
+                    turnStarted();
+                    if(payload[0] == 90){
+                        //turnRight90_onSpot();
+                        turnRight();
                     }
-                    else if(brain->payload[0] > 90){
-                        turnRight90_onSpot();
+                    else if(payload[0] > 90){
+                        turnRight();
                         readjustRight();
                     }
                     else{
                         readjustRight();
                     }
-                    turnStarted();
                     break;
                 case 0x04:
-                    if(brain->payload[0] == 90){
-                        turnLeft90_onSpot();
+                    turnStarted();
+                    if(payload[0] == 90){
+                        turnLeft();
                     }
-                    else if(brain->payload[0] > 90){
-                        turnLeft90_onSpot();
+                    else if(payload[0] > 90){
+                        turnLeft();
                         readjustLeft();
                     }
                     else{
                         readjustLeft();
                     }
-                    turnStarted();
+                    turnCompleted();
                     break;
                 case 0x06:
-                    readjustRight();
                     turnStarted();
+                    readjustRight();
+                    turnCompleted();
                     break;
                 case 0x07:
-                    readjustLeft();
                     turnStarted();
+                    readjustLeft();
+                    turnCompleted();
                     break;
                 case 0x08:
-                    switch (brain->payload[0]){
-                        case 1:
-                            forward(brain->payload[1]);
-                            debugNum(1);
-                            break;
-                        case 2:
-                            forward2(brain->payload[1]);
-                            break;
-                        case 3:
-                            forward3(brain->payload[1]);
-                            break;
-                        default:
-                            break;
-                    }
-                    if(brain->payload[2]){
-                        turnLeft90_onSpot();
+                    turnStarted();
+                    // 1st parameter: # of revolutions: 0 = infinite
+                    // 2nd parameter: speed: 1 = slow, 2 = medium, 3 = fast, 4+ slow
+                    forward(payload[1], payload[0]);
+//                    switch (payload[0]){
+//                        case 1:
+//                            forward(payload[1], 5);
+//                            break;
+//                        case 2:
+//                            forward2(payload[1]);
+//                            break;
+//                        case 3:
+//                            forward3(payload[1]);
+//                            break;
+//                        default:
+//                            break;
+//                    }
+                    if(payload[2]){
+                        turnLeft();
                     }
                     else{
-                        turnRight90_onSpot();
+                        turnRight();
                     }
-                    turnStarted();
+                    turnCompleted();
                     break;
                 case 0x05:
                     sendEncoderData(brain->messageid);
@@ -155,9 +163,9 @@ uint8 sendResponse(BrainMsg* brain, uint8 wifly){
                     length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
 //                    makeHighPriority(command);
                     start_i2c_slave_reply(length, command);
-#ifdef DEBUG_ON
-                    turnCompleted();
-#endif
+//#ifdef DEBUG_ON
+//                    turnCompleted();
+//#endif
                 }
                 else{
                     length = generateTurnCompleteAck(command, sizeof command, brain->messageid);
@@ -227,9 +235,14 @@ void sendData(char* outbuf, uint8 buflen, uint8 wifly){
 
 
 static void handleMessage(BrainMsg* brain, char* payload, uint8 source, uint8 dest){
+#ifndef MOTOR_PIC
     uint8 addr = sendResponse(brain, source); //either sends ack or data
     //if an ack was sent(e.g. Motor start forward), it can be handled here
     //data would have already been returned in the send response method
+#else
+    sendResponse(brain, payload, source);
+#endif
+    
 #if defined(MASTER_PIC) || defined(PICMAN) || defined(ROVER_EMU)
     propogateCommand(brain, payload, addr, dest);
 #endif
@@ -429,9 +442,10 @@ static void handleRoverData(RoverMsg* rover, char* payload){
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
-                        length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
-                        uart_send_array(command, length);
-                        turnCompleted();
+                        //length = generateTurnCompleteReq(command, sizeof command, UART_COMM); //tell picman turn complete
+                        //uart_send_array(command, length);
+                        //turnCompleted();
+                        waitForSensorFrame();
                     }
                     break;
                 default:

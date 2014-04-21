@@ -161,10 +161,10 @@ function tog(val, dest) {
 }
 
 function checkReset(ret) {
-	document.getElementById(dest).innerHTML = (ret == "ok") ? "Reset!" : "Error resetting: " + ret;
+	document.getElementById("controlFo").innerHTML = (ret[0] == 'o') ? "Reset!" : "Error resetting: " + ret;
 }
 function checkStart(ret) {
-	document.getElementById(dest).innerHTML = (ret == "ok") ? "Started!" : "Error starting: " + ret;
+	document.getElementById("controlFo").innerHTML = (ret[0] == 'o') ? "Started!" : "Error starting: " + ret;
 }
 </script>
 </body>

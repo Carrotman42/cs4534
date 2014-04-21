@@ -66,8 +66,18 @@ HTTPD_CGI_CALL(dbgdump, "dbg-dump", dump_dbg );
 HTTPD_CGI_CALL(cmdres, "cmd-reset", cmd_reset );
 HTTPD_CGI_CALL(cmdsta, "cmd-start", cmd_start );
 
+HTTPD_CGI_CALL(cmdctrl2, "cmd-forward", cmd_ctrl );
+HTTPD_CGI_CALL(cmdctrl3, "cmd-stop", cmd_ctrl );
+HTTPD_CGI_CALL(cmdctrl4, "cmd-left", cmd_ctrl );
+HTTPD_CGI_CALL(cmdctrl5, "cmd-right", cmd_ctrl );
 
-static const struct httpd_cgi_call *calls[] = { &mapdump, &dbgdump, &cmdres, &cmdsta, &emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
+
+static const struct httpd_cgi_call *calls[] = { &mapdump, &dbgdump, &cmdres, &cmdsta,
+	&cmdctrl2,
+	&cmdctrl3,
+	&cmdctrl4,
+	&cmdctrl5,
+	&emureg, &file, &tcp, &net, &rtos, &run, &io, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -364,7 +374,7 @@ static PT_THREAD(dump_dbg(struct httpd_state *s, char *ptr)) {
 static PT_THREAD(cmd_reset(struct httpd_state *s, char *ptr)) {
 	PSOCK_BEGIN(&s->sout);
 	TriggerEvent(RESET_ROVER);
-	PSOCK_SEND(&s->sout, "ok", 2);
+	PSOCK_SEND(&s->sout, ptr, 7);
 	PSOCK_END(&s->sout);
 }
 
@@ -374,6 +384,39 @@ static PT_THREAD(cmd_start(struct httpd_state *s, char *ptr)) {
 	PSOCK_SEND(&s->sout, "ok", 2);
 	PSOCK_END(&s->sout);
 }
+
+#include "comm.h"
+static PT_THREAD(cmd_ctrl(struct httpd_state *s, char *ptr)) {
+	PSOCK_BEGIN(&s->sout);
+	
+	dbg(Lap, ptr[4]);
+	int ok = 1;
+	switch (ptr[4]) {
+		case 'f':
+			moveForward(1);
+			break;
+		case 's':
+			stop();
+			break;
+		case 'l':
+			turnCCW(90);
+			break;
+		case 'r':
+			turnCW(90);
+			break;
+		default:
+			ok = 0;
+			break;
+	}
+	if (!ok) {
+		PSOCK_SEND(&s->sout, "unknown request", 15);
+	} else {
+		PSOCK_SEND(&s->sout, "ok", 2);
+	}
+	
+	PSOCK_END(&s->sout);
+}
+
 
 									 
 /** @} */

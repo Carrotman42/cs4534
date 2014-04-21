@@ -28,6 +28,7 @@
 // This one does the action I wanted for this program on a timer0 interrupt
 
 unsigned char datareq = 0;
+#ifdef MOTOR_PIC
 uint16_t motor1Ticks = 0;
 uint16_t motor2Ticks = 0;
 uint16_t target1 = 0;
@@ -39,6 +40,7 @@ int finalMotor1Ticks = 0;
 int finalMotor2Ticks = 0;
 bool ticks1Sent = false;
 bool ticks2Sent = false;
+#endif
 
 
  // motor 1 ticks for 1 revolution: 2750
@@ -50,28 +52,28 @@ bool ticks2Sent = false;
 
 void timer0_int_handler() {
 #ifdef MASTER_PIC
-#ifdef DEBUG_ON
-    static int colorSensorCounter = 0;
-    static uint8 in_progress = 0;
-    if(colorSensorCounter == 100){
-        colorSensorCounter = 0;
-        char command[5] = {0};
-        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
-        uart_send_array(command, length);
-        in_progress++;
-        debugNum(1);
-    }
-    else if(in_progress < 2){
-        colorSensorCounter++;
-    }
-#endif
+//#ifdef DEBUG_ON
+//    static int colorSensorCounter = 0;
+//    static uint8 in_progress = 0;
+//    if(colorSensorCounter == 100){
+//        colorSensorCounter = 0;
+//        char command[5] = {0};
+//        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
+//        uart_send_array(command, length);
+//        in_progress++;
+//        //debugNum(1);
+//    }
+//    else if(in_progress < 2){
+//        colorSensorCounter++;
+//    }
+//#endif
     static uint8 loop = 0;
 
-    char data[5] = {0};
+    char data[10] = {0};
     uint8 length = 0;
     uint8 addr;
     static uint8 datareq_loop = 0;
-    
+    static int i = 0;
     if(!datareq){
         switch(loop){
             case 0:
@@ -90,7 +92,9 @@ void timer0_int_handler() {
         }
         //uart_send_array(encoderDataReq, length);
         datareq = 1;
-        i2c_master_send(addr, length, data);
+        if(length != 0){
+            i2c_master_send(addr, length, data);
+        }
     }
     else{
         datareq_loop++;
@@ -124,17 +128,12 @@ void timer0_int_handler() {
    // encoders for motor 0
 #ifdef MOTOR_PIC
     motor1Ticks++;
-    if (ticks1Sent)
-    {
-        finalMotor1Ticks = 0;
-        ticks1Sent = true;
-    }
     finalMotor1Ticks++;     // ticks to be sent to the ARM
     if (motor1Ticks > target1)
     {
         // stop it here and break it down to a function each and call multiple functions
         // to get the job done
-        stop();
+        //stop();
         commandDone = true;
         
         // dont use, slipping errors occur, this is used to adjust speeds of
@@ -333,17 +332,11 @@ void timer1_int_handler() {
 #ifdef MOTOR_PIC
 
        motor2Ticks++;
-       if (ticks2Sent)
-       {
-           finalMotor2Ticks = 0;
-           ticks2Sent = false;
-       }
        finalMotor2Ticks++;
        //resetDBG(0);
        if ( motor2Ticks > target2)
        {
-           //setDBG(0);
-           stop();
+           //stop();
            commandDone = true;
 
            // dont use, slipping errors occur, this is used to adjust speeds of
@@ -355,6 +348,8 @@ void timer1_int_handler() {
 #endif
 
 }
+
+#ifdef MOTOR_PIC
 
 void setM1Tick(uint16_t motor1) {
     target1 = motor1;
@@ -380,8 +375,9 @@ bool getCommandDone()
 // the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
 int getM1Ticks()
 {
-    ticks1Sent = true;
-    return (finalMotor1Ticks * 25);
+    int tempTicks = finalMotor1Ticks;
+    finalMotor1Ticks = 0;
+    return tempTicks;
 }
 
 
@@ -389,9 +385,11 @@ int getM1Ticks()
 // the interrupt counter (finalMotor1Ticks) times 25 for the total ticks spun
 int getM2Ticks()
 {
-    ticks2Sent = true;
-    return (finalMotor2Ticks * 25);
+    int tempTicks = finalMotor2Ticks;
+    finalMotor2Ticks = 0;
+    return tempTicks;
 }
+#endif
 
 #ifdef SENSOR_PIC
 void timer2_int_handler(){

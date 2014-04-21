@@ -7,7 +7,7 @@
 #define ARM
 // Define this for debug checks that double-check the programmer. Will be disabled for final run once testing is over.
 #define CHECKS
-#define ETHER_EMU 1
+#define ETHER_EMU 0
 
 // Common includes:
 #include "FreeRTOS.h"

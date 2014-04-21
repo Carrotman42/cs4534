@@ -111,6 +111,7 @@ void InterruptHandlerHigh() {
     }
 #endif
     
+<<<<<<< HEAD
     // ------------------------ motor external interrupts ---------------------
 
 //    if (INTCONbits.INT0IF )
@@ -131,12 +132,16 @@ void InterruptHandlerHigh() {
 //        motor1_int_handler();
 //
 //    }
+=======
+>>>>>>> master
 #ifdef SENSOR_PIC
     // here is where you would check other interrupt flags.
     if (INTCONbits.INT0IF){
         INTCONbits.INT0IF = 0; // Clear the interrupt flag
         us_int_handler();
     }
+#endif
+
 #endif
 
     // The *last* thing I do here is check to see if we can
