@@ -408,11 +408,7 @@ void main(void) {
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-<<<<<<< HEAD
-//                    debugNum(8);
-=======
                     //debugNum(8);
->>>>>>> master
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };
