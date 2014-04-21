@@ -75,7 +75,9 @@ void timer0_int_handler() {
     uint8 addr;
     static uint8 datareq_loop = 0;
     static int i = 0;
+    //data req is used "if the ack isn't received, wait to start another transfer"
     if(!datareq){
+        //loop back and forth between sensor frames and encoder data
         switch(loop){
             case 0:
                 length = generateGetSensorFrame(data, sizeof data);
@@ -395,5 +397,30 @@ int getM2Ticks()
 void timer2_int_handler(){
 //    debugNum(4);
     addRollover();
+}
+#endif
+
+
+#ifdef MASTER_PIC
+void timer3_int_handler(){
+    static uint8 counter = 0;
+    if(counter == 10){ //wait 10 overflows
+        //send int clear to the color sensor here
+        counter = 0;
+        T3CONbits.TMR3ON = 0; //turn off the timer
+    }
+    else{
+        counter++;
+    }
+}
+
+
+void color_sensor_int_handler(void){
+    char command[5] = {0};
+    uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
+    uart_send_array(command, length);
+    TMR3H=0;          //Clear timer3-related registers
+    TMR3L=0;
+    T3CONbits.TMR3ON = 1; //turn on the timer, wait to clear the interrupt on the color sensor
 }
 #endif

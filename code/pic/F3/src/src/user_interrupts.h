@@ -7,12 +7,16 @@
 // interrupts.c because it, of course, doesn't know which
 // interrupt handlers you would like to call
 
-//My example program uses these two timer interrupts
 void timer0_int_handler(void);
 
 void timer1_int_handler(void);
 
 void timer2_int_handler(void);
+
+#ifdef MASTER_PIC
+void timer3_int_handler(void);
+void color_sensor_int_handler(void);
+#endif
 
 // include the handler from my uart code
 #include "my_uart.h"

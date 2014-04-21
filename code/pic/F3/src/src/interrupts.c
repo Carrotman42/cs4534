@@ -138,6 +138,19 @@ interrupt low_priority
 #pragma interruptlow InterruptHandlerLow
 #endif
 void InterruptHandlerLow() {
+    
+#ifdef MASTER_PIC
+    if(PIR2bits.TMR3IF){
+        PIR2bits.TMR3IF = 0;
+        timer3_int_handler();
+    }
+
+    if(INTCON3bits.INT1IF){
+        INTCON3bits.INT1IF = 0;
+        color_sensor_int_handler();
+    }
+#endif
+
     #ifdef SENSOR_PIC
     if (PIR1bits.ADIF) {
         PIR1bits.ADIF = 0;

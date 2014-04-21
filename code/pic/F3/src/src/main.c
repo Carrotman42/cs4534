@@ -296,6 +296,21 @@ void main(void) {
 #endif
 #endif
 
+    //Master PIC needs Timer 3 for color sensor logic
+#ifdef MASTER_PIC
+    ///////TIMER 3/////////////////////////
+    OpenTimer3(TIMER_INT_ON & T3_16BIT_RW & T3_SOURCE_FOSC_4 & T3_PS_1_8 & T3_SYNC_EXT_OFF & T3_OSC1EN_OFF);
+    T3CONbits.TMR3ON = 0; //turn off timer for now
+    IPR2bits.TMR3IP = 0; //low priority
+    ///////////////////////////////////////
+    ///////Color Sensor Interrupt//////////
+    INTCON3bits.INT1IE = 1;
+    INTCON3bits.INT1IP = 0; //low priority
+    INTCON2bits.INTEDG1 = 0; //interrupt on falling edge (color sensor is active low)
+    ///////////////////////////////////////
+
+#endif
+
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     // Timer1 interrupt
