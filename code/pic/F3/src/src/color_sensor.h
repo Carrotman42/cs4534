@@ -12,10 +12,10 @@
 extern "C" {
 #endif
 #include "maindefs.h"
-#ifdef SENSOR_PIC
+#ifdef MASTER_PIC
 
     void initializeColorSensor(void);
-    void initializeColorSensor(uint16 upperThresh, uint16 lowerThresh, char persistence);
+//    void initializeColorSensor(uint16 upperThresh, uint16 lowerThresh, char persistence);
     void clearColorSensorInterrupt(void);
 
 #endif
