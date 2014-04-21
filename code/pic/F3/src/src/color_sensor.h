@@ -15,6 +15,7 @@ extern "C" {
 #ifdef SENSOR_PIC
 
     void initializeColorSensor(void);
+    void initializeColorSensor(uint16 upperThresh, uint16 lowerThresh, char persistence);
     void clearColorSensorInterrupt(void);
 
 #endif
