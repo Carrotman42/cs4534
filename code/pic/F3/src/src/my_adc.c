@@ -1,5 +1,5 @@
 #include "maindefs.h"
-//#define ADCCONFIG
+#define ADCCONFIG
 #ifdef SENSOR_PIC
 #ifndef __XC8
 #include <adc.h>
@@ -109,26 +109,12 @@ void init_adc(){
 
     ADCON0bits.ADON = 1;
 
-    /*
-    // Configure ADC
-    ADCON0 = 0x04;
-    ADCON1 = 0x20;
-    ADCON2 = 0x80;
-    ADCON0 = ADCON0 | 0x01;
-    // Configure ADC Interrupts*/
-//    ADC_INT_ENABLE();
-    //INTCONbits.GIE = 1; // Enable Global Interrupts
-
-    //PIE1 = PIE1 | 0x40;  // OR PIE1 with bit_6 - Enables ADC Interrupt
-    //INTCON = INTCON | 0x80; // Enable Global Interrupts
-
 }
 
 void adc_int_handler() {
     uint8 data;
     debugNum(4);
     data = ReadADC()>>2;
-//    data >>= 2;
 
     //if(data != 0xFF){
 //        addBuffer((char) data);
@@ -161,30 +147,18 @@ void adc_int_handler() {
 //        calculateDistance();
 //        sort(buffer.ir0Array);
 //        sort(buffer.ir1Array);
-
+#ifndef ADCCONFIG
         debugNum(4);
         debugNum(4);
         calculateDistance();
 //        calculateDistance(buffer.ir0Array[HALFBUFFER],buffer.ir1Array[HALFBUFFER]);
         debugNum(4);
         debugNum(4);
-//        debugNum(2);
-//        debugNum(2);
+#endif
     }
 }
 
 char* transmitData(){
-//    char ir0[IRBUFFERSIZE] = {0};
-//    char ir1[IRBUFFERSIZE] = {0};
-//
-//    for(char i = 0; i < IRBUFFERSIZE; i++){
-//        ir0[i] = buffer.ir0Array[i];
-//        ir1[i] = buffer.ir1Array[i];
-//    }
-//
-//    sort(ir0);
-//    sort(ir1);
-
 #ifndef ADCCONFIG
 //    calculateDistance(ir0[HALFBUFFER],ir1[HALFBUFFER]);
 
@@ -196,8 +170,24 @@ char* transmitData(){
 
 #endif
 #ifdef ADCCONFIG
+    char ir0[IRBUFFERSIZE] = {0};
+    char ir1[IRBUFFERSIZE] = {0};
+
+    for(char i = 0; i < IRBUFFERSIZE; i++){
+        ir0[i] = buffer.ir0Array[i];
+        ir1[i] = buffer.ir1Array[i];
+    }
+
+    sort(ir0);
+    sort(ir1);
+
     uart_send((char) ir0[HALFBUFFER]);
     uart_send((char) ir1[HALFBUFFER]);
+
+    static char retVal[2] = {0};
+    retVal[0] = ir0[HALFBUFFER];
+    retVal[1] = ir1[HALFBUFFER];
+    return retVal;
 #endif
 }
 

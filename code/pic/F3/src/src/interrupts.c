@@ -119,8 +119,6 @@ void InterruptHandlerHigh() {
     }
 #endif
 
-#endif
-
     // The *last* thing I do here is check to see if we can
     // allow the processor to go to sleep
     // This code *DEPENDS* on the code in messages.c being
