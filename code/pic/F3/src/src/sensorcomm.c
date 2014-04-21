@@ -77,10 +77,12 @@ void resetAccumulators(){
 
 #ifdef SENSOR_PIC
 void sendSensorFrame(uint8 msgid){
-    //addSensorFrame(0x05,0x06,0x07);//will need a function to actually get the sensor data.
+//    addSensorFrame(0x05,0x06,0x07);//will need a function to actually get the sensor data.
                                    //For now, send dummy values
     char usDistance = getDistanceUS();
+//    debugNum(2);
     char* irDistances = transmitData();
+//    debugNum(8);
 
     addSensorFrame(usDistance,*(irDistances),*(irDistances+1));
 

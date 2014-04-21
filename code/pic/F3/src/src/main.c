@@ -266,11 +266,11 @@ void main(void) {
             // Only for 40-pin version of this chip CMCON = 0x07;	// turn the comparator off
             TRISA = 0x0F;	// set RA3-RA0 to inputs
      */
-
     // initialize Timers
 #ifndef MASTER_PIC
 #ifdef SENSOR_PIC
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_16);
+    INTCONbits.T0IE = 1;
 #elif !defined(MOTOR_PIC)
     OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
 #else
@@ -288,7 +288,7 @@ void main(void) {
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
 #else
 #ifndef MOTOR_PIC
-    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
+//    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
 #else
     OpenTimer1(TIMER_INT_ON & T1_PS_1_1 & T1_16BIT_RW & T1_SOURCE_EXT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
     WRITETIMER1(0xFFE8); // leave in here, encoder's for motor 2 doesn't work without it
@@ -313,8 +313,14 @@ void main(void) {
 
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
+    //Timer0 interrupt
+    INTCON2bits.TMR0IP = 1;
     // Timer1 interrupt
+#ifdef SENSOR_PIC
+//    IPR1bits.TMR1IP = 0;
+#else
     IPR1bits.TMR1IP = 1;
+#endif
     // USART RX interrupt
     IPR1bits.RCIP = 0;
     IPR1bits.TXIP = 0;
@@ -557,7 +563,7 @@ void main(void) {
                 case MSGT_MASTER_SEND_BUSY:
                 {
                     //retry
-                    debugNum(8);
+//                    debugNum(8);
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
                 };

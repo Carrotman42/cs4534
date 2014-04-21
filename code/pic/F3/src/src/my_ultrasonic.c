@@ -18,12 +18,12 @@ char distanceArmUnits = 0;
 //Sets up RB0 as External Interrupt and configures Timer for counting time elapsed
 void initUS(){
     //Configure Interrupts for RB0
-//    INTCONbits.INT0IE = 1;   // Enable the INT0 interrupt
-//    INTCON2bits.INTEDG0 = 1; // Set the INT0 interrupt to trigger on rising edge
-//    INTCONbits.INT0IF = 0;  // Clear the flag
+    INTCONbits.INT0IE = 1;   // Enable the INT0 interrupt
+    INTCON2bits.INTEDG0 = 1; // Set the INT0 interrupt to trigger on rising edge
+    INTCONbits.INT0IF = 0;  // Clear the flag
 //    TRISBbits.TRISB1 = 1;
 
-    INTCON = 0b11010000;
+//    INTCON = 0b11010000;
     INTEDG0 = 1;
 
     TRISB0 = 1;
@@ -41,6 +41,7 @@ void initUS(){
 #endif
 
     timer2Data = 0;
+    busyFlag = 0;
 }
 
 void pulseUS(){
@@ -48,8 +49,6 @@ void pulseUS(){
     if(!busyFlag){
         numberT2Rollover = 0;
         TRISBbits.TRISB0 = 0;
-    //    LATBbits.LATB4 = 1;
-    //    LATBbits.LATB4 = 01
         debugNum(1);   // THIS IS NOT A DEBUG STATEMENT -- HAS CORRECT PULSE WIDTH FOR US OPERATION!!
         TRISBbits.TRISB0 = 1;
     //    debugNum(8)

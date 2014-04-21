@@ -51,7 +51,6 @@ bool ticks2Sent = false;
  //int target2 = 108;     // 107 for 1 revolution
 
 void timer0_int_handler() {
-    //debugNum(1);
 #ifdef MASTER_PIC
 //#ifdef DEBUG_ON
 //    static int colorSensorCounter = 0;
@@ -152,6 +151,7 @@ void timer0_int_handler() {
 // This one does the action I wanted for this program on a timer1 interrupt
 
 void timer1_int_handler() {
+    debugNum(4);
 //    unsigned int result;
     // read the timer and then send an empty message to main()
 #ifdef __USE18F2680
