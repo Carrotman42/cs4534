@@ -106,9 +106,11 @@ void sendFrameData(){
 
 void sendFrameData(uint8 msgid){
     //this block may be unnecessary but it makes all invalid data easier to see for now
+#ifndef PICMAN
     if(!frameDataReady()){
         clearFrameData(); //need to change this - this will reset all data already gathered
     }
+#endif
     char packedFrame[FRAME_MEMBERS] = {0};
     uint8 bytes_packed = packFrame(packedFrame, sizeof packedFrame); //puts frame into char array
     if(bytes_packed == 0) return;

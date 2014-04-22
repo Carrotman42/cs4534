@@ -41,6 +41,9 @@ int finalMotor2Ticks = 0;
 bool ticks1Sent = false;
 bool ticks2Sent = false;
 #endif
+#ifdef MASTER_PIC
+static uint8 colorSensor = 0;
+#endif
 
 
  // motor 1 ticks for 1 revolution: 2750
@@ -52,21 +55,19 @@ bool ticks2Sent = false;
 
 void timer0_int_handler() {
 #ifdef MASTER_PIC
-//#ifdef DEBUG_ON
-//    static int colorSensorCounter = 0;
-//    static uint8 in_progress = 0;
-//    if(colorSensorCounter == 100){
-//        colorSensorCounter = 0;
-//        char command[5] = {0};
-//        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
-//        uart_send_array(command, length);
-//        in_progress++;
-//        //debugNum(1);
-//    }
-//    else if(in_progress < 2){
-//        colorSensorCounter++;
-//    }
-//#endif
+    if(colorSensor){
+        static uint8 overflows = 0;
+        if(overflows == 20){ //wait for overflows
+            //send int clear to the color sensor here
+            overflows = 0;
+            colorSensor = 0;
+            debugNum(2);
+        }
+        else{
+            overflows++;
+        }
+    }
+
     static uint8 loop = 0;
 
     char data[10] = {0};
@@ -402,25 +403,11 @@ void timer2_int_handler(){
 
 
 #ifdef MASTER_PIC
-void timer3_int_handler(){
-    static uint8 counter = 0;
-    if(counter == 10){ //wait 10 overflows
-        //send int clear to the color sensor here
-        counter = 0;
-        T3CONbits.TMR3ON = 0; //turn off the timer
-    }
-    else{
-        counter++;
-    }
-}
-
-
 void color_sensor_int_handler(void){
+    //debugNum(1);
     char command[5] = {0};
     uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
     uart_send_array(command, length);
-    TMR3H=0;          //Clear timer3-related registers
-    TMR3L=0;
-    T3CONbits.TMR3ON = 1; //turn on the timer, wait to clear the interrupt on the color sensor
+    colorSensor = 1;
 }
 #endif

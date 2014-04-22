@@ -14,7 +14,6 @@ void timer1_int_handler(void);
 void timer2_int_handler(void);
 
 #ifdef MASTER_PIC
-void timer3_int_handler(void);
 void color_sensor_int_handler(void);
 #endif
 
