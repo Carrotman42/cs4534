@@ -138,9 +138,9 @@ void init_uart_recv(uart_comm *uc) {
 }
 
 void uart_send_array(char* data, char length) {
-
+    debugNum(2);
 #if !defined(SENSOR_PIC) && !defined(MOTOR_PIC)
-    if(!wifly_setup) return; //just return
+    //if(!wifly_setup) return; //just return
 #endif
     if(uc_ptr->status != UART_IDLE){
         if(in_main()){

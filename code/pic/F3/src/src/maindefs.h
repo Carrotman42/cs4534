@@ -64,6 +64,7 @@
 #define MSGT_COMM_BRAIN_BUSY 50
 #define MSGT_COMM_ROVER_BUSY 51
 #define MSGT_TURN_CHECK 60
+#define MSGT_COLOR_SENSOR_INIT 70
 
 
 
@@ -72,10 +73,10 @@
 //#define ARM_EMU //arm emulator (really simple, just sends commands on a timer)
 //#define ROVER_EMU //rover emulator (really simple, just sends dummy values back over uart and sends back frame data on a timer)
 
-#define PICMAN
+//#define PICMAN
 //#define SENSOR_PIC
 //#define MOTOR_PIC
-//#define MASTER_PIC
+#define MASTER_PIC
 
 
 #if defined(MASTER_PIC) || defined(ARM_EMU)
@@ -87,6 +88,7 @@
 #define MOTOR_ADDR 0x20
 #define SENSOR_ADDR 0x10
 #define PICMAN_ADDR 0x10
+#define COLOR_SENSOR_ADDR 0x29
 
 
 #include "my_uart.h"

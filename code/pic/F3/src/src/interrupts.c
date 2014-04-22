@@ -90,7 +90,6 @@ void InterruptHandlerHigh() {
     // We need to check the interrupt flag of each enabled high-priority interrupt to
     // see which device generated this interrupt.  Then we can call the correct handler.
 
-    debugNum(4);
 
     // check to see if we have an I2C interrupt
     if (PIR1bits.SSPIF) {
@@ -109,8 +108,6 @@ void InterruptHandlerHigh() {
 
 #ifdef MASTER_PIC
     if(INTCONbits.INT0IF){
-        debugNum(2);
-        debugNum(2);
         INTCONbits.INT0IF = 0;
         color_sensor_int_handler();
     }
@@ -154,14 +151,6 @@ interrupt low_priority
 #endif
 void InterruptHandlerLow() {
     
-#ifdef MASTER_PIC
-    debugNum(4);
-    if(INTCON3bits.INT1IF){
-        INTCON3bits.INT1IF = 0;
-        color_sensor_int_handler();
-    }
-#endif
-
     #ifdef SENSOR_PIC
     if (PIR1bits.ADIF) {
         PIR1bits.ADIF = 0;

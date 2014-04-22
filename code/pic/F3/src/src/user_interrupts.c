@@ -23,6 +23,10 @@
 #include "my_ultrasonic.h"
 #endif
 
+#ifdef MASTER_PIC
+#include "color_sensor.h"
+#endif
+
 
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
@@ -57,11 +61,11 @@ void timer0_int_handler() {
 #ifdef MASTER_PIC
     if(colorSensor){
         static uint8 overflows = 0;
-        if(overflows == 20){ //wait for overflows
+        if(overflows == 100){ //wait for overflows
             //send int clear to the color sensor here
+            clearColorSensorInterrupt();
             overflows = 0;
             colorSensor = 0;
-            debugNum(2);
         }
         else{
             overflows++;
@@ -110,16 +114,6 @@ void timer0_int_handler() {
 #endif
 
 
-#ifdef MASTER_PIC
-#ifdef DEBUG_ON
-    //WriteTimer0(0x4000);
-    //i2c_master_recv(0x10);
-    //char buf[1];
-    //buf[0] = 0x01;
-    //i2c_master_send(0x10, 1, buf);
-#endif
-#endif
-
 #ifdef SENSOR_PIC
     ADCON0bits.GO = 1;  //Start ADC sampling
     pulseUS();  //Start US Sampling
@@ -152,7 +146,7 @@ void timer0_int_handler() {
 // This one does the action I wanted for this program on a timer1 interrupt
 
 void timer1_int_handler() {
-    debugNum(4);
+//    debugNum(4);
 //    unsigned int result;
     // read the timer and then send an empty message to main()
 #ifdef __USE18F2680
@@ -405,7 +399,7 @@ void timer2_int_handler(){
 #ifdef MASTER_PIC
 void color_sensor_int_handler(void){
     //debugNum(1);
-    char command[5] = {0};
+    char command[HEADER_MEMBERS] = {0};
     uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
     uart_send_array(command, length);
     colorSensor = 1;

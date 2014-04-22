@@ -19,7 +19,10 @@
 #include "debug.h"
 #include "comm.h"
 #include "motor.h"
-#include<plib/pps.h>
+
+#ifdef MASTER_PIC
+#include "color_sensor.h"
+#endif
 
 #ifdef SENSOR_PIC
 #include "my_adc.h"
@@ -298,17 +301,6 @@ void main(void) {
 #endif
 
     
-#ifdef MASTER_PIC
-    ///////Color Sensor Interrupt//////////
-    TRISBbits.TRISB0 = 1;
-    ANCON1bits.PCFG12 = 1; //not sure which is port b
-    INTCONbits.INT0IE = 1;
-    INTCON2bits.INTEDG0 = 0;
-    INTCONbits.INT0IF = 0;
-    ///////////////////////////////////////
-
-#endif
-
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     //Timer0 interrupt
@@ -347,6 +339,18 @@ void main(void) {
 #elif defined I2C_MASTER
     //sending clock frequency
     i2c_configure_master(); //12MHz clock set hardcoded
+#endif
+
+#ifdef MASTER_PIC
+    ///////Color Sensor Interrupt//////////
+    TRISBbits.TRISB0 = 1;
+    ANCON1bits.PCFG12 = 1; //not sure which is port b
+    INTCONbits.INT0IE = 1;
+    INTCON2bits.INTEDG0 = 0;
+    INTCONbits.INT0IF = 0;
+    initializeColorSensor();
+    ///////////////////////////////////////
+
 #endif
 
 
@@ -490,10 +494,10 @@ void main(void) {
                 };
                 case MSGT_UART_RECV_FAILED:
                 {
-                    debugNum(1);
                     debugNum(2);
-                    debugNum(1);
+                    debugNum(4);
                     debugNum(2);
+                    debugNum(4);
                     break;
                 };
                 case MSGT_UART_TX_BUSY:
@@ -557,7 +561,7 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(4);
+//                    debugNum(4);
                     i2c_master_recv(msgbuffer[0]);
                     break;
                 };
@@ -567,6 +571,10 @@ void main(void) {
 //                    debugNum(8);
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
+                };
+                case MSGT_COLOR_SENSOR_INIT:
+                {
+                    initializeColorSensorStage();
                 };
 #endif
                 default:
