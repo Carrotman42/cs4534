@@ -60,19 +60,26 @@ void addDataToBuffer(char ir0Data, char ir1Data){
 //    sort(buffer.ir1Array);
 }
 
-void sort(uint8* array){
+static inline void sort(uint8* array){
 //    debugNum(1);
-    char t = 0;
-    for (char i = 0; i < IRBUFFERSIZE-1; i++){
-        for (char j = 0; j < IRBUFFERSIZE-i-1;j++){
-            if (array[j] > array[j+1]){
-                t = array[j];
-                array[j] = array[j+1];
-                array[j+1] = t;
-            }
-        }
-    }
+//    char t = 0;
+//    for (char i = 0; i < IRBUFFERSIZE-1; i++){
+//        for (char j = 0; j < IRBUFFERSIZE-i-1;j++){
+//            if (array[j] > array[j+1]){
+//                t = array[j];
+//                array[j] = array[j+1];
+//                array[j+1] = t;
+//            }
+//        }
+//    }
 //    debugNum(1);
+
+uint8 i, j;
+for(i = 1; i < IRBUFFERSIZE; i++){
+    uint8 tmp = array[i];
+    for (j = i; j >= 1 && tmp < array[j-1]; j--)
+        array[j] = array[j-1];
+    array[j] = tmp;
 }
 
 void init_adc(){

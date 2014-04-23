@@ -18,7 +18,7 @@ extern "C" {
     void init_adc();
     void adc_int_handler();
     void addDataToBuffer(char ir0Data, char ir1Data);
-    void sort(uint8* array);
+    static inline void sort(uint8* array);
     char* transmitData();
     void calculateDistance();
 #endif
