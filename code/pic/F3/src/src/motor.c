@@ -262,9 +262,9 @@ void turnLeft()
 
 
     // readjust so the turn is as close as possible
-    target1 = 2;
-    target2 = 2;
-    unsigned char test[2] = {0x62, 0xA0};
+    target1 = 4;
+    target2 = 4;
+    unsigned char test[2] = {0x62, 0xA0};   // readjust right
     uart_send_array(test, 2);
 
 

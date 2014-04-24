@@ -61,7 +61,7 @@ void timer0_int_handler() {
 #ifdef MASTER_PIC
     if(colorSensor){
         static uint8 overflows = 0;
-        if(overflows == 100){ //wait for overflows
+        if(overflows == 50){ //wait for overflows
             //send int clear to the color sensor here
             clearColorSensorInterrupt();
             overflows = 0;

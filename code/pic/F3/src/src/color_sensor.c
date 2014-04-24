@@ -6,6 +6,7 @@
 uint8 colorSensorInitStage = 0;
 
 void initializeColorSensor(void){
+    for(int i = 0; i < 10000; i++);
     colorSensorInitStage = 0;
     initializeColorSensorStage(); //start at stage 0
 }
