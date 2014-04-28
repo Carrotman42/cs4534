@@ -99,6 +99,7 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
                     else{
                         readjustRight();
                     }
+                    turnCompleted();
                     break;
                 case 0x04:
                     turnStarted();

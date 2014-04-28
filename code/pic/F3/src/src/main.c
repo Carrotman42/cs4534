@@ -442,13 +442,13 @@ void main(void) {
                     unsigned char frame[FRAME_MEMBERS] = {0};
                     packFrame(frame, sizeof frame);
                     //frame[1] is ir1 and frame[2] is ir2
-                    frame[1] = 1;//just for now, provide these dummy values
-                    frame[2] = 1;
-                    if((frame[1] > frame[2]) && (frame[1] - frame[2]) > 1){
+//                    frame[1] = 1;//just for now, provide these dummy values
+//                    frame[2] = 1;
+                    if((frame[1] > frame[2]) && (frame[1] - frame[2]) > 10){
                         //readjust right
                         // no need to call waitForSensorFrame() again
                     }
-                    else if((frame[2] > frame[1]) && (frame[2] - frame[1]) > 1){
+                    else if((frame[2] > frame[1]) && (frame[2] - frame[1]) > 10){
                         //readjust left
                         // no need to call waitForSensorFrame() again
                     }
