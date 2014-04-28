@@ -1,5 +1,5 @@
 #include "maindefs.h"
-#define ADCCONFIG
+//#define ADCCONFIG
 #ifdef SENSOR_PIC
 #ifndef __XC8
 #include <adc.h>
@@ -50,14 +50,14 @@ static void addBuffer(char data){
 
 void addDataToBuffer(char ir0Data, char ir1Data){
 //    debugNum(2);
-    buffer.ir0Array[buffer.count] = ir0Data;
-    buffer.ir1Array[buffer.count++] = ir1Data;
+    buffer.ir0Array[HALFBUFFER] = ir0Data;
+    buffer.ir1Array[HALFBUFFER] = ir1Data;
 
-    if(count == IRBUFFERSIZE)
-        buffer.count = 0;
+//    if(count == IRBUFFERSIZE)
+//        buffer.count = 0;
 
-//    sort(buffer.ir0Array);
-//    sort(buffer.ir1Array);
+    sort(buffer.ir0Array);
+    sort(buffer.ir1Array);
 }
 
 static inline void sort(uint8* array){
@@ -74,12 +74,13 @@ static inline void sort(uint8* array){
 //    }
 //    debugNum(1);
 
-uint8 i, j;
-for(i = 1; i < IRBUFFERSIZE; i++){
-    uint8 tmp = array[i];
-    for (j = i; j >= 1 && tmp < array[j-1]; j--)
-        array[j] = array[j-1];
-    array[j] = tmp;
+    uint8 i, j;
+    for(i = 1; i < IRBUFFERSIZE; i++){
+        uint8 tmp = array[i];
+        for (j = i; j >= 1 && tmp < array[j-1]; j--)
+            array[j] = array[j-1];
+        array[j] = tmp;
+    }
 }
 
 void init_adc(){
@@ -155,12 +156,12 @@ void adc_int_handler() {
 //        sort(buffer.ir0Array);
 //        sort(buffer.ir1Array);
 #ifndef ADCCONFIG
-        debugNum(4);
-        debugNum(4);
-        calculateDistance();
-//        calculateDistance(buffer.ir0Array[HALFBUFFER],buffer.ir1Array[HALFBUFFER]);
-        debugNum(4);
-        debugNum(4);
+//        debugNum(4);
+//        debugNum(4);
+//        calculateDistance();
+////        calculateDistance(buffer.ir0Array[HALFBUFFER],buffer.ir1Array[HALFBUFFER]);
+//        debugNum(4);
+//        debugNum(4);
 #endif
     }
 }
@@ -169,8 +170,8 @@ char* transmitData(){
 #ifndef ADCCONFIG
 //    calculateDistance(ir0[HALFBUFFER],ir1[HALFBUFFER]);
 
-    distanceArray[0] = ir0_distance;
-    distanceArray[1] = ir1_distance;
+    distanceArray[0] = buffer.ir0Array[HALFBUFFER];
+    distanceArray[1] = buffer.ir1Array[HALFBUFFER];
 
     //uart_send_array(distanceArray,2);
     return distanceArray;
@@ -200,19 +201,19 @@ char* transmitData(){
 
 #ifndef ADCCONFIG
 void calculateDistance(){
-    char ir0[IRBUFFERSIZE] = {0};
-    char ir1[IRBUFFERSIZE] = {0};
+//    char ir0[IRBUFFERSIZE] = {0};
+//    char ir1[IRBUFFERSIZE] = {0};
+//
+//    for(char i = 0; i < IRBUFFERSIZE; i++){
+//        ir0[i] = buffer.ir0Array[i];
+//        ir1[i] = buffer.ir1Array[i];
+//    }
+//
+//    sort(ir0);
+//    sort(ir1);
 
-    for(char i = 0; i < IRBUFFERSIZE; i++){
-        ir0[i] = buffer.ir0Array[i];
-        ir1[i] = buffer.ir1Array[i];
-    }
-
-    sort(ir0);
-    sort(ir1);
-
-    char ir0_rawData = ir0[HALFBUFFER];
-    char ir1_rawData = ir1[HALFBUFFER];
+    char ir0_rawData = buffer.ir0Array[HALFBUFFER];
+    char ir1_rawData = buffer.ir1Array[HALFBUFFER];
 
 
     uint8 ir0_index;
