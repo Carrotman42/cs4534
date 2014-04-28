@@ -15,6 +15,10 @@ typedef enum {
 	Overrun = 3,
 	Lap = 4,
 	Error = 5,
+	StateChange = 6,
+	// Should accompany a StateChange, or else the output message won't make sense.
+	NewEvent = 7,
+	InvalidEvent = 8,
 } DebugType;
 
 typedef struct {

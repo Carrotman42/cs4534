@@ -12,7 +12,9 @@
 // PROT(NAME,  FLAGS, PARAM, HasPayload)
 Prot(Forward,     2, 0, 1);
 Prot(TurnCCW,     2, 4, 1);
+Prot(AdjuCCW,     2, 4, 1);
 Prot(TurnCW,      2, 3, 1);
+Prot(AdjuCW,      2, 3, 1);
 Prot(Stop,        2, 2, 0);
 Prot(StartFrames, 4, 0, 0);
 Prot(StopFrames,  4, 3, 0);
@@ -23,7 +25,9 @@ Prot(TurnAck,     4, 5, 0);
 static const char protBytes[LASTROVER][3] = {
 	P(Forward),
 	P(TurnCCW),
+	P(AdjuCCW),
 	P(TurnCW),
+	P(AdjuCW),
 	P(Stop),
 	P(StartFrames),
 	P(StopFrames),
@@ -61,7 +65,9 @@ int copyToBuf(RoverCmd cmd, char* dest) {
 	switch (cmd.act) {
 		Case(Forward);
 		Case(TurnCCW);
+		Case(AdjuCCW);
 		Case(TurnCW);
+		Case(AdjuCW);
 		Case(Stop);
 		Case(StartFrames);
 		Case(StopFrames);
@@ -185,7 +191,7 @@ inline RoverAction nextCommand(int* len, char* outBuf) {
 			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
 		}
-		SLEEP(500);
+		SLEEP(150);
 	} else {
 		dbg(SendCmd, cmd.act);
 	}

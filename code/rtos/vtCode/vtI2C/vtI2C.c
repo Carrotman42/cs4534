@@ -224,10 +224,6 @@ static portTASK_FUNCTION( vI2CMonitorTask, pvParameters )
 		// Block until the I2C operation is complete -- we *cannot* overlap operations on the I2C bus...
 		FAILIF(xSemaphoreTake(devPtr->binSemaphore,portMAX_DELAY) != pdTRUE);
 		
-		if (ret) {
-		 	// TODO: Check this value too?
-		}
-		
 		gotData(last, inBuf);
 	}
 }

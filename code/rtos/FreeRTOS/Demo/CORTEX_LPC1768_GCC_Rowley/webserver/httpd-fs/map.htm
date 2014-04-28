@@ -129,6 +129,15 @@ function tableUpdate(data) {
 			case 5:
 				msgs += "<br>Error: " + param;
 				break;
+			case 6:
+				msgs += "<br>Changed to state " + param;
+				break;
+			case 7:
+				msgs += "<br>New Event: " + param;
+				break;
+			case 8:
+				msgs += "<br>Invalid event for current state (state=" + param + ")";
+				break;
 			default:
 				msgs += "<br>Unknown debug message. ID=" + data[cur] + ", param=" + param;
 				break;

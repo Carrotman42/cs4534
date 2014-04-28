@@ -11,6 +11,8 @@
 #define INIT 0
 #define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
+#define WAIT_EVENT_SLOW 10
+#define WAIT_TURN 11
 #define L_TURN_STALL 3
 #define R_TURN_STALL 4
 #define ADJ_TURN_STALL 8
@@ -84,15 +86,94 @@ void debug(int line, char* info);
 #else
 
 // TODO: Fix these when we get a rover (when it eventually gets built...)
-#define TOO_FAR 255
-#define TOO_CLOSE 0
-#define TOO_CLOSE_FRONT 15
-#define GO_SLOW moveForward(50)
+#define TOO_FAR 80
+#define TOO_CLOSE 15
+#define TOO_CLOSE_FRONT 8
+#define TOO_CLOSE_SLOW 26
+#define GO_SLOW moveForward(1)
+#define GO_FASTER moveForward(1)
+
 
 #endif
 
 PATH_FINDING_DECL {
+	currentstate = INIT;
+	int lastWasData = 0;
+	for (;;) {
+		int prevstate = currentstate;
+		FsmEvent event = nextEvent();
+		if (event == NEW_SENSOR_DATA) {
+			if (lastWasData) goto skipDbg;
+			lastWasData = 1;
+		} else {
+			lastWasData = 0;
+		}
+		dbg(NewEvent, event);
+skipDbg:
+		{
+			bBuf(30);
+			bStr("State: ");
+			bByte(currentstate);
+			bStr(", Event: ");
+			bByte(event);
+			bPrint(5);
+		}
+		
+		switch (event) {
+			case START:
+				GO_SLOW;
+				currentstate = WAIT_EVENT;
+				break;
+			case RESET_ROVER:
+				stop();
+				currentstate = INIT;
+				break;
+			case NEW_SENSOR_DATA:
+				if (currentstate != WAIT_EVENT) {
+					continue;
+				}
+				Memory mem;
+				mapGetMemory(&mem);
+				
+				if (mem.Forward < TOO_CLOSE_FRONT) {
+					// Turn left
+					turnCCW(90);
+					currentstate = WAIT_TURN;
+				}else if (mem.Right1 > TOO_FAR && mem.Right2 > TOO_FAR) {
+					// Gotta turn right!
+					turnCW(90);
+					currentstate = WAIT_TURN;
+				} else if (mem.Right1 < TOO_CLOSE && mem.Right2 < TOO_CLOSE) {
+					// Slight readjust left
+					adjuCCW(10);
+					currentstate = WAIT_TURN;
+				}
+				break;
+			case TURN_COMPLETE:
+				if (currentstate != WAIT_TURN) {
+					dbg(InvalidEvent, TURN_COMPLETE);
+					break;
+				}
+				GO_SLOW;
+				currentstate = WAIT_EVENT;
+				break;
+			case COLOR_SENSOR_TRIGGERED:
+				if (mapLap() == 3) {
+					currentstate = END;
+					stop();
+				}
+				break;
+		}
+		
+		
+		if (currentstate != prevstate) {
+			dbg(StateChange, currentstate);
+		}
+	}
 	
+} FSM_FOOT
+	
+/*
 	currentstate = INIT;
 	int cur = 0;
 	for(;;){
@@ -106,7 +187,7 @@ PATH_FINDING_DECL {
 			bPrint(5);
 		}
 		if (++cur % 5 == 0) {
-			LCDrefreshMap();
+			//LCDrefreshMap();
 		}
 		if (event == RESET_ROVER) {
 			currentstate = INIT;
@@ -115,19 +196,54 @@ PATH_FINDING_DECL {
 		
 		#define Remember(name) Memory name; mapGetMemory(&name)
 		#define CHECK_FRONT(mem) \
-			if(mem.Forward <= TOO_CLOSE_FRONT){\
-				stop(); \
+			if (mem.Forward <= TOO_CLOSE_SLOW) { \
+				GO_SLOW; \
+				currentstate = WAIT_EVENT_SLOW; \
+			} else if(mem.Forward <= TOO_CLOSE_FRONT){\
 				turnCCW(90); \
 				currentstate = L_TURN_STALL; \
 				registerTickListener(0); \
 			}
 		
+		int prevState = currentstate;
 		//debug(event, "Got event");
 		switch(currentstate){
 			case INIT:
 				if (event == START) {
 					currentstate = WAIT_EVENT;
-					GO_SLOW;
+					GO_FASTER;
+				}
+				break;
+			case WAIT_EVENT_SLOW:
+				switch(event){
+					case NEW_SENSOR_DATA: {
+						Remember(mem);
+						
+						if(mem.Forward <= TOO_CLOSE_FRONT){
+							turnCCW(90); 
+							currentstate = L_TURN_STALL; 
+							registerTickListener(0); 
+						} else if((mem.Right1 > TOO_FAR) && (mem.Right2 > TOO_FAR)){
+						
+							currentstate = WAIT_TICKS;
+						} else if ((mem.Right1 < TOO_CLOSE) && (mem.Right2 < TOO_CLOSE)) {
+							currentstate = ADJ_TURN_STALL;
+							// Slightly left
+							turnCCW(10);
+						}
+						
+						break;
+					}
+					case COLOR_SENSOR_TRIGGERED: {
+						// If at the beginnning of the 3rd lap, finish and stop
+						if (mapLap() == 3) {
+							currentstate = END;
+							stop();
+						}
+						break;
+					}
+					default:
+						goto invalid;
 				}
 				break;
 			case WAIT_EVENT:
@@ -142,7 +258,6 @@ PATH_FINDING_DECL {
 						} else if ((mem.Right1 < TOO_CLOSE) && (mem.Right2 < TOO_CLOSE)) {
 							currentstate = ADJ_TURN_STALL;
 							// Slightly left
-							stop();
 							turnCCW(10);
 						}
 						
@@ -166,7 +281,7 @@ PATH_FINDING_DECL {
 						// Ignore sensor data here
 						break;
 					case TURN_COMPLETE:
-						GO_SLOW;
+						GO_FASTER;
 						currentstate = WAIT_EVENT;
 						break;
 					default:
@@ -179,7 +294,7 @@ PATH_FINDING_DECL {
 						// Ignore sensor data here
 						break;
 					case TURN_COMPLETE:
-						GO_SLOW;
+						GO_FASTER;
 						// Just turned slightly, go back to normal
 						currentstate = WAIT_EVENT;
 						// Maybe? registerTickListener(30);
@@ -194,7 +309,7 @@ PATH_FINDING_DECL {
 						// Ignore sensor data here
 						break;
 					case TURN_COMPLETE:
-						GO_SLOW;
+						GO_FASTER;
 						// Just turned right - try and find the wall again
 						registerTickListener(50);
 						currentstate = WAIT_TICKS;
@@ -216,11 +331,10 @@ PATH_FINDING_DECL {
 						
 						// Turn right if we don't know where the wall to our right is
 						if((mem.Right1 > TOO_FAR) && (mem.Right2 > TOO_FAR)){
-							stop();
 							turnCW(90);
 							currentstate = R_TURN_STALL;
 						} else {
-							GO_SLOW;
+							GO_FASTER;
 							currentstate = WAIT_EVENT;
 						}
 						break;
@@ -246,6 +360,11 @@ PATH_FINDING_DECL {
 				
 		}
 		
+		if (currentstate != prevState) {
+			dbg(StateChange, currentstate);
+			dbg(BecauseEvent, event);
+		}
+		
 		continue;
 		
 invalid:
@@ -258,7 +377,7 @@ invalid:
 			bPrint(6);
 		}
 	}
-} FSM_FOOT
+} FSM_FOOT*/
 
 
 #ifdef FSM_TEST

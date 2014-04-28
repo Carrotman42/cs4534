@@ -12,7 +12,9 @@ typedef enum {
 	StopFrames = 5,
 	ReadFrames = 6,
 	TurnAck = 7,
-	LASTROVER = 8,
+	AdjuCCW = 8,
+	AdjuCW = 9,
+	LASTROVER = 10,
 } RoverAction;		  
 
 typedef struct {
@@ -47,7 +49,9 @@ void registerTickListener(int x);
 
 CMD_FUNC(moveForward, Forward);
 CMD_FUNC(turnCCW, TurnCCW);
+CMD_FUNC(adjuCCW, AdjuCCW);
 CMD_FUNC(turnCW, TurnCW);
+CMD_FUNC(adjuCW, AdjuCW);
 CMD_FUNC_NOARG(stop, Stop);
 
 #endif

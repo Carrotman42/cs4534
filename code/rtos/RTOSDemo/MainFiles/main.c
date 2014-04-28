@@ -124,7 +124,6 @@ tick hook). */
 #define mainQUEUE_POLL_PRIORITY				( tskIDLE_PRIORITY)
 #define mainSEM_TEST_PRIORITY				( tskIDLE_PRIORITY)
 #define mainBLOCK_Q_PRIORITY				( tskIDLE_PRIORITY)
-#define mainUIP_TASK_PRIORITY				( tskIDLE_PRIORITY)
 #define mainINTEGER_TASK_PRIORITY           ( tskIDLE_PRIORITY)
 #define mainGEN_QUEUE_TASK_PRIORITY			( tskIDLE_PRIORITY)
 #define mainFLASH_TASK_PRIORITY				( tskIDLE_PRIORITY)

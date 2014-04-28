@@ -67,7 +67,7 @@ void mapMarkSensor(int val, Dir dir) {
 void mapMark() {
 	MapInfo(mem.X/MAP_RESOLUTION, mem.Y/MAP_RESOLUTION, ind, shift);
 	map.data[ind] = map.data[ind] | (3 << shift);
-	
+
 	// Only record the data when it's relatively close
 	if (mem.Forward < 100) {
 		mapMarkSensor(mem.Forward, mem.dir);
@@ -105,6 +105,8 @@ inline void mapGetMemory(Memory* dest){
 	//    we could get a partial representation of reality.
 	LOCK
 		*dest = mem;
+		dest->Right1 = dest->Right1;
+		dest->Right2 = dest->Right2;
 	UNLOCK
 }
 // Returns a copy of the current map into dest
@@ -158,6 +160,12 @@ int mapLap() {
 		return 4;
 	}
 }
+   
+#include <math.h>
+int valToCm(int v) {
+	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281));
+}
+
 void mapReportNewFrame(int colorSensed, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
 	
@@ -169,17 +177,21 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	Frame *f = (Frame*)frame;
 	int countDone = 0;
 	
+	// Do IR calculations before getting the lock
+	int ir1 = valToCm(f->IR1);
+	int ir2 = valToCm(f->IR2);
+	
 	LOCK
 		mem.Forward = f->ultrasonic;
-		mem.Right1 = f->IR1;
-		mem.Right2 = f->IR2;
+		mem.Right1 = ir1;
+		mem.Right2 = ir2;
 		
 		mem.newDir = 0;
 		if (mem.newDir) {
 			mem.newDir = 0;
 			// Ignore encorder values for the first frames after turning.
 		} else {
-			int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2;
+			int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2/(80/MAP_RESOLUTION);
 			
 			if (mem.tCount > 0) {
 				if (mem.tCount > ticks) {
