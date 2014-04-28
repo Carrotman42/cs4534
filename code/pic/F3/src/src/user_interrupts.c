@@ -23,6 +23,10 @@
 #include "my_ultrasonic.h"
 #endif
 
+#ifdef MASTER_PIC
+#include "color_sensor.h"
+#endif
+
 
 // A function called by the interrupt handler
 // This one does the action I wanted for this program on a timer0 interrupt
@@ -41,6 +45,9 @@ int finalMotor2Ticks = 0;
 bool ticks1Sent = false;
 bool ticks2Sent = false;
 #endif
+#ifdef MASTER_PIC
+static uint8 colorSensor = 0;
+#endif
 
 
  // motor 1 ticks for 1 revolution: 2750
@@ -52,21 +59,19 @@ bool ticks2Sent = false;
 
 void timer0_int_handler() {
 #ifdef MASTER_PIC
-//#ifdef DEBUG_ON
-//    static int colorSensorCounter = 0;
-//    static uint8 in_progress = 0;
-//    if(colorSensorCounter == 100){
-//        colorSensorCounter = 0;
-//        char command[5] = {0};
-//        uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
-//        uart_send_array(command, length);
-//        in_progress++;
-//        //debugNum(1);
-//    }
-//    else if(in_progress < 2){
-//        colorSensorCounter++;
-//    }
-//#endif
+    if(colorSensor){
+        static uint8 overflows = 0;
+        if(overflows == 50){ //wait for overflows
+            //send int clear to the color sensor here
+            clearColorSensorInterrupt();
+            overflows = 0;
+            colorSensor = 0;
+        }
+        else{
+            overflows++;
+        }
+    }
+
     static uint8 loop = 0;
 
     char data[10] = {0};
@@ -109,16 +114,6 @@ void timer0_int_handler() {
 #endif
 
 
-#ifdef MASTER_PIC
-#ifdef DEBUG_ON
-    //WriteTimer0(0x4000);
-    //i2c_master_recv(0x10);
-    //char buf[1];
-    //buf[0] = 0x01;
-    //i2c_master_send(0x10, 1, buf);
-#endif
-#endif
-
 #ifdef SENSOR_PIC
     ADCON0bits.GO = 1;  //Start ADC sampling
     pulseUS();  //Start US Sampling
@@ -151,7 +146,7 @@ void timer0_int_handler() {
 // This one does the action I wanted for this program on a timer1 interrupt
 
 void timer1_int_handler() {
-    debugNum(4);
+//    debugNum(4);
 //    unsigned int result;
     // read the timer and then send an empty message to main()
 #ifdef __USE18F2680
@@ -402,25 +397,11 @@ void timer2_int_handler(){
 
 
 #ifdef MASTER_PIC
-void timer3_int_handler(){
-    static uint8 counter = 0;
-    if(counter == 10){ //wait 10 overflows
-        //send int clear to the color sensor here
-        counter = 0;
-        T3CONbits.TMR3ON = 0; //turn off the timer
-    }
-    else{
-        counter++;
-    }
-}
-
-
 void color_sensor_int_handler(void){
-    char command[5] = {0};
+    //debugNum(1);
+    char command[HEADER_MEMBERS] = {0};
     uint8 length = generateColorSensorSensed(command, sizeof command, UART_COMM);
     uart_send_array(command, length);
-    TMR3H=0;          //Clear timer3-related registers
-    TMR3L=0;
-    T3CONbits.TMR3ON = 1; //turn on the timer, wait to clear the interrupt on the color sensor
+    colorSensor = 1;
 }
 #endif

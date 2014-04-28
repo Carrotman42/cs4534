@@ -86,8 +86,10 @@ interrupt
 #pragma interrupt InterruptHandlerHigh
 #endif
 void InterruptHandlerHigh() {
+
     // We need to check the interrupt flag of each enabled high-priority interrupt to
     // see which device generated this interrupt.  Then we can call the correct handler.
+
 
     // check to see if we have an I2C interrupt
     if (PIR1bits.SSPIF) {
@@ -103,6 +105,14 @@ void InterruptHandlerHigh() {
         // call whatever handler you want (this is "user" defined)
         timer0_int_handler();
     }
+
+#ifdef MASTER_PIC
+    if(INTCONbits.INT0IF){
+        INTCONbits.INT0IF = 0;
+        color_sensor_int_handler();
+    }
+#endif
+
     // check to see if we have an interrupt on timer 1
 #ifdef MOTOR_PIC
     else if (PIR1bits.TMR1IF) {
@@ -140,18 +150,6 @@ interrupt low_priority
 #endif
 void InterruptHandlerLow() {
     
-#ifdef MASTER_PIC
-    if(PIR2bits.TMR3IF){
-        PIR2bits.TMR3IF = 0;
-        timer3_int_handler();
-    }
-
-    if(INTCON3bits.INT1IF){
-        INTCON3bits.INT1IF = 0;
-        color_sensor_int_handler();
-    }
-#endif
-
     #ifdef SENSOR_PIC
     if (PIR1bits.ADIF) {
         PIR1bits.ADIF = 0;

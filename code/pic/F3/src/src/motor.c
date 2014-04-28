@@ -234,7 +234,7 @@ void turnRight()
      uart_send_array(test, 2);
 
      // wait for the 2 revolutions to be done or the kill flag to be true
-     while (!getCommandDone() && !killCommand);
+     while (!getCommandDone() );
      resetKill();
   
      stop();            // done with turning
@@ -262,13 +262,13 @@ void turnLeft()
 
 
     // readjust so the turn is as close as possible
-    target1 = 2;
-    target2 = 2;
-    unsigned char test[2] = {0x62, 0xA0};
+    target1 = 4;
+    target2 = 4;
+    unsigned char test[2] = {0x62, 0xA0};   // readjust right
     uart_send_array(test, 2);
 
 
-    while (!getCommandDone() && !killCommand);      // wait for readjustment to be complete
+    while (!getCommandDone() );      // wait for readjustment to be complete
     setCommandDone();
     resetTicks();
 
@@ -280,7 +280,7 @@ void turnLeft()
      uart_send_array(test, 2);
 
      // wait for the 2 revolutions to be done or the kill flag to be true
-     while (!getCommandDone() && !getCommandDone());     
+     while (!getCommandDone() );     
      resetKill();
 
      stop();            // done with turning

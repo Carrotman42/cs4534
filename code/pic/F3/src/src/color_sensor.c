@@ -3,39 +3,47 @@
 #include "color_sensor.h"
 #include "my_i2c.h"
 
-static char config[2] = {0};
+uint8 colorSensorInitStage = 0;
 
 void initializeColorSensor(void){
-    config[0] = 0x81;
-    config[1] = 0xFF;
+    for(int i = 0; i < 10000; i++);
+    colorSensorInitStage = 0;
+    initializeColorSensorStage(); //start at stage 0
+}
 
-    i2c_master_send_no_raw(0x29,2,config);
-
-    config[0] = 0x80;
-    config[1] = 0x13;
-
-    i2c_master_send_no_raw(0x29,2,config);
-
-    config[0] = 0x84;
-    config[1] = 0x02;
-
-    i2c_master_send_no_raw(0x29,2,config);
-
-    config[0] = 0x86;
-    config[1] = 0x14;
-
-    i2c_master_send_no_raw(0x29,2,config);
-
-    config[0] = 0x8C;
-    config[1] = 0x02;
-
-    i2c_master_send_no_raw(0x29,2,config);
-
-    config[0] = 0xE6;
-
-    i2c_master_send_no_raw(0x29,1,config);
-
-
+void initializeColorSensorStage(){
+    char config[2] = {0};
+    switch(colorSensorInitStage){
+        case ENABLE:
+            config[0] = 0x81;
+            config[1] = 0xFF;
+            break;
+        case INT_ENABLE:
+            config[0] = 0x80;
+            config[1] = 0x13;
+            break;
+        case THRESHOLD_LOW:
+            config[0] = 0x84;
+            config[1] = 0x02;
+            break;
+        case THRESHOLD_HIGH:
+            config[0] = 0x86;
+            config[1] = 0x14;
+            break;
+        case PERSISTENCE:
+            config[0] = 0x8C;
+            config[1] = 0x02;
+            break;
+        case INT_CLEAR:
+            clearColorSensorInterrupt();
+            break;
+        default:
+            break;
+    }
+    if(colorSensorInitStage != INT_CLEAR){
+        i2c_master_send_no_raw(COLOR_SENSOR_ADDR, 2, config);
+    }
+    colorSensorInitStage++;
 }
 
 //void initializeColorSensor(uint16 upperThresh, uint16 lowerThresh, char persistence){
@@ -58,10 +66,10 @@ void initializeColorSensor(void){
 //}
 
 void clearColorSensorInterrupt(void){
-
+    char config[1] = {0};
     config[0] = 0xE6;
 
-    i2c_master_send_no_raw(0x29,1,config);
+    i2c_master_send_no_raw(COLOR_SENSOR_ADDR,1,config);
 
 }
 

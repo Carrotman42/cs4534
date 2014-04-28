@@ -20,6 +20,10 @@
 #include "comm.h"
 #include "motor.h"
 
+#ifdef MASTER_PIC
+#include "color_sensor.h"
+#endif
+
 #ifdef SENSOR_PIC
 #include "my_adc.h"
 #include "sensorcomm.h"
@@ -285,7 +289,7 @@ void main(void) {
     OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
 #else
 #ifdef __USE18F46J50
-    OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
+    //OpenTimer1(TIMER_INT_ON & T1_SOURCE_FOSC_4 & T1_PS_1_8 & T1_16BIT_RW & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0x0);
 #else
 #ifndef MOTOR_PIC
 //    OpenTimer1(TIMER_INT_ON & T1_PS_1_8 & T1_16BIT_RW & T1_SOURCE_INT & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF);
@@ -296,21 +300,7 @@ void main(void) {
 #endif
 #endif
 
-    //Master PIC needs Timer 3 for color sensor logic
-#ifdef MASTER_PIC
-    ///////TIMER 3/////////////////////////
-    OpenTimer3(TIMER_INT_ON & T3_16BIT_RW & T3_SOURCE_FOSC_4 & T3_PS_1_8 & T3_SYNC_EXT_OFF & T3_OSC1EN_OFF);
-    T3CONbits.TMR3ON = 0; //turn off timer for now
-    IPR2bits.TMR3IP = 0; //low priority
-    ///////////////////////////////////////
-    ///////Color Sensor Interrupt//////////
-    INTCON3bits.INT1IE = 1;
-    INTCON3bits.INT1IP = 0; //low priority
-    INTCON2bits.INTEDG1 = 0; //interrupt on falling edge (color sensor is active low)
-    ///////////////////////////////////////
-
-#endif
-
+    
     // Decide on the priority of the enabled peripheral interrupts
     // 0 is low, 1 is high
     //Timer0 interrupt
@@ -351,6 +341,18 @@ void main(void) {
     i2c_configure_master(); //12MHz clock set hardcoded
 #endif
 
+#ifdef MASTER_PIC
+    ///////Color Sensor Interrupt//////////
+    TRISBbits.TRISB0 = 1;
+    ANCON1bits.PCFG12 = 1; //not sure which is port b
+    INTCONbits.INT0IE = 1;
+    INTCON2bits.INTEDG0 = 0;
+    INTCONbits.INT0IF = 0;
+    initializeColorSensor();
+    ///////////////////////////////////////
+
+#endif
+
 
     // configure the hardware USART device
 #ifdef __USE18F26J50
@@ -381,11 +383,14 @@ void main(void) {
     // enable high-priority interrupts and low-priority interrupts
     enable_interrupts();
     LATBbits.LB7 = 0;
+#ifndef MASTER_PIC
     LATBbits.LB0 = 0;
+#endif
     LATBbits.LB1 = 0;
     LATBbits.LB2 = 0;
     LATBbits.LB3 = 0;
     WRITETIMER0(0x00FF);
+    
 
     // loop forever
     // This loop is responsible for "handing off" messages to the subroutines
@@ -489,10 +494,10 @@ void main(void) {
                 };
                 case MSGT_UART_RECV_FAILED:
                 {
-                    debugNum(1);
                     debugNum(2);
-                    debugNum(1);
+                    debugNum(4);
                     debugNum(2);
+                    debugNum(4);
                     break;
                 };
                 case MSGT_UART_TX_BUSY:
@@ -556,7 +561,7 @@ void main(void) {
                 case MSGT_MASTER_RECV_BUSY:
                 {
                     //retry
-                    debugNum(4);
+//                    debugNum(4);
                     i2c_master_recv(msgbuffer[0]);
                     break;
                 };
@@ -566,6 +571,10 @@ void main(void) {
 //                    debugNum(8);
                     i2c_master_send(msgbuffer[0], length - 1, msgbuffer + 1); // point to second position (actual msg start)
                     break;
+                };
+                case MSGT_COLOR_SENSOR_INIT:
+                {
+                    initializeColorSensorStage();
                 };
 #endif
                 default:

@@ -64,6 +64,7 @@
 #define MSGT_COMM_BRAIN_BUSY 50
 #define MSGT_COMM_ROVER_BUSY 51
 #define MSGT_TURN_CHECK 60
+#define MSGT_COLOR_SENSOR_INIT 70
 
 
 
@@ -74,6 +75,8 @@
 
 //#define PICMAN
 #define SENSOR_PIC
+//#define MOTOR_PIC
+//#define SENSOR_PIC
 //#define MOTOR_PIC
 //#define MASTER_PIC
 
@@ -87,6 +90,7 @@
 #define MOTOR_ADDR 0x20
 #define SENSOR_ADDR 0x10
 #define PICMAN_ADDR 0x10
+#define COLOR_SENSOR_ADDR 0x29
 
 
 #include "my_uart.h"

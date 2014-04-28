@@ -18,6 +18,10 @@
 #include "motor.h"
 #endif
 
+#ifdef MASTER_PIC
+#include "color_sensor.h"
+#endif
+
 
 static i2c_comm *ic_ptr;
 
@@ -215,6 +219,11 @@ void i2c_tx_handler(){
                     i2c_master_recv(ic_ptr->addr); //send a request for data (either ack or data)
                 }
                 else{
+#ifdef MASTER_PIC
+                    if(colorSensorInitStage <= INT_CLEAR){
+                        FromI2CInt_sendmsg(0, MSGT_COLOR_SENSOR_INIT, (void*) 0);
+                    }
+#endif
                     ic_ptr->read_after_write = 1; //reset to 1 just in case
                 }
             }
@@ -313,14 +322,14 @@ void i2c_rx_handler(){
                     }
                 }
                 else{
-                    char error[6];
+                    char error[6] = {0};
                     generateChecksumError(error, sizeof error, UART_COMM); //the intention is that this may be sent over uart
                                                                    //but will not be sent over i2c
                     FromI2CInt_sendmsg(sizeof error, MSGT_I2C_MASTER_RECV_FAILED, (void *) error);
                 }
             }
             else{
-                char error[6];
+                char error[6] = {0};
                 if(ic_ptr->addr == SENSOR_ADDR){ //sensor pic
                     generateSensorPICDetectionError(error, sizeof error, UART_COMM);
                 }
