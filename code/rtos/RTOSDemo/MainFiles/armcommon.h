@@ -40,6 +40,12 @@
 
 #define aByte(dest, val) {         \
 		int t = (val);             \
+		if (t < 0) {               \
+			t = -t;                \
+			aChar(dest, '-');      \
+		} else {                   \
+			aChar(dest, ' ');      \
+		}                          \
 		aNib(dest, (t / 16) % 16); \
 		aNib(dest, (t     ) % 16); \
 	}
