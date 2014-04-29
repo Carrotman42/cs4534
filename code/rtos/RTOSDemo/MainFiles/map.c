@@ -72,7 +72,7 @@ void mapMark() {
 	if (mem.Forward < 100) {
 		mapMarkSensor(mem.Forward, mem.dir);
 	}
-	if (mem.Right1 < 100) {
+	if (mem.Right2 < 100) {
 		mapMarkSensor(mem.Right1, (mem.dir + 3) % 4);
 	}
 	
@@ -183,7 +183,9 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	
 	LOCK
 		mem.Forward = f->ultrasonic;
-		mem.Right1 = ir1;
+		mem.Last2 = mem.Last1;
+		mem.Last1 = mem.Right2;
+		//mem.Right1 = 0;
 		mem.Right2 = ir2;
 		
 		mem.newDir = 0;

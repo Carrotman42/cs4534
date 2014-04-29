@@ -85,11 +85,12 @@ void debug(int line, char* info);
 
 #else
 
-// TODO: Fix these when we get a rover (when it eventually gets built...)
-#define TOO_FAR 80
+#define WAY_TOO_FAR 70
+#define TOO_FAR_FOR_COMFORT 50
 #define TOO_CLOSE 15
-#define TOO_CLOSE_FRONT 8
+#define TOO_CLOSE_FRONT 14
 #define TOO_CLOSE_SLOW 26
+#define ADJU_PATIENCE 10
 #define GO_SLOW moveForward(1)
 #define GO_FASTER moveForward(1)
 
@@ -99,6 +100,7 @@ void debug(int line, char* info);
 PATH_FINDING_DECL {
 	currentstate = INIT;
 	int lastWasData = 0;
+	int recentlyAdju = 0;
 	for (;;) {
 		int prevstate = currentstate;
 		FsmEvent event = nextEvent();
@@ -120,6 +122,9 @@ skipDbg:
 		}
 		
 		switch (event) {
+			case TICK_COUNTING_DONE:
+				recentlyAdju = 0;
+				break;
 			case START:
 				GO_SLOW;
 				currentstate = WAIT_EVENT;
@@ -139,14 +144,22 @@ skipDbg:
 					// Turn left
 					turnCCW(90);
 					currentstate = WAIT_TURN;
-				}else if (mem.Right1 > TOO_FAR && mem.Right2 > TOO_FAR) {
-					// Gotta turn right!
+				}else if (mem.Right2 > WAY_TOO_FAR) {
+					// Gotta turn right! Probably a chicane
 					turnCW(90);
 					currentstate = WAIT_TURN;
-				} else if (mem.Right1 < TOO_CLOSE && mem.Right2 < TOO_CLOSE) {
+				} else if (mem.Right2 > TOO_FAR_FOR_COMFORT && !recentlyAdju) {
+					// Slight readjust left
+					adjuCW(10);
+					recentlyAdju = 1;
+					currentstate = WAIT_TURN;
+					mapRegisterTick(ADJU_PATIENCE);
+				} else if (mem.Right2 < TOO_CLOSE && !recentlyAdju) {
 					// Slight readjust left
 					adjuCCW(10);
+					recentlyAdju = 1;
 					currentstate = WAIT_TURN;
+					mapRegisterTick(ADJU_PATIENCE);
 				}
 				break;
 			case TURN_COMPLETE:

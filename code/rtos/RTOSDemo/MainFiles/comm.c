@@ -151,6 +151,9 @@ inline void gotData(RoverAction last, char* ret) {
 			}
 			// A payload of 0 means still turning, 1 means done turning
 			if (ret[HEADER_MEMBERS]) {
+				if (turning == 4) {
+					turning = 0;
+				}
 				mapReportTurn(turning);
 				turning = 0;
 			}
@@ -170,6 +173,8 @@ inline void gotData(RoverAction last, char* ret) {
 				turning = 1;
 			} else if (last == TurnCW) {
 				turning = -1;
+			} else if (last == AdjuCCW || last == AdjuCW) {
+				turning = 4;
 			}
 		}
 			break;
