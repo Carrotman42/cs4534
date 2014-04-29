@@ -17,13 +17,8 @@ typedef enum {
 
 
 #define INIT 0
-#define WAIT_START_LINE 1 //also continues to move forward
 #define WAIT_EVENT 2
-#define WAIT_EVENT_SLOW 10
 #define WAIT_TURN 11
-#define L_TURN_STALL 3
-#define R_TURN_STALL 4
-#define ADJ_TURN_STALL 8
 #define WAIT_TICKS 5
 #define END 7 //picman handles stop frame data and stop moving
 

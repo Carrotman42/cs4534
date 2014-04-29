@@ -56,8 +56,6 @@ void debug(int line, char*msg) {
 }
 #endif
 
-static int currentstate = WAIT_START_LINE;
-
 void debug(int line, char* info);
 
 
@@ -82,7 +80,7 @@ void debug(int line, char* info);
 #endif
 
 PATH_FINDING_DECL {
-	currentstate = INIT;
+	int currentstate = INIT;
 	int lastWasData = 0;
 	int recentlyAdju = 0;
 	for (;;) {
