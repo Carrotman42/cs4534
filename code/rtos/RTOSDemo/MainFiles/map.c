@@ -73,7 +73,7 @@ void mapMark() {
 		mapMarkSensor(mem.Forward, mem.dir);
 	}
 	if (mem.Right2 < 100) {
-		mapMarkSensor(mem.Right1, (mem.dir + 3) % 4);
+		mapMarkSensor(mem.Right2, (mem.dir + 3) % 4);
 	}
 	
 }
@@ -105,8 +105,6 @@ inline void mapGetMemory(Memory* dest){
 	//    we could get a partial representation of reality.
 	LOCK
 		*dest = mem;
-		dest->Right1 = dest->Right1;
-		dest->Right2 = dest->Right2;
 	UNLOCK
 }
 // Returns a copy of the current map into dest
@@ -166,13 +164,14 @@ int valToCm(int v) {
 	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281));
 }
 
-#define HIST 6
+#define HIST 3
 int checkIRSpike(int v) {
 	static int past[HIST];
 	
 	int oks = HIST;
+	int i;
 	// Ignore 0th on purpose!
-	for (int i = 1; i < HIST; i++) {
+	for (i = 1; i < HIST; i++) {
 		int cur = past[i];
 		int d = v - cur;
 		if (d > 5 || d < -5) {
@@ -180,6 +179,7 @@ int checkIRSpike(int v) {
 		}
 		past[i-1] = cur;
 	}
+	past[HIST-1] = v;
 	
 	return oks > HIST/2;
 }
@@ -206,24 +206,8 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	//   but only if we decide to use this new IR (if it isn't a spike)
 	int ir2 = irok ? valToCm(f->IR2) : mem.Right2;
 	
-	{
-		bBuf(50);
-		bStr("D1: ");
-		bByte(d1);
-		bStr(", D2: ");
-		bByte(d2);
-		if (irok) {
-			bStr("; :)");
-		} else {
-			bStr("; NO");
-		}
-		bPrint(8);
-	}
-	
 	LOCK
 		mem.Forward = f->ultrasonic;
-		mem.Last2 = mem.Last1;
-		mem.Last1 = mem.Right2;
 		//mem.Right1 = 0;
 		mem.Right2 = ir2;
 		

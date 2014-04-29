@@ -363,8 +363,8 @@ static PT_THREAD(dump_dbg(struct httpd_state *s, char *ptr)) {
 		char f, r1, r2;
 	} toWrite;
 	toWrite.f = (char)(m.Forward);
-	toWrite.r1 = (char)(m.Right1);
-	toWrite.r2 = (char)(m.Right2);
+	toWrite.r1 = (char)m.Right2;
+	toWrite.r2 = (char)(m.tCount);
 	
 	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
 	
