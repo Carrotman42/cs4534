@@ -115,47 +115,66 @@ skipDbg:
 				stop();
 				currentstate = INIT;
 				break;
-			case NEW_SENSOR_DATA:
-				if (currentstate != WAIT_EVENT) {
-					continue;
-				}
+			case NEW_SENSOR_DATA: {  
 				Memory mem;
 				mapGetMemory(&mem);
+				int turnok = 1;
+				if (currentstate == FIND_WALL) {
+					if (mem.Right2 < TOO_FAR_FOR_COMFORT) {
+						// Found the wall
+						currentstate = WAIT_EVENT;
+					}
+					turnok = 0;
+				} else if (currentstate != WAIT_EVENT) {
+					break;
+				}
 				
 				if (mem.Forward < TOO_CLOSE_FRONT) {
 					// Turn left
 					turnCCW(90);
-					currentstate = WAIT_TURN;
-				}else if (mem.Right2 > WAY_TOO_FAR) {
+					currentstate = TURNING_L;
+				}else if (turnok && mem.Right2 > WAY_TOO_FAR) {
 					// Gotta turn right! Probably a chicane
 					turnCW(90);
-					currentstate = WAIT_TURN;
-				} else if (mem.Right2 > TOO_FAR_FOR_COMFORT && !recentlyAdju) {
+					currentstate = TURNING_R;
+				} else if (turnok && mem.Right2 > TOO_FAR_FOR_COMFORT && !recentlyAdju) {
 					// Slight readjust left
 					adjuCW(10);
-					currentstate = WAIT_TURN;
+					currentstate = TURNING_ADJ;
 					int amt = 3 + TOO_FAR_FOR_COMFORT - mem.Right2;
 					recentlyAdju = amt > 0;
 					if (recentlyAdju) {
 						mapRegisterTick(amt);
 					}
-				} else if (mem.Right2 < TOO_CLOSE && !recentlyAdju) {
+				} else if (turnok && mem.Right2 < TOO_CLOSE && !recentlyAdju) {
 					// Slight readjust left
 					adjuCCW(10);
-					currentstate = WAIT_TURN;
+					currentstate = TURNING_ADJ;
 					recentlyAdju = mem.Right2 > 1;
 					if (recentlyAdju) {
 						mapRegisterTick(mem.Right2);
 					}
 				}
 				break;
+			}
 			case TURN_COMPLETE:
-				if (currentstate != WAIT_TURN) {
-					dbg(InvalidEvent, TURN_COMPLETE);
-					break;
+				switch (currentstate) {
+					case TURNING_L:
+						currentstate = FIND_WALL;
+						goto finishTurn;
+					case TURNING_R:
+						currentstate = FIND_WALL;
+						goto finishTurn;
+					case TURNING_ADJ:
+						// Just an adjust
+						currentstate = WAIT_EVENT;
+						goto finishTurn;
+					default:
+						dbg(InvalidEvent, TURN_COMPLETE);
 				}
-				GO_SLOW;
-				currentstate = WAIT_EVENT;
+				break;
+
+finishTurn:		GO_SLOW;
 				break;
 			case COLOR_SENSOR_TRIGGERED:
 				if (mapLap() == 3) {
