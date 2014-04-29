@@ -442,14 +442,20 @@ void main(void) {
                     unsigned char frame[FRAME_MEMBERS] = {0};
                     packFrame(frame, sizeof frame);
                     //frame[1] is ir1 and frame[2] is ir2
-//                    frame[1] = 1;//just for now, provide these dummy values
-//                    frame[2] = 1;
+                    frame[1] = 1;//just for now, provide these dummy values
+                    frame[2] = 1;
                     if((frame[1] > frame[2]) && (frame[1] - frame[2]) > 10){
                         //readjust right
+                        char out[HEADER_MEMBERS] = {0};
+                        uint8 len = generateReadjustCW(out, sizeof out, I2C_COMM);
+                        i2c_master_send(MOTOR_ADDR, len, out);
                         // no need to call waitForSensorFrame() again
                     }
                     else if((frame[2] > frame[1]) && (frame[2] - frame[1]) > 10){
                         //readjust left
+                        char out[HEADER_MEMBERS] = {0};
+                        uint8 len = generateReadjustCCW(out, sizeof out, I2C_COMM);
+                        i2c_master_send(MOTOR_ADDR, len, out);
                         // no need to call waitForSensorFrame() again
                     }
                     else{
@@ -463,7 +469,7 @@ void main(void) {
                 case MSGT_UART_TX_BUSY:
                 {
                     // TODO: take out for now
-                    //uart_send_array(msgbuffer, length);
+                    uart_send_array(msgbuffer, length);
                     break;
                 };
                 default:
@@ -503,7 +509,7 @@ void main(void) {
                 case MSGT_UART_TX_BUSY:
                 {
                     // TODO: take out for now
-                    //uart_send_array(msgbuffer, length);
+                    uart_send_array(msgbuffer, length);
                     break;
                 };
                 default:

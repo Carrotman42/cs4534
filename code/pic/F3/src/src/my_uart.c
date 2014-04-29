@@ -143,7 +143,9 @@ void uart_send_array(char* data, char length) {
 #endif
     if(uc_ptr->status != UART_IDLE){
         if(in_main()){
-            FromMainHigh_sendmsg(length, MSGT_UART_TX_BUSY, data);
+            debugNum(2);
+            if(FromMainHigh_sendmsg(length, MSGT_UART_TX_BUSY, data) == MSGQUEUE_FULL)
+                debugNum(4);
         }
         else{
             FromUARTInt_sendmsg(length, MSGT_UART_TX_BUSY, data);

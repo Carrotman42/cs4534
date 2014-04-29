@@ -8,9 +8,9 @@
 uint16_t motor1Ticks = 0;
 uint16_t motor2Ticks = 0;
 
-uint16_t target1 = 110;
-uint16_t target2 = 107;
-bool commandDone = false;
+extern uint16_t target1;
+extern uint16_t target2;
+//bool commandDone = false;
 bool killCommand = false;
 
 
@@ -46,8 +46,10 @@ void reverse(int rev) {
 void forward(int rev, int speed)
 {
     // initialize variables for new command
-    resetTicks();
     setCommandDone();
+    resetTicks();
+    resetKill();
+    
 
     // move forwards
     calcRevMotor1(rev);
@@ -74,7 +76,6 @@ void forward(int rev, int speed)
 
     // wait for it to be done or the kill flag to be true
     while (!getCommandDone() && !killCommand);
-
     resetKill();
     stop();
 
@@ -227,6 +228,23 @@ void turnRight()
     resetTicks();                   // reset the ticks for the next command
 
 
+    // readjust left
+    // unsigned char test[2] = {0x18, 0xE0};
+
+    // readjust right
+    // unsigned char test[2] = {0x62, 0xA0};
+
+    // readjust to the right
+    target1 = 20;
+    target2 = 20;
+    unsigned char test[2] = {0x62, 0xA0};
+    uart_send_array(test, 2);
+
+    while (!getCommandDone());      // wait for the turn to complete
+    setCommandDone();               // turn flag to false for next command
+    resetTicks();                   // reset the ticks for the next command
+
+
     // move forwards 2 revolutions
      calcRevMotor1(2);
      calcRevMotor2(2);
@@ -236,9 +254,8 @@ void turnRight()
      // wait for the 2 revolutions to be done or the kill flag to be true
      while (!getCommandDone() );
      resetKill();
-  
-     stop();            // done with turning
 
+     stop();            // done with turning
 }
 
 // turns left 90 degrees on the spot
