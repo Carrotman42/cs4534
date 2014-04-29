@@ -186,13 +186,14 @@ inline void gotData(RoverAction last, char* ret) {
 inline RoverAction nextCommand(int* len, char* outBuf) {
 	RoverCmd cmd;
 	if (!TRY_RECV(toRover, cmd)) {
+		static int swap = 0;
+		
 		if (turning) {
-			cmd.act = TurnAck;
+			cmd.act = (swap ^= 1) ? TurnAck : ReadFrames;
 		} else if (invalid > 10) {
 			invalid = 0;
 			cmd.act = StartFrames;
 		} else {
-			// Right now I think it's best not to have a delay since we want frame data as fast as we can get it.
 			cmd.act = ReadFrames;
 		}
 		SLEEP(150);

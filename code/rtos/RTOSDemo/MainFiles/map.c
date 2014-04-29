@@ -160,20 +160,24 @@ int mapLap() {
 }
    
 #include <math.h>
-int valToCm(int v) {
-	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281));
+int valToArm(int v) {
+	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281)/1.5);
 }
 
 #define HIST 3
 int checkIRSpike(int v) {
 	static int past[HIST];
 	
+	int totDiff = 0;
+	int tot = 0;
 	int oks = HIST;
 	int i;
 	// Ignore 0th on purpose!
 	for (i = 1; i < HIST; i++) {
 		int cur = past[i];
+		tot += cur;
 		int d = v - cur;
+		totDiff += d;
 		if (d > 5 || d < -5) {
 			oks--;
 		}
@@ -181,7 +185,20 @@ int checkIRSpike(int v) {
 	}
 	past[HIST-1] = v;
 	
-	return oks > HIST/2;
+	int ret = (oks > HIST/2) ? v : ((tot + v)/HIST);
+	totDiff /= HIST;
+	
+	bBuf(50);
+	bStr("Avg Diff:");
+	bByte(totDiff);
+	if (ret) {
+		bStr(";   ");
+	} else {
+		bStr("; NO");
+	}
+	bPrint(11);
+	
+	return ret;
 }
 
 void mapReportNewFrame(int colorSensed, char* frame) {
@@ -200,11 +217,10 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	// IGNORE IR1, FOR NOW
 	//int ir1 = valToCm(f->IR1);
 	
-	int irok = checkIRSpike(f->IR2);
+	int ir2 = checkIRSpike(f->IR2);
 	
 	// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
-	//   but only if we decide to use this new IR (if it isn't a spike)
-	int ir2 = irok ? valToCm(f->IR2) : mem.Right2;
+	ir2 = valToArm(ir2);
 	
 	LOCK
 		mem.Forward = f->ultrasonic;

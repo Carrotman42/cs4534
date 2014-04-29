@@ -1,23 +1,8 @@
 
 #include "fsm.h"
 
-//recv will get events 
-//these events can be 
-//1) new sensor data (us, ir1, ir2)
-//2) turn complete,
-//3) tick counting done (from registerTickListener(int x)), 
-//4) color sensor triggered
 
-#define INIT 0
-#define WAIT_START_LINE 1 //also continues to move forward
-#define WAIT_EVENT 2
-#define WAIT_EVENT_SLOW 10
-#define WAIT_TURN 11
-#define L_TURN_STALL 3
-#define R_TURN_STALL 4
-#define ADJ_TURN_STALL 8
-#define WAIT_TICKS 5
-#define END 7 //picman handles stop frame data and stop moving
+// States and events in fsm.h
 
 
 #ifdef FSM_TEST
@@ -85,12 +70,11 @@ void debug(int line, char* info);
 
 #else
 
-#define WAY_TOO_FAR 70
-#define TOO_FAR_FOR_COMFORT 50
-#define TOO_CLOSE 15
+#define WAY_TOO_FAR 45
+#define TOO_FAR_FOR_COMFORT 33
+#define TOO_CLOSE 8
 #define TOO_CLOSE_FRONT 14
 #define TOO_CLOSE_SLOW 26
-#define ADJU_PATIENCE 10
 #define GO_SLOW moveForward(1)
 #define GO_FASTER moveForward(1)
 
@@ -151,15 +135,20 @@ skipDbg:
 				} else if (mem.Right2 > TOO_FAR_FOR_COMFORT && !recentlyAdju) {
 					// Slight readjust left
 					adjuCW(10);
-					recentlyAdju = 1;
 					currentstate = WAIT_TURN;
-					mapRegisterTick(ADJU_PATIENCE);
+					int amt = 3 + TOO_FAR_FOR_COMFORT - mem.Right2;
+					recentlyAdju = amt > 0;
+					if (recentlyAdju) {
+						mapRegisterTick(amt);
+					}
 				} else if (mem.Right2 < TOO_CLOSE && !recentlyAdju) {
 					// Slight readjust left
 					adjuCCW(10);
-					recentlyAdju = 1;
 					currentstate = WAIT_TURN;
-					mapRegisterTick(ADJU_PATIENCE);
+					recentlyAdju = mem.Right2 > 1;
+					if (recentlyAdju) {
+						mapRegisterTick(mem.Right2);
+					}
 				}
 				break;
 			case TURN_COMPLETE:
