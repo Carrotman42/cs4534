@@ -240,16 +240,16 @@ void turnRight()
     unsigned char test[2] = {0x62, 0xA0};
     uart_send_array(test, 2);
 
-    while (!getCommandDone());      // wait for the turn to complete
-    setCommandDone();               // turn flag to false for next command
-    resetTicks();                   // reset the ticks for the next command
-
-
-    // move forwards 2 revolutions
-     calcRevMotor1(2);
-     calcRevMotor2(2);
-     unsigned char test[2] = {0x51, 0xD0};
-     uart_send_array(test, 2);
+//    while (!getCommandDone());      // wait for the turn to complete
+//    setCommandDone();               // turn flag to false for next command
+//    resetTicks();                   // reset the ticks for the next command
+//
+//
+//    // move forwards 2 revolutions
+//     calcRevMotor1(2);
+//     calcRevMotor2(2);
+//     unsigned char test[2] = {0x51, 0xD0};
+//     uart_send_array(test, 2);
 
      // wait for the 2 revolutions to be done or the kill flag to be true
      while (!getCommandDone() );
@@ -285,16 +285,16 @@ void turnLeft()
     uart_send_array(test, 2);
 
 
-    while (!getCommandDone() );      // wait for readjustment to be complete
-    setCommandDone();
-    resetTicks();
-
-
-    // move forwards 2 revolutions
-     calcRevMotor1(2);
-     calcRevMotor2(2);
-     unsigned char test[2] = {0x51, 0xD0};
-     uart_send_array(test, 2);
+//    while (!getCommandDone() );      // wait for readjustment to be complete
+//    setCommandDone();
+//    resetTicks();
+//
+//
+//    // move forwards 2 revolutions
+//     calcRevMotor1(2);
+//     calcRevMotor2(2);
+//     unsigned char test[2] = {0x51, 0xD0};
+//     uart_send_array(test, 2);
 
      // wait for the 2 revolutions to be done or the kill flag to be true
      while (!getCommandDone() );     
