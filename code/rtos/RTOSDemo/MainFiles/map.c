@@ -164,41 +164,61 @@ int valToArm(int v) {
 	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281)/1.5);
 }
 
-#define HIST 3
-int checkIRSpike(int v) {
+#define HIST 15
+#define OKS 3
+#define OKHIST (HIST-OKS)
+int getIR(int v, int*ir, int*trend) {
 	static int past[HIST];
 	
-	int totDiff = 0;
-	int tot = 0;
-	int oks = HIST;
+	bBuf(50);
+	bStr("Trend:");
+	
+	int oks = OKS;
+	int trendTot = 0;
+	int trendCount = 0;
 	int i;
 	// Ignore 0th on purpose!
 	for (i = 1; i < HIST; i++) {
 		int cur = past[i];
-		tot += cur;
 		int d = v - cur;
-		totDiff += d;
-		if (d > 5 || d < -5) {
+		
+		int trend = d * 10 / (HIST - i);
+		//bByte(trend);
+		//bStr(",");
+		
+		if (d >= -5 && d <= 5) {
+			trendTot += trend;
+			trendCount++;
+		} else if (i > OKHIST) {
 			oks--;
 		}
 		past[i-1] = cur;
 	}
 	past[HIST-1] = v;
 	
-	int ret = (oks > HIST/2) ? v : ((tot + v)/HIST);
-	totDiff /= HIST;
-	
-	bBuf(50);
-	bStr("Avg Diff:");
-	bByte(totDiff);
-	if (ret) {
-		bStr(";   ");
+	static int lastTrend = 0;
+	if (trendCount == 0) {
+		bStr("                        ");
 	} else {
-		bStr("; NO");
+		trendTot /= trendCount;
+		bStr(" =");
+		bByte(trendTot);
+		
+		
+		trendTot = lastTrend = (lastTrend*3 + trendTot*5)/8;
+		bStr("; SM=");
+		bByte(trendTot);
+		
 	}
 	bPrint(11);
 	
-	return ret;
+	if (oks <= OKS / 2) {
+		return 0;
+	}
+	
+	*ir = valToArm(v);
+	*trend = trendTot;
+	return 1;
 }
 
 void mapReportNewFrame(int colorSensed, char* frame) {
@@ -217,15 +237,18 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	// IGNORE IR1, FOR NOW
 	//int ir1 = valToCm(f->IR1);
 	
-	int ir2 = checkIRSpike(f->IR2);
-	
 	// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
-	ir2 = valToArm(ir2);
+	int ir2, trend;
+	if (!getIR(f->IR2, &ir2, &trend)) {
+		ir2 = mem.Right2;
+		trend = mem.Trend;
+	}
 	
 	LOCK
 		mem.Forward = f->ultrasonic;
 		//mem.Right1 = 0;
 		mem.Right2 = ir2;
+		mem.Trend = trend;
 		
 		mem.newDir = 0;
 		if (mem.newDir) {

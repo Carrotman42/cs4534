@@ -39,7 +39,7 @@
 
 #ifndef NULL
 #define NULL 0
-#endif /* NULL */
+#endif /* NULL */	 6
 		   
 #include "httpd-fsdata.c"			   
 							 

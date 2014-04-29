@@ -68,21 +68,19 @@ void debug(int line, char* info);
 
 #else
 
-#define WAY_TOO_FAR 45
-#define TOO_FAR_FOR_COMFORT 33
+#define TREND_AWAY_AMT 20
+#define WAY_TOO_FAR 33
+#define TOO_FAR_FOR_COMFORT 20
 #define TOO_CLOSE 8
 #define TOO_CLOSE_FRONT 14
-#define TOO_CLOSE_SLOW 26
-#define GO_SLOW moveForward(1)
-#define GO_FASTER moveForward(1)
 
-
+// TODO: Move the speed suggestion to the map rather than the fsm
+#define FORWARD() moveForward(1)
 #endif
 
 PATH_FINDING_DECL {
 	int currentstate = INIT;
 	int lastWasData = 0;
-	int recentlyAdju = 0;
 	for (;;) {
 		int prevstate = currentstate;
 		FsmEvent event = nextEvent();
@@ -105,10 +103,9 @@ skipDbg:
 		
 		switch (event) {
 			case TICK_COUNTING_DONE:
-				recentlyAdju = 0;
 				break;
 			case START:
-				GO_SLOW;
+				FORWARD();
 				currentstate = WAIT_EVENT;
 				break;
 			case RESET_ROVER:
@@ -133,27 +130,23 @@ skipDbg:
 					// Turn left
 					turnCCW(90);
 					currentstate = TURNING_L;
-				}else if (turnok && mem.Right2 > WAY_TOO_FAR) {
-					// Gotta turn right! Probably a chicane
-					turnCW(90);
-					currentstate = TURNING_R;
-				} else if (turnok && mem.Right2 > TOO_FAR_FOR_COMFORT && !recentlyAdju) {
-					// Slight readjust left
-					adjuCW(10);
-					currentstate = TURNING_ADJ;
-					int amt = 3 + TOO_FAR_FOR_COMFORT - mem.Right2;
-					recentlyAdju = amt > 0;
-					if (recentlyAdju) {
-						mapRegisterTick(amt);
-					}
-				} else if (turnok && mem.Right2 < TOO_CLOSE && !recentlyAdju) {
-					// Slight readjust left
-					adjuCCW(10);
-					currentstate = TURNING_ADJ;
-					recentlyAdju = mem.Right2 > 1;
-					if (recentlyAdju) {
-						mapRegisterTick(mem.Right2);
-					}
+				} else if (turnok) {
+					// Only do these if we can turn
+					if (mem.Right2 > WAY_TOO_FAR) {
+						// Gotta turn right! Probably a chicane
+						turnCW(90);
+						currentstate = TURNING_R;
+					} else if (mem.Trend > TREND_AWAY_AMT) {
+						adjuCCW(10);
+						currentstate = TURNING_ADJ;
+					} else if (mem.Trend < -TREND_AWAY_AMT) {
+						adjuCW(10);
+						currentstate = TURNING_ADJ;
+					} /*else if (mem.Right2 < TOO_CLOSE) {
+						// Too close, initiate LEFT-FORWARD-RIGHT manuever
+						turnCW(90);
+						currentstate = MOVE_AWAY_1;
+					}*/
 				}
 				break;
 			}
@@ -174,7 +167,8 @@ skipDbg:
 				}
 				break;
 
-finishTurn:		GO_SLOW;
+finishTurn:		
+				FORWARD();
 				break;
 			case COLOR_SENSOR_TRIGGERED:
 				if (mapLap() == 3) {
@@ -504,9 +498,6 @@ void stopTimer(){
 	debug(5, "stopping timer");
 }
 
-void registerTickListener(int x){
-	debug(x, "waiting for ticks");
-}
 
 void mapGetMemory(Memory* mem){
 	switch(trackStage){

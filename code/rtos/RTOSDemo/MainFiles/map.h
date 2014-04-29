@@ -30,6 +30,7 @@ typedef struct {
 	// The last values for each sensor.
 	int Forward;
 	int Right2;
+	int Trend;
 	
 	// A countdown of ticks left before 
 	unsigned int tCount;
