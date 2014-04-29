@@ -129,8 +129,6 @@ inline void checkError(char* ret) {
 // outBuf was the message written to the picman
 // inBuf is the message that was just read from the picman
 inline void gotData(RoverAction last, char* ret) {
-	// TODO: Check checksum maybe
-	
 	// Remove any priorities because we treat all messages the same
 	ret[0] = ret[0] & ~HIGH_PRIORITY;
 	switch (last) {
@@ -149,6 +147,7 @@ inline void gotData(RoverAction last, char* ret) {
 				LCDwriteLn(10, "Got TurnAck without a 'turning' value!");
 				return;
 			}
+			
 			// A payload of 0 means still turning, 1 means done turning
 			if (ret[HEADER_MEMBERS]) {
 				if (turning == 4) {

@@ -166,6 +166,24 @@ int valToCm(int v) {
 	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281));
 }
 
+#define HIST 6
+int checkIRSpike(int v) {
+	static int past[HIST];
+	
+	int oks = HIST;
+	// Ignore 0th on purpose!
+	for (int i = 1; i < HIST; i++) {
+		int cur = past[i];
+		int d = v - cur;
+		if (d > 5 || d < -5) {
+			oks--;
+		}
+		past[i-1] = cur;
+	}
+	
+	return oks > HIST/2;
+}
+
 void mapReportNewFrame(int colorSensed, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
 	
@@ -178,8 +196,29 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	int countDone = 0;
 	
 	// Do IR calculations before getting the lock
-	int ir1 = valToCm(f->IR1);
-	int ir2 = valToCm(f->IR2);
+	
+	// IGNORE IR1, FOR NOW
+	//int ir1 = valToCm(f->IR1);
+	
+	int irok = checkIRSpike(f->IR2);
+	
+	// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
+	//   but only if we decide to use this new IR (if it isn't a spike)
+	int ir2 = irok ? valToCm(f->IR2) : mem.Right2;
+	
+	{
+		bBuf(50);
+		bStr("D1: ");
+		bByte(d1);
+		bStr(", D2: ");
+		bByte(d2);
+		if (irok) {
+			bStr("; :)");
+		} else {
+			bStr("; NO");
+		}
+		bPrint(8);
+	}
 	
 	LOCK
 		mem.Forward = f->ultrasonic;
@@ -251,19 +290,22 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 
 // Called to record that the rover has finished the turn with the given direction. dir should be -1 for right and 1 for left.
 void mapReportTurn(int dir) {
-	Dir d;
-	LOCK
-		d = (mem.dir = (mem.dir + 4 + dir) % 4);
-		mem.newDir = 1;
-	UNLOCK
+	if (dir != 0) {
+		Dir d;
+		LOCK
+			d = (mem.dir = (mem.dir + 4 + dir) % 4);
+			mem.newDir = 1;
+		UNLOCK
+	}
 
 	TriggerEvent(TURN_COMPLETE);
-	bBuf(10);
+	
+	/*bBuf(10);
 	bStr("Turned ");
 	bChar((dir == 1 ? 'L' : 'R'));
 	bStr("; now ");
 	bChar(drawDir(d));
-	bPrint(12);
+	bPrint(12);*/
 }
 
 void mapRegisterTick(int x) {
