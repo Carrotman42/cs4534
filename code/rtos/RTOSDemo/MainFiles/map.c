@@ -171,7 +171,8 @@ int getIR(int v, int*ir, int*trend) {
 	static int past[HIST];
 	
 	bBuf(50);
-	bStr("Trend:");
+	bStr("IR:");
+	bByte(v);
 	
 	int oks = OKS;
 	int trendTot = 0;
@@ -186,7 +187,7 @@ int getIR(int v, int*ir, int*trend) {
 		//bByte(trend);
 		//bStr(",");
 		
-		if (d >= -5 && d <= 5) {
+		if (trend >= -50 && trend <= 50) {
 			trendTot += trend;
 			trendCount++;
 		} else if (i > OKHIST) {
@@ -201,12 +202,12 @@ int getIR(int v, int*ir, int*trend) {
 		bStr("                        ");
 	} else {
 		trendTot /= trendCount;
-		bStr(" =");
+		bStr("NTr =");
 		bByte(trendTot);
 		
 		
-		trendTot = lastTrend = (lastTrend*3 + trendTot*5)/8;
-		bStr("; SM=");
+		trendTot = lastTrend = (lastTrend*1 + trendTot*7)/8;
+		bStr("; STrs=");
 		bByte(trendTot);
 		
 	}

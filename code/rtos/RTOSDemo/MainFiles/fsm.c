@@ -68,10 +68,10 @@ void debug(int line, char* info);
 
 #else
 
-#define TREND_AWAY_AMT 20
+#define TREND_AWAY_AMT 10
 #define WAY_TOO_FAR 33
 #define TOO_FAR_FOR_COMFORT 20
-#define TOO_CLOSE 8
+#define TOO_CLOSE 10
 #define TOO_CLOSE_FRONT 14
 
 // TODO: Move the speed suggestion to the map rather than the fsm
@@ -103,6 +103,10 @@ skipDbg:
 		
 		switch (event) {
 			case TICK_COUNTING_DONE:
+				if (currentstate == MOVE_AWAY) {
+					turnCW(90);
+					currentstate = TURNING_R;
+				}
 				break;
 			case START:
 				FORWARD();
@@ -142,11 +146,11 @@ skipDbg:
 					} else if (mem.Trend < -TREND_AWAY_AMT) {
 						adjuCW(10);
 						currentstate = TURNING_ADJ;
-					} /*else if (mem.Right2 < TOO_CLOSE) {
+					} else if (mem.Right2 < TOO_CLOSE) {
 						// Too close, initiate LEFT-FORWARD-RIGHT manuever
-						turnCW(90);
-						currentstate = MOVE_AWAY_1;
-					}*/
+						turnCCW(90);
+						currentstate = MOVE_AWAY;
+					}
 				}
 				break;
 			}
@@ -161,6 +165,10 @@ skipDbg:
 					case TURNING_ADJ:
 						// Just an adjust
 						currentstate = WAIT_EVENT;
+						goto finishTurn;
+					case MOVE_AWAY:
+						// After we go forward a bit, we'll right again
+						mapRegisterTick(3);
 						goto finishTurn;
 					default:
 						dbg(InvalidEvent, TURN_COMPLETE);
