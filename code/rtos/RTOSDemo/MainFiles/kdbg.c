@@ -39,7 +39,7 @@ void ReportInvalidResponse(int last, char* orig, char* resp) {
 	D(orig);
 	bStr("): ");
 	D(resp);
-	bPrint(14);
+	bPrint(12);
 }
 
 DbgRecord dbgs[500];

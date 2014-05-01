@@ -53,14 +53,19 @@ void mapMarkSensor(int val, Dir dir) {
 		default: FATAL(dir);
 	}
 	mapInc(x, y);
+	
 	/*bBuf(40);
 	bChar('(');
 	bWord(x);
 	bChar(',');
 	bWord(y);
 	bChar(')');
-	bPrint(13);	*/
+	bPrint(12);*/
 }
+
+
+#define LOCK FAILIF(xSemaphoreTake(dataSem, portMAX_DELAY) != pdTRUE);
+#define UNLOCK FAILIF(xSemaphoreGive(dataSem) != pdTRUE);
 
 // Uses the current memory to make a guess at where the wall in the course is.
 //   It takes into account the X,Y position as well as sensors.
@@ -68,12 +73,16 @@ void mapMark() {
 	MapInfo(mem.X/MAP_RESOLUTION, mem.Y/MAP_RESOLUTION, ind, shift);
 	map.data[ind] = map.data[ind] | (3 << shift);
 
+	int dir;
+	LOCK
+		dir = mem.dir;
+	UNLOCK
 	// Only record the data when it's relatively close
 	if (mem.Forward < 100) {
-		mapMarkSensor(mem.Forward, mem.dir);
+		mapMarkSensor(mem.Forward, dir);
 	}
 	if (mem.Right2 < 100) {
-		mapMarkSensor(mem.Right2, (mem.dir + 3) % 4);
+		mapMarkSensor(mem.Right2, (dir + 3) % 4);
 	}
 	
 }
@@ -89,15 +98,12 @@ void InitMind() {
 	//memset(&map, 0, sizeof(Map));
 	//memset(&mem, 0, sizeof(Memory));
 	mem.X = MAP_WIDTH/2*MAP_RESOLUTION;
-	mem.Y = (MAP_WIDTH-25)*MAP_RESOLUTION;
+	mem.Y = (MAP_WIDTH-10)*MAP_RESOLUTION;
 	dataSem = xSemaphoreCreateMutex();
 	FAILIF(dataSem == NULL);
 	
 	StartPathFindingFSM();
 }
-
-#define LOCK FAILIF(xSemaphoreTake(dataSem, portMAX_DELAY) != pdTRUE);
-#define UNLOCK FAILIF(xSemaphoreGive(dataSem) != pdTRUE);
 
 // Returns a copy of where the rover thinks it is into dest.
 inline void mapGetMemory(Memory* dest){
@@ -164,65 +170,94 @@ int valToArm(int v) {
 	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281)/1.5);
 }
 
-#define HIST 15
 #define OKS 3
-#define OKHIST (HIST-OKS)
-int getIR(int v, int*ir, int*trend) {
-	static int past[HIST];
+int getIR(int v, int*ir) {
+	/* *ir = valToArm(v);
+	{
+		bBuf(50);
+		bStr("RAW IR:");
+		bByte(v);
+		bStr("; CM IR:");
+		bByte(*ir);
+		bPrint(1);
+	}
+	return 1;*/
+	static int past[OKS];
 	
-	bBuf(50);
-	bStr("IR:");
-	bByte(v);
-	
-	int oks = OKS;
-	int trendTot = 0;
-	int trendCount = 0;
+	int oks = 0;
 	int i;
-	// Ignore 0th on purpose!
-	for (i = 1; i < HIST; i++) {
+	for (i = 0; i < OKS; i++) {
 		int cur = past[i];
-		int d = v - cur;
+		int d = (v - cur) / (OKS - i);
 		
-		int trend = d * 10 / (HIST - i);
-		//bByte(trend);
-		//bStr(",");
-		
-		if (trend >= -50 && trend <= 50) {
-			trendTot += trend;
-			trendCount++;
-		} else if (i > OKHIST) {
-			oks--;
+		if (d >= -3 && d <= 3) {
+			oks++;
 		}
-		past[i-1] = cur;
+		if (i != 0) {
+			past[i-1] = cur;
+		}
 	}
-	past[HIST-1] = v;
-	
-	static int lastTrend = 0;
-	if (trendCount == 0) {
-		bStr("                        ");
-	} else {
-		trendTot /= trendCount;
-		bStr("NTr =");
-		bByte(trendTot);
-		
-		
-		trendTot = lastTrend = (lastTrend*1 + trendTot*7)/8;
-		bStr("; STrs=");
-		bByte(trendTot);
-		
-	}
-	bPrint(11);
+	past[OKS-1] = v;
 	
 	if (oks <= OKS / 2) {
+		v = valToArm(v);
+		bBuf(40);
+		bStr("Ig:");
+		bByte(v);
+		bStr(" || ");
+		for (i = 0; i < OKS; i++) {
+			int pp = valToArm(past[i]);
+			bChar(',');
+			bByte(pp);
+		}
+		bPrint(1);
 		return 0;
 	}
 	
 	*ir = valToArm(v);
-	*trend = trendTot;
 	return 1;
 }
 
-void mapReportNewFrame(int colorSensed, char* frame) {
+#define HIST 10
+#define TOT_PROP 8
+#define PAST_PROP 3
+
+// Keep track of whether the "past" buffer is full; don't attempt a trend guess if it isn't.
+int trendUse, past[HIST];
+void clearTrend() {
+	trendUse = 0;
+}
+
+int findTrend(int new) {
+	static int lastTrend = 0;
+	
+	int trendTot = 0;
+	int trendCount = 0;
+	int i;
+	for (i = 0; i < HIST; i++) {
+		int cur = past[i];
+		int d = (new - cur) * 30 / (HIST - i);
+		
+		// Make sure we don't try to add the edge of a wall as a crazy trendline.
+		if (d > -5*30 && d < 5*30) {
+			trendTot += d;
+			trendCount++;
+		}
+		
+		if (i != 0) {
+			past[i-1] = cur;
+		}
+	}
+	past[HIST-1] = new;
+	if (trendUse < HIST && trendCount != 0) {
+		trendTot /= trendCount;
+		return lastTrend = (lastTrend * PAST_PROP + trendTot * (TOT_PROP - PAST_PROP)) / TOT_PROP;
+	}
+	trendUse++;
+	return 0;
+}
+
+void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
 	
 	if (colorSensed) {
@@ -238,9 +273,33 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	// IGNORE IR1, FOR NOW
 	//int ir1 = valToCm(f->IR1);
 	
-	// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
+	// Hacky, woo!
+	static int wasTurning = 0;
+	
 	int ir2, trend;
-	if (!getIR(f->IR2, &ir2, &trend)) {
+	if (!turning) {
+		if (wasTurning) {
+			wasTurning = 0;
+			clearTrend();
+		}
+		static int lastIR = 0;
+		
+		// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
+		if (!getIR(f->IR2, &ir2)) {
+			ir2 = mem.Right2;
+			trend = 0;
+		} else {
+			trend = findTrend(ir2);
+		}
+		int d = lastIR - ir2;
+		if (d <= -10 || d >= 10) {
+			// We found a wall! Clear that trend;
+			clearTrend();
+			trend = mem.Trend;
+		}
+		lastIR = ir2;
+	} else {
+		wasTurning = 1;
 		ir2 = mem.Right2;
 		trend = mem.Trend;
 	}
@@ -251,36 +310,30 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 		mem.Right2 = ir2;
 		mem.Trend = trend;
 		
-		mem.newDir = 0;
-		if (mem.newDir) {
-			mem.newDir = 0;
-			// Ignore encorder values for the first frames after turning.
-		} else {
-			int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2/(80/MAP_RESOLUTION);
-			
-			if (mem.tCount > 0) {
-				if (mem.tCount > ticks) {
-					mem.tCount -= ticks;
-				} else {
-					mem.tCount = 0;
-					countDone = 1;
-				}
+		int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2/(80/MAP_RESOLUTION);
+		
+		if (mem.tCount > 0) {
+			if (mem.tCount > ticks) {
+				mem.tCount -= ticks;
+			} else {
+				mem.tCount = 0;
+				countDone = 1;
 			}
-			
-			switch (mem.dir) {
-				case Right:
-					mem.X += ticks;
-					break;
-				case Up:
-					mem.Y -= ticks;
-					break;
-				case Left:
-					mem.X -= ticks;
-					break;
-				case Down:
-					mem.Y += ticks;
-					break;
-			}
+		}
+		
+		switch (mem.dir) {
+			case Right:
+				mem.X += ticks;
+				break;
+			case Up:
+				mem.Y -= ticks;
+				break;
+			case Left:
+				mem.X -= ticks;
+				break;
+			case Down:
+				mem.Y += ticks;
+				break;
 		}
 	UNLOCK
 	
@@ -294,22 +347,17 @@ void mapReportNewFrame(int colorSensed, char* frame) {
 	// We can read mem safely because this is the only task that
 	//   ever modifies mem
 	
-	bBuf(40);
-	if (mem.tCount) {
+	/*if (mem.tCount) {
+		bBuf(40);
 		bStr("TICK COUNTDOWN=");
 		bWord(mem.tCount);
-	} else {
-		bStr("                   ");
-	}
+		bPrint(15);
+	} else if (countDone) {	
+		bBuf(40);
+		bStr("                        ");
+		bPrint(15);
+	}*/
 
-	bPrint(15);
-	// 'b' is reset correctly by above macro.
-	bChar('(');
-	bWord(mem.X);
-	bChar(',');
-	bWord(mem.Y);
-	bChar(')');
-	bPrint(14);
 }
 
 // Called to record that the rover has finished the turn with the given direction. dir should be -1 for right and 1 for left.
@@ -317,8 +365,7 @@ void mapReportTurn(int dir) {
 	if (dir != 0) {
 		Dir d;
 		LOCK
-			d = (mem.dir = (mem.dir + 4 + dir) % 4);
-			mem.newDir = 1;
+			d = (mem.dir = ((mem.dir + 4 + dir) % 4));
 		UNLOCK
 	}
 

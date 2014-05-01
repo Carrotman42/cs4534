@@ -23,10 +23,6 @@ typedef struct {
 	// Current direction
 	Dir dir;
 	
-	// Will be true if "dir" was recently changed. This means that the next set of
-	//    encoder datas should be ignored since they will be from the turn itself.
-	int newDir : 1;
-	
 	// The last values for each sensor.
 	int Forward;
 	int Right2;
@@ -36,7 +32,7 @@ typedef struct {
 	unsigned int tCount;
 } Memory;
 
-void mapReportNewFrame(int colorSensed, char* frame);
+void mapReportNewFrame(int colorSensed, int turning, char* frame);
 void mapReportTurn(int dir);
 void InitMind();
 

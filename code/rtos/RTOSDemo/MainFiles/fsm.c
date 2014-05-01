@@ -68,9 +68,9 @@ void debug(int line, char* info);
 
 #else
 
-#define TREND_AWAY_AMT 10
+#define TREND_AWAY_AMT 20
 #define WAY_TOO_FAR 33
-#define TOO_FAR_FOR_COMFORT 20
+#define ADJU_THRESH 20
 #define TOO_CLOSE 10
 #define TOO_CLOSE_FRONT 14
 
@@ -106,6 +106,10 @@ skipDbg:
 				if (currentstate == MOVE_AWAY) {
 					turnCW(90);
 					currentstate = TURNING_R;
+				} else if (currentstate == FIND_WALL) {
+					// Give up on finding the wall! Probably will cause it to turn toward
+					//     the wall on the next data packet.
+					currentstate = WAIT_EVENT;
 				}
 				break;
 			case START:
@@ -121,7 +125,7 @@ skipDbg:
 				mapGetMemory(&mem);
 				int turnok = 1;
 				if (currentstate == FIND_WALL) {
-					if (mem.Right2 < TOO_FAR_FOR_COMFORT) {
+					if (mem.Right2 < ADJU_THRESH) {
 						// Found the wall
 						currentstate = WAIT_EVENT;
 					}
@@ -135,18 +139,19 @@ skipDbg:
 					turnCCW(90);
 					currentstate = TURNING_L;
 				} else if (turnok) {
+					int r = mem.Right2;
 					// Only do these if we can turn
-					if (mem.Right2 > WAY_TOO_FAR) {
+					if (r > WAY_TOO_FAR) {
 						// Gotta turn right! Probably a chicane
 						turnCW(90);
 						currentstate = TURNING_R;
-					} else if (mem.Trend > TREND_AWAY_AMT) {
-						adjuCCW(10);
-						currentstate = TURNING_ADJ;
-					} else if (mem.Trend < -TREND_AWAY_AMT) {
+					} else if (r < ADJU_THRESH && mem.Trend > TREND_AWAY_AMT) {
 						adjuCW(10);
 						currentstate = TURNING_ADJ;
-					} else if (mem.Right2 < TOO_CLOSE) {
+					} else if (r < ADJU_THRESH && mem.Trend < -TREND_AWAY_AMT) {
+						adjuCCW(10);
+						currentstate = TURNING_ADJ;
+					} else if (r < TOO_CLOSE) {
 						// Too close, initiate LEFT-FORWARD-RIGHT manuever
 						turnCCW(90);
 						currentstate = MOVE_AWAY;
@@ -158,9 +163,11 @@ skipDbg:
 				switch (currentstate) {
 					case TURNING_L:
 						currentstate = FIND_WALL;
+						mapRegisterTick(50);
 						goto finishTurn;
 					case TURNING_R:
 						currentstate = FIND_WALL;
+						mapRegisterTick(50);
 						goto finishTurn;
 					case TURNING_ADJ:
 						// Just an adjust
