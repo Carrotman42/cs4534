@@ -171,6 +171,15 @@ int valToArm(int v) {
 }
 
 #define OKS 3
+
+static int IRpast[OKS];
+void clearIR(int v) {
+	int i;
+	for (i = 0; i < OKS; i++) {
+		IRpast[i] = v;
+	}
+}
+
 int getIR(int v, int*ir) {
 	/* *ir = valToArm(v);
 	{
@@ -182,22 +191,21 @@ int getIR(int v, int*ir) {
 		bPrint(1);
 	}
 	return 1;*/
-	static int past[OKS];
 	
 	int oks = 0;
 	int i;
 	for (i = 0; i < OKS; i++) {
-		int cur = past[i];
+		int cur = IRpast[i];
 		int d = (v - cur) / (OKS - i);
 		
 		if (d >= -3 && d <= 3) {
 			oks++;
 		}
 		if (i != 0) {
-			past[i-1] = cur;
+			IRpast[i-1] = cur;
 		}
 	}
-	past[OKS-1] = v;
+	IRpast[OKS-1] = v;
 	
 	if (oks <= OKS / 2) {
 		v = valToArm(v);
@@ -206,7 +214,7 @@ int getIR(int v, int*ir) {
 		bByte(v);
 		bStr(" || ");
 		for (i = 0; i < OKS; i++) {
-			int pp = valToArm(past[i]);
+			int pp = valToArm(IRpast[i]);
 			bChar(',');
 			bByte(pp);
 		}
@@ -218,9 +226,9 @@ int getIR(int v, int*ir) {
 	return 1;
 }
 
-#define HIST 10
+#define HIST 5
 #define TOT_PROP 8
-#define PAST_PROP 3
+#define PAST_PROP 2
 
 // Keep track of whether the "past" buffer is full; don't attempt a trend guess if it isn't.
 int trendUse, past[HIST];
@@ -281,6 +289,7 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 		if (wasTurning) {
 			wasTurning = 0;
 			clearTrend();
+			clearIR(f->IR2);
 		}
 		static int lastIR = 0;
 		
