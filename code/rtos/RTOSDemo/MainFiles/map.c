@@ -33,14 +33,14 @@ inline int mapTest(int x, int y) {
 //    are both in armunits (ie not already divided MAP_RESOLUTION)
 void mapInc(int x, int y) {
 	// This is called in the only task which modifies mem/map, so we don't need to lock it to read them
-	MapInfo(x/MAP_RESOLUTION, y/MAP_RESOLUTION, ind, shift);
+	/*MapInfo(x/MAP_RESOLUTION, y/MAP_RESOLUTION, ind, shift);
 	
 	uint8_t b = map.data[ind];
 	int prev = (b >> shift) & 3;
 	if (prev < 2) { // 3 means most confident already, don't modify it
 		// We don't need to lock because there is no "inconsistent" map. See other comment about same subject.
 		map.data[ind] = (b & (~(3 << shift))) | ((prev + 1) << shift);
-	}
+	}*/
 }
 
 void mapMarkSensor(int val, Dir dir) {
@@ -167,7 +167,7 @@ int mapLap() {
    
 #include <math.h>
 int valToArm(int v) {
-	return (int)(41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281)/1.5);
+	return (int)(2*41.543 * pow(((float)(v)*3.1/255. + 0.30221), -1.5281));
 }
 
 #define OKS 3
@@ -180,7 +180,6 @@ void clearIR(int v) {
 	}
 }
 
-int getIR(int v, int*ir) {
 	/* *ir = valToArm(v);
 	{
 		bBuf(50);
@@ -192,6 +191,9 @@ int getIR(int v, int*ir) {
 	}
 	return 1;*/
 	
+	
+	
+int getIR(int v, int*ir) {
 	int oks = 0;
 	int i;
 	for (i = 0; i < OKS; i++) {
@@ -224,6 +226,73 @@ int getIR(int v, int*ir) {
 	
 	*ir = valToArm(v);
 	return 1;
+}
+
+#define GoodIrMem 5
+#define TrendScale 10
+#define TrendThresh (5 * TrendScale)
+int getTrend(int ir) {
+	static int GoodIrs[GoodIrMem + 1] = {0};
+	static int Irs[3] = {0};
+	static int irPos = 0;
+	
+	Irs[irPos] = ir;
+	irPos++;
+	if (irPos < 3) {
+		return 0;
+	}
+	irPos = 0;
+	
+	#define swap(a, b) {\
+		int t = a; \
+		a = b; \
+		b = t; \
+	}
+	int x = Irs[0], y = Irs[1], z = Irs[2];
+	if (x < y) {
+		if (z < x) {
+			swap(x,z);
+		}
+	} else {
+		if (y < z) {
+			swap(x, y);
+		} else {
+			swap(x, z);
+		}
+	}
+	if (z < y) {
+		swap(y, z);
+	}
+	
+	int trendTot = 0;
+	int trendCount = 0;
+	int good = 1;
+	int last = -1;
+	GoodIrs[0] = y;
+	int i;
+	for (i = 0; i < GoodIrMem; i++) {
+		int d = GoodIrs[i] - GoodIrs[i+1];
+		
+		if (last != -1) {
+			int diff = (d - last) * TrendScale;
+			
+			if (diff <= -TrendThresh || diff >= TrendThresh) {
+				good = 0;
+			} else {
+				trendTot += d;
+				trendCount++;
+			}
+		}
+		last = d;
+		
+		GoodIrs[i+1] = GoodIrs[i];
+	}
+	
+	if (good) {
+		return trendTot / trendCount;
+	} else {
+		return 0;
+	}
 }
 
 void mapReportNewFrame(int colorSensed, int turning, char* frame) {
@@ -268,6 +337,8 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 		wasTurning = 1;
 		ir2 = mem.Right2;
 	}
+	
+	trend = getTrend(ir2);
 	
 	LOCK
 		mem.Forward = f->ultrasonic;

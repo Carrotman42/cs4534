@@ -34,5 +34,5 @@ TASK_PROTOTYPE_NOARG(PathFindingFSM, 1500, tskIDLE_PRIORITY+1);
 
 #endif
 
-#define mainUIP_TASK_PRIORITY				( tskIDLE_PRIORITY+3)
+#define mainUIP_TASK_PRIORITY				( tskIDLE_PRIORITY+2)
 

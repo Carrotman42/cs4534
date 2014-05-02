@@ -68,10 +68,10 @@ void debug(int line, char* info);
 
 #else
 
-#define TREND_AWAY_AMT 20
-#define WAY_TOO_FAR 33
-#define ADJU_THRESH 20
-#define TOO_CLOSE 10
+#define TREND_AWAY_AMT 5
+#define WAY_TOO_FAR 106
+#define ADJU_THRESH 70
+#define TOO_CLOSE 30
 #define TOO_CLOSE_FRONT 14
 
 // TODO: Move the speed suggestion to the map rather than the fsm
@@ -175,7 +175,7 @@ skipDbg:
 						goto finishTurn;
 					case MOVE_AWAY:
 						// After we go forward a bit, we'll right again
-						mapRegisterTick(3);
+						mapRegisterTick(7);
 						goto finishTurn;
 					default:
 						dbg(InvalidEvent, TURN_COMPLETE);
