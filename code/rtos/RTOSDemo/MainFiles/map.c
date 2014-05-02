@@ -64,7 +64,7 @@ void mapMarkSensor(int val, Dir dir) {
 }
 
 
-#define LOCK FAILIF(xSemaphoreTake(dataSem, portMAX_DELAY) != pdTRUE);
+#define LOCK FAILIF(xSemaphoreTake(dataSem, 1000/portTICK_RATE_MS) != pdTRUE);
 #define UNLOCK FAILIF(xSemaphoreGive(dataSem) != pdTRUE);
 
 // Uses the current memory to make a guess at where the wall in the course is.
@@ -226,45 +226,6 @@ int getIR(int v, int*ir) {
 	return 1;
 }
 
-#define HIST 5
-#define TOT_PROP 8
-#define PAST_PROP 2
-
-// Keep track of whether the "past" buffer is full; don't attempt a trend guess if it isn't.
-int trendUse, past[HIST];
-void clearTrend() {
-	trendUse = 0;
-}
-
-int findTrend(int new) {
-	static int lastTrend = 0;
-	
-	int trendTot = 0;
-	int trendCount = 0;
-	int i;
-	for (i = 0; i < HIST; i++) {
-		int cur = past[i];
-		int d = (new - cur) * 30 / (HIST - i);
-		
-		// Make sure we don't try to add the edge of a wall as a crazy trendline.
-		if (d > -5*30 && d < 5*30) {
-			trendTot += d;
-			trendCount++;
-		}
-		
-		if (i != 0) {
-			past[i-1] = cur;
-		}
-	}
-	past[HIST-1] = new;
-	if (trendUse < HIST && trendCount != 0) {
-		trendTot /= trendCount;
-		return lastTrend = (lastTrend * PAST_PROP + trendTot * (TOT_PROP - PAST_PROP)) / TOT_PROP;
-	}
-	trendUse++;
-	return 0;
-}
-
 void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 	//LCDwriteLn(2, "Got new frame");
 	
@@ -284,11 +245,10 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 	// Hacky, woo!
 	static int wasTurning = 0;
 	
-	int ir2, trend;
+	int ir2, trend = 0;
 	if (!turning) {
 		if (wasTurning) {
 			wasTurning = 0;
-			clearTrend();
 			clearIR(f->IR2);
 		}
 		static int lastIR = 0;
@@ -296,21 +256,17 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 		// Pre-calculate the linear value for the IR so that we don't hold the lock during a "long" math op
 		if (!getIR(f->IR2, &ir2)) {
 			ir2 = mem.Right2;
-			trend = 0;
-		} else {
-			trend = findTrend(ir2);
 		}
+		
 		int d = lastIR - ir2;
 		if (d <= -10 || d >= 10) {
-			// We found a wall! Clear that trend;
-			clearTrend();
-			trend = mem.Trend;
+			// We found a wall! Clear that trend:
+			// nop
 		}
 		lastIR = ir2;
 	} else {
 		wasTurning = 1;
 		ir2 = mem.Right2;
-		trend = mem.Trend;
 	}
 	
 	LOCK
@@ -373,9 +329,11 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 void mapReportTurn(int dir) {
 	if (dir != 0) {
 		Dir d;
+		DBGbit(0, 1);
 		LOCK
 			d = (mem.dir = ((mem.dir + 4 + dir) % 4));
 		UNLOCK
+		DBGbit(0, 0);
 	}
 
 	TriggerEvent(TURN_COMPLETE);
