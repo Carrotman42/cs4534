@@ -130,28 +130,34 @@ skipDbg:
 						currentstate = WAIT_EVENT;
 					}
 					turnok = 0;
-				} else if (currentstate != WAIT_EVENT) {
+				} else if (currentstate != WAIT_EVENT && currentstate != WAIT_WALL) {
 					break;
 				}
-				
+			
+				int r = mem.Right2;
 				if (mem.Forward < TOO_CLOSE_FRONT) {
 					// Turn left
 					turnCCW(90);
 					currentstate = TURNING_L;
-				} else if (turnok) {
-					int r = mem.Right2;
+				} else {
 					// Only do these if we can turn
-					if (r > WAY_TOO_FAR) {
-						// Gotta turn right! Probably a chicane
-						turnCW(90);
-						currentstate = TURNING_R;
+					if (turnok && r > WAY_TOO_FAR) {
+						// Nothing to the right:
+						if (currentstate == WAIT_EVENT) {
+							// but wait a sec first
+							currentstate = WAIT_WALL;
+						} else if (currentstate == WAIT_WALL) {
+							// Gotta turn right! Probably a chicane
+							turnCW(90);
+							currentstate = TURNING_R;
+						}
 					} else if (r < ADJU_THRESH && mem.Trend > TREND_AWAY_AMT) {
 						adjuCW(10);
 						currentstate = TURNING_ADJ;
 					} else if (r < ADJU_THRESH && mem.Trend < -TREND_AWAY_AMT) {
 						adjuCCW(10);
 						currentstate = TURNING_ADJ;
-					} else if (r < TOO_CLOSE) {
+					} else if (turnok && r < TOO_CLOSE) {
 						// Too close, initiate LEFT-FORWARD-RIGHT manuever
 						turnCCW(90);
 						currentstate = MOVE_AWAY;
@@ -175,7 +181,7 @@ skipDbg:
 						goto finishTurn;
 					case MOVE_AWAY:
 						// After we go forward a bit, we'll right again
-						mapRegisterTick(7);
+						mapRegisterTick(5);
 						goto finishTurn;
 					default:
 						dbg(InvalidEvent, TURN_COMPLETE);

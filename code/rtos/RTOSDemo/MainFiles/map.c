@@ -231,11 +231,22 @@ int getIR(int v, int*ir) {
 #define GoodIrMem 5
 #define TrendScale 10
 #define TrendThresh (5 * TrendScale)
+
+
+static int GoodIrs[GoodIrMem + 1] = {0};
+static int Irs[3] = {0};
+static int irPos = 0;
+
+
+void clearTrend() {
+	irPos = 0;
+	int i;
+	for (i = 0; i < GoodIrMem + 1; i++) {
+		GoodIrs[i] = 0;
+	}
+}
+
 int getTrend(int ir) {
-	static int GoodIrs[GoodIrMem + 1] = {0};
-	static int Irs[3] = {0};
-	static int irPos = 0;
-	
 	Irs[irPos] = ir;
 	irPos++;
 	if (irPos < 3) {
@@ -271,7 +282,13 @@ int getTrend(int ir) {
 	GoodIrs[0] = y;
 	int i;
 	for (i = 0; i < GoodIrMem; i++) {
-		int d = GoodIrs[i] - GoodIrs[i+1];
+		int tt = GoodIrs[i + 1];
+		
+		if (tt == 0) {
+			good = 0;
+		}
+		
+		int d = GoodIrs[i] - tt;
 		
 		if (last != -1) {
 			int diff = (d - last) * TrendScale;
@@ -319,6 +336,7 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 		if (wasTurning) {
 			wasTurning = 0;
 			clearIR(f->IR2);
+			clearTrend();
 		}
 		static int lastIR = 0;
 		

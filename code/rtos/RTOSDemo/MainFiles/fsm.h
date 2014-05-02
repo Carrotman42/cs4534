@@ -25,6 +25,7 @@ typedef enum {
 #define WAIT_TICKS 6
 #define END 7 //picman handles stop frame data and stop moving
 #define MOVE_AWAY 8
+#define WAIT_WALL 9
 
 #ifndef FSM_TEST
 // Safe to be called on any task
