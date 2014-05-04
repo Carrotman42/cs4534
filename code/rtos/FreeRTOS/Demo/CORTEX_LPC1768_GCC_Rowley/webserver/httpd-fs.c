@@ -60,9 +60,9 @@ httpd_fs_strcmp(const char *str1, const char *str2)
      str1[i] == '\n') {							   
     return 0; 
   }
-
+			
   if(str1[i] != str2[i]) {
-    return 1;
+    return 1;										 
   }
 
 		 
@@ -93,9 +93,9 @@ httpd_fs_open(const char *name, struct httpd_fs_file *file)
 #if HTTPD_FS_STATISTICS
     ++i;
 #endif /* HTTPD_FS_STATISTICS */
-
+					 
   }
-  return 0;
+  return 0;		
 }
 /*-----------------------------------------------------------------------------------*/
 void

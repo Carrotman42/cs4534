@@ -71,8 +71,8 @@ void debug(int line, char* info);
 #define TREND_AWAY_AMT 5
 #define WAY_TOO_FAR 106
 #define ADJU_THRESH 70
-#define TOO_CLOSE 30
-#define TOO_CLOSE_FRONT 14
+#define TOO_CLOSE 38
+#define TOO_CLOSE_FRONT 18
 
 // TODO: Move the speed suggestion to the map rather than the fsm
 #define FORWARD() moveForward(1)
@@ -128,8 +128,9 @@ skipDbg:
 					if (mem.Right2 < ADJU_THRESH) {
 						// Found the wall
 						currentstate = WAIT_EVENT;
+					} else {
+						turnok = 0;
 					}
-					turnok = 0;
 				} else if (currentstate != WAIT_EVENT && currentstate != WAIT_WALL) {
 					break;
 				}
@@ -139,9 +140,9 @@ skipDbg:
 					// Turn left
 					turnCCW(90);
 					currentstate = TURNING_L;
-				} else {
+				} else if (turnok) {
 					// Only do these if we can turn
-					if (turnok && r > WAY_TOO_FAR) {
+					if (r >= WAY_TOO_FAR) {
 						// Nothing to the right:
 						if (currentstate == WAIT_EVENT) {
 							// but wait a sec first
@@ -151,13 +152,13 @@ skipDbg:
 							turnCW(90);
 							currentstate = TURNING_R;
 						}
-					} else if (r < ADJU_THRESH && mem.Trend > TREND_AWAY_AMT) {
+					} else if (mem.Trend > TREND_AWAY_AMT) {
 						adjuCW(10);
 						currentstate = TURNING_ADJ;
-					} else if (r < ADJU_THRESH && mem.Trend < -TREND_AWAY_AMT) {
+					} else if (mem.Trend < -TREND_AWAY_AMT) {
 						adjuCCW(10);
 						currentstate = TURNING_ADJ;
-					} else if (turnok && r < TOO_CLOSE) {
+					} else if (r < TOO_CLOSE) {
 						// Too close, initiate LEFT-FORWARD-RIGHT manuever
 						turnCCW(90);
 						currentstate = MOVE_AWAY;
@@ -181,7 +182,7 @@ skipDbg:
 						goto finishTurn;
 					case MOVE_AWAY:
 						// After we go forward a bit, we'll right again
-						mapRegisterTick(5);
+						mapRegisterTick(10);
 						goto finishTurn;
 					default:
 						dbg(InvalidEvent, TURN_COMPLETE);

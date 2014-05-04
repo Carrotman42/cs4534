@@ -29,18 +29,26 @@ inline int mapTest(int x, int y) {
 	return mapTestMap(&map, x, y);
 }
 
+#define OutOfBounds(x, y) x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_WIDTH
+
 // Increments the confidence at the given coordinate position. x and y
 //    are both in armunits (ie not already divided MAP_RESOLUTION)
 void mapInc(int x, int y) {
+	x /= MAP_RESOLUTION;
+	y /= MAP_RESOLUTION;
+	if (OutOfBounds(x, y)) {
+		// Out of bounds!
+		return;
+	}
 	// This is called in the only task which modifies mem/map, so we don't need to lock it to read them
-	/*MapInfo(x/MAP_RESOLUTION, y/MAP_RESOLUTION, ind, shift);
+	MapInfo(x, y, ind, shift);
 	
 	uint8_t b = map.data[ind];
 	int prev = (b >> shift) & 3;
-	if (prev < 2) { // 3 means most confident already, don't modify it
+	if (prev < 2) { // 2 means most confident already, don't modify it
 		// We don't need to lock because there is no "inconsistent" map. See other comment about same subject.
 		map.data[ind] = (b & (~(3 << shift))) | ((prev + 1) << shift);
-	}*/
+	}
 }
 
 void mapMarkSensor(int val, Dir dir) {
@@ -70,7 +78,14 @@ void mapMarkSensor(int val, Dir dir) {
 // Uses the current memory to make a guess at where the wall in the course is.
 //   It takes into account the X,Y position as well as sensors.
 void mapMark() {
-	MapInfo(mem.X/MAP_RESOLUTION, mem.Y/MAP_RESOLUTION, ind, shift);
+	int x = mem.X/MAP_RESOLUTION, y = mem.Y/MAP_RESOLUTION;
+	
+	if (OutOfBounds(x, y)) {
+		// Out of bounds!
+		return;
+	}
+	
+	MapInfo(x, y, ind, shift);
 	map.data[ind] = map.data[ind] | (3 << shift);
 
 	int dir;
@@ -78,11 +93,11 @@ void mapMark() {
 		dir = mem.dir;
 	UNLOCK
 	// Only record the data when it's relatively close
-	if (mem.Forward < 100) {
-		mapMarkSensor(mem.Forward, dir);
+	if (mem.Forward < 30) {
+		mapMarkSensor(CONVERT_FORWARD(mem.Forward), dir);
 	}
-	if (mem.Right2 < 100) {
-		mapMarkSensor(mem.Right2, (dir + 3) % 4);
+	if (mem.Right2 < 50) {
+		mapMarkSensor(CONVERT_RIGHT(mem.Right2), (dir + 3) % 4);
 	}
 	
 }
@@ -325,15 +340,16 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 	
 	// Do IR calculations before getting the lock
 	
-	// IGNORE IR1, FOR NOW
+	// IGNORE IR1, FOREVER
 	//int ir1 = valToCm(f->IR1);
 	
-	// Hacky, woo!
 	static int wasTurning = 0;
+	static int clearNextTicks = 0;
 	
 	int ir2, trend = 0;
 	if (!turning) {
 		if (wasTurning) {
+			clearNextTicks = 1;
 			wasTurning = 0;
 			clearIR(f->IR2);
 			clearTrend();
@@ -364,7 +380,15 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 		mem.Right2 = ir2;
 		mem.Trend = trend;
 		
-		int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2/(80/MAP_RESOLUTION);
+		int ticks = (u2_8to16(f->encoderRight) + u2_8to16(f->encoderLeft))/2;
+		ticks = ticks/(4);
+		
+		if (ticks > 0 && clearNextTicks) {
+			clearNextTicks = 0;
+			ticks = 0;
+		}
+		
+		mem.totRot += ticks;
 		
 		if (mem.tCount > 0) {
 			if (mem.tCount > ticks) {
@@ -374,6 +398,8 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 				countDone = 1;
 			}
 		}
+		
+		ticks /= 2;
 		
 		switch (mem.dir) {
 			case Right:
@@ -396,7 +422,11 @@ void mapReportNewFrame(int colorSensed, int turning, char* frame) {
 	}
 	
 	TriggerEvent(NEW_SENSOR_DATA);
-	mapMark();
+	
+	// Only mark if we haven't finihsed the first lap.
+	if (!lap1) {
+		mapMark();
+	}
 	
 	// We can read mem safely because this is the only task that
 	//   ever modifies mem

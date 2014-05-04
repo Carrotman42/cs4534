@@ -208,7 +208,7 @@ PT_THREAD(psock_send(register struct psock *s, const char *buf,
     PT_WAIT_UNTIL(&s->psockpt, data_acked(s) & send_data(s));
   }
 
-  s->state = STATE_NONE;
+   s->state = STATE_NONE;
   
   PT_END(&s->psockpt);
 }

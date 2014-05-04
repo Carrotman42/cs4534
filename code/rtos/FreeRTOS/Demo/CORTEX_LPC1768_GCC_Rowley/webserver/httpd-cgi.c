@@ -328,7 +328,7 @@ static PT_THREAD(register_emu(struct httpd_state *s, char *ptr)) {
 
 //static Map save;
 static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
-	PSOCK_BEGIN(&s->sout);
+	PSOCK_BEGIN(&s->sout); 
 	PSOCK_SEND(&s->sout, (char*)(mapMapPtr()), sizeof(Map));
 	static Memory m;
 	mapGetMemory(&m);
@@ -360,12 +360,13 @@ static PT_THREAD(dump_dbg(struct httpd_state *s, char *ptr)) {
 	static Memory m;
 	mapGetMemory(&m);
 	static struct {
-		char f, r1, r2, dir;
+		char f, r1, r2, dir, rot;
 	} toWrite;
 	toWrite.f = (char)(m.Forward);
 	toWrite.r1 = (char)m.Right2;
 	toWrite.r2 = (char)(m.Trend + 100);
 	toWrite.dir = (char)(m.dir * 25 + 100);
+	toWrite.rot = (char)(m.totRot);
 	
 	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
 	

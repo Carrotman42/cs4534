@@ -5,8 +5,10 @@
 // Defines the "armunits" per map "tile" for use of discretization.
 //   It's a guess right now, but we need to choose a value that allows us
 //   to have a good balance of precision and memory/processing required.
-#define MAP_RESOLUTION 10
-#define MAP_WIDTH 64
+#define MAP_RESOLUTION 16
+#define MAP_WIDTH 70
+#define CONVERT_FORWARD(x) (x * 5 / 2)
+#define CONVERT_RIGHT(x) (x / 2)
 
 typedef enum {
 	Right = 0, // Initial value
@@ -30,6 +32,8 @@ typedef struct {
 	
 	// A countdown of ticks left before 
 	unsigned int tCount;
+	
+	unsigned int totRot;
 } Memory;
 
 void mapReportNewFrame(int colorSensed, int turning, char* frame);
