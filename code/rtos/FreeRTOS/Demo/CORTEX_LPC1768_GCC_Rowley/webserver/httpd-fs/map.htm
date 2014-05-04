@@ -85,19 +85,23 @@ function tableUpdate(data) {
 	tab[data[cur+1]][data[cur]].style.background = "#0000FF";
 	
 	// Lap timing
-	var to = "(X, Y) = (" + data[cur] + ", " + data[cur+1] + ")<br>"
-	var lap1 = data[cur+2];
+	var to = "(X, Y) = (" + data[cur] + ", " + data[cur+1] + ")<br>";
+	
+	var dist = (data[cur+2] << 8) | data[cur+3];
+	to += "Distance travelled: " + dist + " ft<br>";
+	
+	var lap1 = data[cur+4];
 	if (lap1 > 0) {
 		to += "Lap 1: " + lap1 + "<br>";
 	}
-	var lap2 = data[cur+3];
+	var lap2 = data[cur+5];
 	if (lap2 > 0) {
 		to += "Lap 2: " + lap2 + "<br>";
 	}
 	document.getElementById('info').innerHTML = to;
 	
 	// Get to start of debug messages
-	cur += 6;
+	cur += 8;
 	var len = (data[cur-2] << 8) | data[cur-1];
 	var msgs = "";
 	for (var i = 0; i < len; i++, cur+=2) {
