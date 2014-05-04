@@ -334,10 +334,15 @@ static PT_THREAD(dump_map(struct httpd_state *s, char *ptr)) {
 	mapGetMemory(&m);
 	static struct {
 		char X, Y;
+		char ftTravMSB, ftTravLSB;
 		char lap1, lap2;
 	} toWrite;
 	toWrite.X = (char)(m.X / MAP_RESOLUTION);
 	toWrite.Y = (char)(m.Y / MAP_RESOLUTION);
+	int t = m.totRot/2;
+	toWrite.ftTravMSB = (char)((t >> 8)&0xFF);
+	toWrite.ftTravLSB = (char)(t&0xFF);
+	
 	mapGetLap(&toWrite.lap1, &toWrite.lap2);
 	PSOCK_SEND(&s->sout, (char*)(&toWrite), sizeof(toWrite));
 	

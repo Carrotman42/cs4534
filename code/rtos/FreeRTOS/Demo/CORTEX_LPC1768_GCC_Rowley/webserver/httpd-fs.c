@@ -53,7 +53,7 @@ httpd_fs_strcmp(const char *str1, const char *str2)
 {							  
   u8_t i;			  
   i = 0;														
- loop:			 
+ loop:			  
 
   if(str2[i] == 0 ||
      str1[i] == '\r' ||
@@ -125,8 +125,8 @@ u16_t httpd_fs_count
       return count[i];
     }
     ++i;
-  }
+  }											  
   return 0;
-}
+}		  
 #endif /* HTTPD_FS_STATISTICS */
 /*-----------------------------------------------------------------------------------*/

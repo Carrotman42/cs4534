@@ -81,14 +81,20 @@ function tableUpdate(data) {
 			n++
 		}
 	}
-	// Rover pos
-	tab[data[cur+1]][data[cur]].style.background = "#0000FF";
+	
+	var x = data[cur+1];
+	var y = data[cur];
+	
+	if (x >= 0 && x < Width && y >= 0 && y < Width) {
+		// Rover pos, if it hasn't gone off yet
+		tab[x][y].style.background = "#0000FF";
+	}
 	
 	// Lap timing
-	var to = "(X, Y) = (" + data[cur] + ", " + data[cur+1] + ")<br>";
+	var to = "(X, Y) = (" + x + ", " + y + ")<br>";
 	
 	var dist = (data[cur+2] << 8) | data[cur+3];
-	to += "Distance travelled: " + dist + " ft<br>";
+	to += "Distance travelled: " + (dist/11.).toFixed(2) + " ft<br>";
 	
 	var lap1 = data[cur+4];
 	if (lap1 > 0) {
