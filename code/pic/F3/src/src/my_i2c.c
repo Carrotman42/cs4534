@@ -82,8 +82,8 @@ unsigned char i2c_master_send(unsigned char addr, unsigned char length, unsigned
         }
         return 0;
     }
-    ic_ptr->read_after_write = 1;
     ic_ptr->status = I2C_STARTED;
+    ic_ptr->read_after_write = 1;
     ic_ptr->txnrx = 1;
     ic_ptr->addr = addr;
     char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits
@@ -116,8 +116,8 @@ unsigned char i2c_master_send_no_raw(unsigned char addr, unsigned char length, u
         }
         return 0;
     }
-    ic_ptr->read_after_write = 0;
     ic_ptr->status = I2C_STARTED;
+    ic_ptr->read_after_write = 0;
     ic_ptr->txnrx = 1;
     ic_ptr->addr = addr;
     char buf_addr = (addr << 1) & 0xFE; // explicitely make sure that the lsb is 0 and et the addr in top 7 bits

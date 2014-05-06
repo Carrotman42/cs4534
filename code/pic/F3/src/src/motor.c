@@ -312,8 +312,8 @@ void readjustLeft() {
     resetTicks();
     setCommandDone();
 
-    target1 = 2;
-    target2 = 2;
+    target1 = 12;
+    target2 = 12;
     unsigned char test[2] = {0x18, 0xE0};
     uart_send_array(&test, 2);
 
@@ -331,8 +331,8 @@ void readjustRight() {
     resetTicks();
     setCommandDone();
 
-    target1 = 2;
-    target2 = 2;
+    target1 = 12;
+    target2 = 12;
     unsigned char test[2] = {0x62, 0xA0};
     uart_send_array(&test, 2);
 

@@ -180,6 +180,14 @@ uint8 sendResponse(BrainMsg* brain, char* payload, uint8 wifly){
                 //Here is where we insert code to do a victory dance!
                 //DO A BARREL ROLL
             }
+            else{
+                length = generateTurnCompleteNack(command, sizeof command, brain->messageid);
+                start_i2c_slave_reply(length, command);
+//                char errorbuf[6] = {0};
+//                uint8 length = generateUnknownCommandError(errorbuf, sizeof errorbuf, wifly);
+//                start_i2c_slave_reply(length, errorbuf);
+                break;
+            }
             break;
         default:
         {
@@ -438,8 +446,10 @@ static void handleRoverData(RoverMsg* rover, char* payload){
             switch(rover->parameters){
                 case 0x05:{//ack or nack back from turn complete
                     if(payload[0] == 0){ //nack
-                        length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
-                        i2c_master_send(MOTOR_ADDR, length, command);
+                        if(!isTurnComplete()){
+                            length = generateTurnCompleteReq(command, sizeof command, I2C_COMM); //ask again
+                            i2c_master_send(MOTOR_ADDR, length, command);
+                        }
                     }
                     else{//ack, here is where I would do error checking and send a command to fix turn by x degrees
                         //for now, just tell picman that the turn is complete.
